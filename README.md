@@ -2,7 +2,7 @@
 
 ## Thread of Execution
 
-When Javascript code is run, it reads each line of code. Line-by-line and has it reads each line it also saves everything in memory:
+When Javascript code is run, the thread of execution reads each line of code. Line-by-line and when it reads each line it also saves everything in global memory:
   - function definitions
   - variables
   - etc...
