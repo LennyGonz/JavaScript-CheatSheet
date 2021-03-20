@@ -19,11 +19,11 @@ const output = multiplyByTwo(num);
 const newOutput = multiplyByTwo(10);
 ```
 
-<center>
+<p align="center">
 
-![ExecutionContext](Images/ExecutionContext.png)
+<image src="/Images/ExecutionContext.png">
 
-</center>
+</p>
 
 > When we execute `multiplyByTwo(10)` Javascript creates a execution context
 > Inside we run the code of a function and keep track of the variables inside the function definition using Local Memory
