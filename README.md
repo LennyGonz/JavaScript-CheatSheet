@@ -1,12 +1,18 @@
 # Understanding JavaScript Concepts
 
-## Thread of Execution
+## Execution Context - Thread of Execution - Global Memory - Call Stack
 
-When Javascript code is run, the thread of execution reads each line of code. Line-by-line and when it reads each line it also saves everything in global memory:
+There are two halves to the process of executing code
+
+1) the ability to walk through the code line-by-line → known as the thread of execution <br> All that is, is the ability to take line one → execute it, line two → execute it, and so on. <br> It's threading its way down our code (top → bottom) <br>
+2) Simultaneously, the other part that's required to run our code is a place to store the bits of data that we announce as we go through our codes global execution context, which is the global memory.
+
+So to reiterate,when Javascript code is run, the thread of execution reads each line of code. Line-by-line and when it reads each line it also saves everything in global memory:
   - function definitions
   - variables
   - etc...
 
+And when it reads a line where a function is invoked, Javascript creates a `local execution` context that keeps track of the variables/constants used inside the function block known as `local memory`.
 ```js
 const num = 3;
 function multiplyByTwo(inputNumber){
@@ -38,13 +44,21 @@ const newOutput = multiplyByTwo(10);
 >
 > Engine: Looks like I’m done.
 
-## Global Memory
+Multiple functions can be invoked, so how does Javascript keep track?
 
-## Call Stack
+Using a call stack.
 
-## Scope & this
+Always in the call stack is global, so when there are no more functions left on the call stack, it returns back to global.
+
+In the example above, our call stack would push `multiplyBy2(num)` → create an execution context (return result) → pop `multiplyBy2(num)` off the stack 
+
+Then push `multiplyBy2(10)` onto the call stack → create an execution context (return result) → pop `multiplyBy2(10)` off the stack and return to global
+
+## Callbacks & Higher Order Functions
 
 ## Arrow Function
+
+## Scope & this
 
 ## Asynchronous Javascript
 
