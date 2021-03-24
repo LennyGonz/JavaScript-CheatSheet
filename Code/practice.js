@@ -8,9 +8,24 @@
 
 // Promise.race([firstPromise, secondPromise]).then(res => console.log(res))
 
-async function getData() {
-  return await Promise.resolve('I made it!');
+// async function getData() {
+//   return await Promise.resolve('I made it!');
+// }
+
+// const data = getData();
+// console.log(data);
+
+const myPromise = () => Promise.resolve('I have resolved!')
+
+function firstFunction() {
+  myPromise().then(res => console.log(res))
+  console.log('second')
 }
 
-const data = getData();
-console.log(data);
+async function secondFunction() {
+  console.log(await myPromise());
+  console.log('second')
+}
+
+firstFunction();
+secondFunction();
