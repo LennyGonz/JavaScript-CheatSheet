@@ -363,6 +363,47 @@ doSomething().then((result) => {
 })();
 ```
 
+
+Using prototypes is uncommon now b/c of the `new` keyword
+
+```js
+function Workshop(teacher){
+  this.teacher = teacher;
+}
+
+Workshop.prototype.ask = function(question){
+  console.log(this.teacher, question);
+};
+
+var deepJS = new Workshop("Kyle");
+var reactJS = new Workshop("Suzy");
+
+deepJS.ask("Is 'prototype' a class?")
+// Kyle Is 'prototype' a class?
+
+reactJS.ask("Isnt 'prototype ugly")
+// Suzy isn't 'prototype ugly?
+```
+
+The `Workshop()` function is going to act like a constructor for instances of this so-called class
+And to add methods into the definition of our workshop class, we're going to add them to the prototype of the workshop constructor.
+
+So prototype means that it is an object where any instances are going to linked to or to delegate to.
+So on line 8 `var deepJS = new Workshop("Kyle");` the new keyword is gonna invoke that workshop function, and the object that gets created is going to be linked to `Workshop.prototype`
+And since workshop.prototype has an `ask` method on it, on line 11. I can take that `deepJs` instance and say `deepJS.ask()`
+
+`deepJS` the object **does not have an `ask()` method**, but it is instead prototype linked to `Workshop.prototype`
+And therefore, when we say `deepJS.ask()`, it's actually going to delegate one level up the prototype chain from deepJS up to `Workshop.prototype`
+
+And when it invokes the ask method, look at the call site down on line 11. Look at how that function is being invoked.
+Remember the `this` keyword, 1 of the rules - at the call site what determines what the `this` keyword should point at
+Well `var deepJS = new Workshop("Kyle");` -> here we're invoking the `ask()` method in this context of the deepJS object. 
+So when we invoke `ask()` we're actually saying deepJS.teacher
+
+or reactJS.ask() on line 5 we're actually saying reactJS.teacher
+
+It's because we have found a function through the prototype chain, invoked it, but it still is deremine what the `this` keyword is gonna point at by the call sites on line 11 or line 14
+
 #### XMLHttpRequest Synchronous
 
 Before async Javascript was a thing, we used XMLHttpRequest(XHR) to call an API to get data without refreshing our page
@@ -421,4 +462,40 @@ When the fetch has returned a `Promise` the first time, the result is put in the
 The prototype system is what the `class` keyword is built on top of
 
 ## Classes
+
+
+
+### More on functions
+
+```js
+function teacher() { /* ..  */}
+```
+
+This is a function declaration
+
+```js
+const myTeacher = function anotherTeacher(){
+  console.log(anotherTeacher)
+}
+```
+
+This is a function expression
+
+```js
+function teacher() { /* .. */ }
+
+const myTeacher = function anotherTeacher(){
+  console.log(anotherTeacher)
+}
+
+console.log(teacher);
+console.log(myTeacher);
+console.log(anotherTeacher);
+```
+
+The last console log - will throw a ReferenceError, there is no `anotherTeacher()` global scope will never had heard of this function
+
+**One of the key differences** between *function declarations* and *function expressions* is that function declarations and their name they are attached to the enclosing scope
+
+Where as function expressions are attached to their own scope.
 
