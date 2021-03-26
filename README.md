@@ -497,5 +497,349 @@ The last console log - will throw a ReferenceError, there is no `anotherTeacher(
 
 **One of the key differences** between *function declarations* and *function expressions* is that function declarations and their name they are attached to the enclosing scope
 
-Where as function expressions are attached to their own scope.
+Where as function expressions are attached to their own scope
+Function expressions put their identifier into their own scope.
 
+There's also a little nuance... `anotherTeacher()` is read-only - you cannot reassign `anotherTeacher()` on line 4, you could not reassign it to some other value
+
+Why would you actually have the named function on the right side of the expression?
+- You've probably more often seen it as an anonymous function there...
+- And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
+
+## Named function expressions
+
+
+A function expression thats been given a name.
+
+```js
+var clickHandler = function() {
+  // ...
+}
+
+var keyHandler = function keyHandler(){
+  // ...
+}
+```
+One line 1, i'm declaring a function expression - why is it a function expression? - because its not a function declaration.. How do we know if somethings a function declaration? If the word function is literally the first thing in the statement.
+So if it's not the first thing in the statement, if there's a variable or an operator or a parenthesis or anything, then it's not a declaration... **it is an expression**
+**BUT** we see no name, so it's an anonymous function expressions
+
+whereas the one on line 5 is a named function expression.
+
+So setting aside the differences between the two, here I just want to focus our attention to the difference between anonymous function expressions and named function expressions
+Even though anonymous function expressions are vastly more common, vastly more popular, most of you probably have never even seen a named function expression (Thats how uncommon and unpopular it is) Im going to make the claim that you should always (100%, 0 exceptions) you should prefer named function expression over the anonymous function expression
+
+Why?
+
+1. The name produces or creates a reliable self reference to the function from inside of itself. that's useful if youre going to make the function recursive, if that function is an event handler of some sort and it needs to reference itself to **unbind itself**, its useful if you need to access any properties on that function object (i.e name, length, etc). Any time you need a self reference to the function, the single only right answer to that question is, it needs to have a name.
+2. More debuggable stack traces - in the stack traces you'll get `Anonymous Function` in the stack traces - but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
+3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... Where as 
+
+
+## Arrow functions
+
+```js
+var ids = people.map(person => person.id);
+
+var ids = people.map(function getId(person){
+  return person.id;
+})
+```
+
+arrow functions are anonymous... kyle doesn't think you should use anonymous function expressions... for the reasons above
+
+**You should definitely not be using arrow functions for general replacements for all other functions** !
+You shouldn't be using them because theyre short and concise...
+The shorter the syntax the more complex the edge cases are...
+
+The arrow function (while obvious) the reader still has to infer the purpose of the function
+Whereas the second one we know it gets an ID, we could even call it `getPersonID()`
+
+Promise-chains are other scenarios you might use arrow functions
+
+```js
+getPerson()
+.then(person => getData(person.id))
+.then(renderData)
+
+getPerson()
+.then(function getDataFrom(person){
+  return getData(person.id)
+})
+.then(renderData)
+```
+
+Named function Expressions vs Anonymous function expressions
+
+well you can still do Named (Arrow) Function Expressions...
+
+```js
+var getID = person => person.id;
+var ids = people.map(getID)
+
+// ****************************
+
+var getDataFrom = person => getData(person.id);
+getPerson()
+.then(getDataFrom)
+.then(renderData);
+```
+
+Its more characters to define the function as an arrow function then it is to make it a function declaration
+
+So Kyle's thoughts on functions (which he prefers)
+
+1. (Named) Function Declarations
+2. Named Function Expressions
+3. Anonymous Function Expressions
+
+
+<hr>
+
+`this`
+
+A function's `this` references the execution context for that call, a context in which that call was being made and that is detemined entirely by **how the function was called**
+
+In other words, if you look at a function that has a `this` keyword in it. It is assigned based upon how the function is called
+Which is the counterintuitive part because most people think that you could look at a function, and figure out what its `this` keyword is going to point at.
+**But the function's definition doesn't matter at all**, when determing the `this` keyword
+**The only thing that matters is:** how does that function get invoked?
+
+
+A `this`-aware function can thus have a different context each time its called, which makes it more flexible and reusable
+In other words the `this` keyword is Javascripts version of dynamic scoping - **because what matters is how the function is being called**
+
+```js
+var teacher = "kyle";
+
+function ask(question){
+  console.log(teacher, question);
+}
+
+function otherClass() {
+  var teacher = "Suzy";
+
+  ask("Why?");
+}
+
+otherClass()
+```
+
+So instead of asking teacher to get the teacher, on line 4, when it references teacher, instead of trying to go to line 1 to get teacher, it goes to line 8
+**thats how it works in a dynamically scoped language**, which JS is not
+
+In JS to mimic this behavior we can use `this`
+
+```js
+function aks(question){
+  console.log(this.teacher, question)
+}
+
+function otherClass() {
+  var myContext = {
+    teacher: "Suzy"
+  }
+
+  ask.call(myContext, "Why?")
+}
+
+otherClass();
+```
+
+You'll notice we're invoking `ask()` from another location, but it doesn't matter...
+**It's not where I call it from, it's how I call it** 
+By using `call()` I'm saying use this particular object (myContext) as your `this` keyword, and invoke the function in that context
+So the `this` keyword in this particular case, will end up pointing at my context.
+
+So you get that dynamically flexibilty.
+We can call that same `ask()` function, lots of different ways... and provide lots of different context objects for the `this` keyword to point at, thats the dynamic flexible reusability of the `this` keyword. 
+
+Thats why `this` exists, so we can invoke functions in these different contexts
+
+if you were to do `ask("Why?")` instead you'll get -> "undefined why?"
+
+
+There are 4 different ways of invoking a function, and each way is going to answer: "what is the `this` keyword?" differently
+
+In lexical scope land, we start at the current scope and we work our way to the global scope
+
+1) this: implicit binding
+
+```js
+var workshop = {
+  teacher: "kyle",
+  ask(question) {
+    console.log(this.teacher, question)
+  }
+}
+
+workshop.ask("what is implicit binding?")
+// kyle what is implicit binding
+```
+
+You'll notice i have a workshop objec with a method on it that is `this` aware.
+That's called the `namespace pattern`
+
+how does the `this` keyword behave in the namespace pattern?
+
+When we invoke the `ask()` method on the workshop objecy, how does it figure out what the `this` keyword should point at?
+> The Call Site
+> Because of the call site the `this` keyword is going to end up pointing at the object that is used to invoke it, which in this case is the workshop object
+> `workshop.ask()` says invoke `ask()` with the `this` keyword pointing at workshop - thats what the implicit binding rule says
+> And thats how the `this` keyword works in all other languages - so this is the most common and intuitive 
+
+2) this: dynamic binding -> sharing
+
+```js
+function ask(question) {
+  console.log(this.teacher, question)
+}
+
+var workshop1 = {
+  teacher: "Kyle",
+  ask: ask;
+}
+
+var workshop2 = {
+  teacher: "Suzy",
+  ask: ask
+}
+
+workshop1.ask("How do I share a method?");
+// Kyle How do I share a method?
+
+workshop2.ask("How do I share a method?");
+// Suzy How do I share a method?
+```
+
+Im sharing the ask function across 2 different objects: workshop1 and workshop2
+With the help of the implicit binding rule, `this` points to the object - so its invoked in 2 different contexts (again to the dynamic flexibility)
+
+3) this: explicit binding
+
+```js
+function ask(question) {
+  console.log(this.teacher, question)
+}
+
+var workshop1 = {
+  teacher: "Kyle",
+  ask: ask;
+}
+
+var workshop2 = {
+  teacher: "Suzy",
+  ask: ask
+}
+
+ask.call(workshop1, "Can I explicitly set context?");
+// Kyle "Can I explicitly set context?"
+
+ask.call(workshop2, "How do I share a method?");
+// Suzy "Can I explicitly set context?"
+```
+
+The `.call()` method & `.apply()` method, both of them take, as their first argument, a `this` keyword
+So when we pass an object as the first argument, we're saying invoke the `ask()` function with the `this` context of workshop1
+
+**losing your `this` binding** - a variation of explicit binding is called **hard binding**
+
+```js
+var workshop = {
+  teacher: "Kyle",
+  ask(question) {
+    console.log(this.teacher, question)
+  }
+}
+
+setTimeout(workshop.ask,10,"Lost this?");
+// undefined Lost This?
+
+setTimeout(workshop.ask.bind(workshop), 10, "Hard bound this?");[
+// Kyle Hard bound this?
+```
+
+Looking at `setTimeout(workshop.ask,10,"Lost this?");` -> the method is on the workshop object, so why is it getting lost?
+Because `setTimeout(workshop.ask,10,"Lost this?");` this is not the call site...
+B/c of setTimeout we actually invoke the `ask()` method in the global context, where it won't find a global variable teacher, hence undefined
+
+So the solution is to pass a hard bound function `workshop.ask.bind(workshop)` -> which is saying invoke the `ask()` method and no matter how you invoke it, always use workshop as its `this` context
+
+In other words, the `.bind()` method, it doesn't invoke the function, it produces a new function which is bound to a particular specific `this` context
+so there's a trade off - we have a predictable `this` binding.... but then
+you see some scenarios where its flexibility is frustrasting and we need it to be predicatable.
+
+
+So...
+
+If I go to the trouble to write a `this` aware set of code, and then most of my call sites are using the flexible dynamism and every once in a while I have to do something like a hard binding.. then im getting a lot of benefit from that system
+
+On the other hand, if i go through the trouble to write a `this` aware system and then everyone or most of my call sites **have** to use `.bind()`, that's a clue to me that Im doing this the hard way and should use `closures` and lexical scope instead.
+
+
+## 3rd way of invoking a function: `new`
+**The purpose of the new keyword is actually to invoke a function with a `this` keyword pointing at a whole new empty object**
+If we have invoking function functions and pointing them at a context object
+
+This new way of doing it is to say, I wanna invoke a function and use a whole new empty object. And the `new` keyword can accomplish that.
+
+4 things that new does:
+1. Create a brand new empty object
+2. Link that object to another object
+3. Call function with `this` set to the new object
+4. If function does not return an object, assume return of `this`
+
+These 4 things happen every time the `new` keyword is used.
+
+4) 4th and final way of invoking a function
+
+this: default binding
+
+```js
+var teacher = "Kyle";
+
+function ask(question){
+  console.log(this.teacher, question)
+}
+
+function askAgain(question){
+  "use strict";
+  console.log(this.teacher, question)
+}
+
+ask("what's the non-strict-mode default?")
+// Kyle what's the non-strict-mode default
+
+askAgain("what's the strict-mode default?");
+// Type Error
+```
+
+So we dont specify any object, or use `call` or binding -> the fallback is to default to the global (where it finds the global variable teacher and this prints kyle)
+
+But askAgain is in strict-mode - gets a TypeError...
+In strict-mode, when you invoke it with no other `this` bindings, the default behavior is to leave it undefined
+and now you're trying to access a property on an undefined value - which is a TypeError
+
+And this makes sense, youre invoking a function without giving a `this` - because if you don't it goes hunting in global and thats horrible... 
+
+We have to look at the call-site to determine what `this` is pointing at, you have to look at **how the function's being called!!**
+because everytime it gets called, the how of the call controls what the `this` keyword will point at
+
+```js
+var workshop = {
+  teacher: "kyle",
+  ask: function ask(question) {
+    console.log(this.teacher, question);
+  }
+}
+
+new (workshop.ask.bind(workshop))("What does this do?");
+```
+
+3/4 rules for `this` are in 1 line, what's the order of prescedence?
+
+1. Is the function called by `new`? - If 'yes' the newly created object will be the `this` keyword
+2. Is the function called by `call()` or apply()`? - If yes, the context object that is specified will be used.
+   - **Note:** `bind()` uses apply() under the hood so this rule applies to `.bind()` as well
+3. Is the funcion called on a context object? Like `workshop.ask()`? - If so, use that object
+4. And if none of the previous 3 apply - we default onto the global object (except strict mode)
