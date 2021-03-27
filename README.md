@@ -20,7 +20,7 @@ const nameImprover = function nameImprover(name, adi){
 ```
 <p align="center">
 
-<image src="/Images/js_snippet1.png">
+<image src="/Images/js_snippet01.png">
 
 </p>
 
