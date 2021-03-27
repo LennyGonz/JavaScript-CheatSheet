@@ -1,26 +1,25 @@
-<p align="center">
+<div align="center"> <h1>Understanding JavaScript</h1>Understanding JavaScript </div>
 
-<h1> Understanding JavaScript </h1>
+## 1. Functions
 
-</p>
+<div align="center">
 
-## Functions
-
-<p align="center">
 Function declarations vs Function expressions
+
 <image src="/Images/js_snippet01.png">
 
-</p>
+<strong>It's a stylistic choice based on scope!</strong>
+</div>
 
-**It's a stylistic choice based on scope**!
 
-<p align="center">
+
+<div align="center">
 
 <image src="/Images/js_snippet02.png">
 
-</p>
+> The last console log - will throw a ReferenceError, there is no `anotherTeacher()` global scope will never had heard of this function
+</div>
 
-The last console log - will throw a ReferenceError, there is no `anotherTeacher()` global scope will never had heard of this function
 
 **One of the key differences** between *function declarations* and *function expressions* is that function declarations and their name they are attached to the enclosing scope
 
