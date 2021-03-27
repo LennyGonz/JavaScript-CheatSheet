@@ -15,17 +15,29 @@
 // const data = getData();
 // console.log(data);
 
-const myPromise = () => Promise.resolve('I have resolved!')
+// const myPromise = () => Promise.resolve('I have resolved!')
 
-function firstFunction() {
-  myPromise().then(res => console.log(res))
-  console.log('second')
+// function firstFunction() {
+//   myPromise().then(res => console.log(res))
+//   console.log('second')
+// }
+
+// async function secondFunction() {
+//   console.log(await myPromise());
+//   console.log('second')
+// }
+
+// firstFunction();
+// secondFunction();
+
+let snack = 'Meow Mix';
+
+function getFood(food) {
+    if (food) {
+        let snack = 'Friskies';
+        return snack;
+    }
+    return snack;
 }
 
-async function secondFunction() {
-  console.log(await myPromise());
-  console.log('second')
-}
-
-firstFunction();
-secondFunction();
+console.log(getFood(false)); // 'Meow Mix'
