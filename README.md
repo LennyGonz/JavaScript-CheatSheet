@@ -1,42 +1,24 @@
-# Understanding JavaScript Concepts
+<p align="center">
+
+<h1> Understanding JavaScript </h1>
+
+</p>
 
 ## Functions
 
-Function declarations vs Function expressions
-
-```js
-function teacher() { /* ..  */}
-// This is a function declaration
-
-const nameImprover = function(name, adj) {
-  return 'Col' + name + ' MC' + adj + ' pants';
-}
-// This is an anonymous function expression
-
-const nameImprover = function nameImprover(name, adi){
-  return 'Col' + name + ' MC' + adj + ' pants';
-}
-// Named function expressions
-```
 <p align="center">
-
+Function declarations vs Function expressions
 <image src="/Images/js_snippet01.png">
 
 </p>
 
 **It's a stylistic choice based on scope**!
 
-```js {.line-numbers}
-function teacher() { /* .. */ }
+<p align="center">
 
-const myTeacher = function anotherTeacher(){
-  console.log(anotherTeacher)
-}
+<image src="/Images/js_snippet02.png">
 
-console.log(teacher);
-console.log(myTeacher);
-console.log(anotherTeacher);
-```
+</p>
 
 The last console log - will throw a ReferenceError, there is no `anotherTeacher()` global scope will never had heard of this function
 
@@ -54,16 +36,11 @@ Why would you actually have the named function on the right side of the expressi
 
 ### IIFEs, which stands for Immediately Invoked Function Expression
 
-```js
-var teacher = 'Will'
+<p align="center">
 
-(function anotherTeacher(){
-  var teacher = 'Kyle'
-  console.log(teacher) // Kyle
-})();
+<image src="/Images/js_snippet03.png">
 
-console.log(teacher)
-```
+</p>
 
 You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
 That's what makes it a function expression, instead of a function declaration.
@@ -208,17 +185,12 @@ So to reiterate,when Javascript code is run, the thread of execution reads each 
   - etc...
 
 And when it reads a line where a function is invoked, Javascript creates a `local execution` context that keeps track of the variables/constants used inside the function block known as `local memory`.
-```js
-const num = 3;
-function multiplyByTwo(inputNumber){
-  const result = inputNumber * 2;
-  return result;
-}
 
-const output = multiplyByTwo(num);
+<p align="center">
 
-const newOutput = multiplyByTwo(10);
-```
+<image src="/Images/js_snippet04.png">
+
+</p>
 
 <p align="center">
 
@@ -253,19 +225,11 @@ Then push `multiplyBy2(10)` onto the call stack → create an execution context 
 
 ## Arrow Function
 
-```js
-var nameImprover = (name, adj) => {
-  return `Col ${name} Mc ${adj} pants`;
-}
+<p align="center">
 
-$('body').hide();
+<image src="/Images/js_snippet05.png">
 
-myArr.forEach(val => console.log(val))
-
-$('button').on('click', () => {
-  console.log('Click me');
-})
-```
+</p>
 
 Syntax differences:
 We don't have to wrap our parameters in parenthesis if there's only 1 parameters
@@ -317,7 +281,7 @@ A function's `this` references the execution context for that call, determined *
 It's not about the definition of the function, it's not where the function is, it's not what the function belongs to, **none of that matters**
 It's only how the function was called that determines what the `this` keyword is pointing at.
 
-```
+```js
 var workshop = {
   teacher: 'kyle',
   ask(question) {
@@ -337,7 +301,7 @@ So it was entirely based upon this line: `workshop.ask("what is implicit binding
 
 We can actually change, we can have a function that is in one place, and change what `this` context it uses, based upon its call site.
 
-```
+```js
 function ask(question){
   console.log(this.teacher, question)
 }
@@ -383,21 +347,11 @@ Which is the counterintuitive part because most people think that you could look
 A `this`-aware function can thus have a different context each time its called, which makes it more flexible and reusable
 In other words the `this` keyword is Javascripts version of dynamic scoping - **because what matters is how the function is being called**
 
-```js
-var teacher = "kyle";
+<p align="center">
 
-function ask(question){
-  console.log(teacher, question);
-}
+<image src="/Images/js_snippet06.png">
 
-function otherClass() {
-  var teacher = "Suzy";
-
-  ask("Why?");
-}
-
-otherClass()
-```
+</p>
 
 So instead of asking teacher to get the teacher, on line 4, when it references teacher, instead of trying to go to line 1 to get teacher, it goes to line 8
 **thats how it works in a dynamically scoped language**, which JS is not
@@ -439,17 +393,11 @@ In lexical scope land, we start at the current scope and we work our way to the 
 
 1) this: implicit binding
 
-```js
-var workshop = {
-  teacher: "kyle",
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
+<p align="center">
 
-workshop.ask("what is implicit binding?")
-// kyle what is implicit binding
-```
+<image src="/Images/js_snippet07.png">
+
+</p>
 
 You'll notice i have a workshop objec with a method on it that is `this` aware.
 That's called the `namespace pattern`
@@ -464,74 +412,32 @@ When we invoke the `ask()` method on the workshop objecy, how does it figure out
 
 2) this: dynamic binding -> sharing
 
-```js
-function ask(question) {
-  console.log(this.teacher, question)
-}
+<p align="center">
 
-var workshop1 = {
-  teacher: "Kyle",
-  ask: ask;
-}
+<image src="/Images/js_snippet08.png">
 
-var workshop2 = {
-  teacher: "Suzy",
-  ask: ask
-}
-
-workshop1.ask("How do I share a method?");
-// Kyle How do I share a method?
-
-workshop2.ask("How do I share a method?");
-// Suzy How do I share a method?
-```
-
+</p>
 Im sharing the ask function across 2 different objects: workshop1 and workshop2
 With the help of the implicit binding rule, `this` points to the object - so its invoked in 2 different contexts (again to the dynamic flexibility)
 
 3) this: explicit binding
 
-```js
-function ask(question) {
-  console.log(this.teacher, question)
-}
+<p align="center">
 
-var workshop1 = {
-  teacher: "Kyle",
-  ask: ask;
-}
+<image src="/Images/js_snippet09.png">
 
-var workshop2 = {
-  teacher: "Suzy",
-  ask: ask
-}
-
-ask.call(workshop1, "Can I explicitly set context?");
-// Kyle "Can I explicitly set context?"
-
-ask.call(workshop2, "How do I share a method?");
-// Suzy "Can I explicitly set context?"
-```
+</p>
 
 The `.call()` method & `.apply()` method, both of them take, as their first argument, a `this` keyword
 So when we pass an object as the first argument, we're saying invoke the `ask()` function with the `this` context of workshop1
 
 **losing your `this` binding** - a variation of explicit binding is called **hard binding**
 
-```js
-var workshop = {
-  teacher: "Kyle",
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
+<p align="center">
 
-setTimeout(workshop.ask,10,"Lost this?");
-// undefined Lost This?
+<image src="/Images/js_snippet010.png">
 
-setTimeout(workshop.ask.bind(workshop), 10, "Hard bound this?");[
-// Kyle Hard bound this?
-```
+</p>
 
 Looking at `setTimeout(workshop.ask,10,"Lost this?");` -> the method is on the workshop object, so why is it getting lost?
 Because `setTimeout(workshop.ask,10,"Lost this?");` this is not the call site...
@@ -569,24 +475,11 @@ These 4 things happen every time the `new` keyword is used.
 
 this: default binding
 
-```js
-var teacher = "Kyle";
+<p align="center">
 
-function ask(question){
-  console.log(this.teacher, question)
-}
+<image src="/Images/js_snippet11.png">
 
-function askAgain(question){
-  "use strict";
-  console.log(this.teacher, question)
-}
-
-ask("what's the non-strict-mode default?")
-// Kyle what's the non-strict-mode default
-
-askAgain("what's the strict-mode default?");
-// Type Error
-```
+</p>
 
 So we dont specify any object, or use `call` or binding -> the fallback is to default to the global (where it finds the global variable teacher and this prints kyle)
 
@@ -599,16 +492,11 @@ And this makes sense, youre invoking a function without giving a `this` - becaus
 We have to look at the call-site to determine what `this` is pointing at, you have to look at **how the function's being called!!**
 because everytime it gets called, the how of the call controls what the `this` keyword will point at
 
-```js
-var workshop = {
-  teacher: "kyle",
-  ask: function ask(question) {
-    console.log(this.teacher, question);
-  }
-}
+<p align="center">
 
-new (workshop.ask.bind(workshop))("What does this do?");
-```
+<image src="/Images/js_snippet12.png">
+
+</p>
 
 3/4 rules for `this` are in 1 line, what's the order of prescedence?
 
@@ -620,19 +508,11 @@ new (workshop.ask.bind(workshop))("What does this do?");
 
 ## Arrow-functions and `this`
 
-```js
-var workshop = {
-  teacher: "kyle",
-  ask(question) {
-    setTimeout(() => {
-      console.log(this.teacher,question);
-    }, 100);
-  }
-}
+<p align="center">
 
-workshop.ask("Is this lexical `this`?");
-// Kyle Is this lexical 'this'?
-```
+<image src="/Images/js_snippet13.png">
+
+</p>
 
 Here `this` is correctly pointing to the workshop object
 **How is this not implicit binding???????**
@@ -657,20 +537,11 @@ The **spec sheet** for Arrow function says:
 2. If you call `new` on an arrow function, you get an exception ... an error
 
 
-```js
-var workshop = {
-  teacher: "kyle",
-  ask: (question) => {
-    console.log(this.teacher, question)
-  }
-}
+<p align="center">
 
-workshop.ask("What happened to 'this'?");
-// undefined What happened to 'this'?
+<image src="/Images/js_snippet14.png">
 
-workshop.ask.call(workshop,"Still no 'this'?");
-// undefined Still no 'this'?
-```
+</p>
 
 We tend to think that `{}` curly braces are scopes, theyre blocks, theyre function bodies ... they must be scopes!
 **No!** 
