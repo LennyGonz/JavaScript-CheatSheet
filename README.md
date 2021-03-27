@@ -51,7 +51,7 @@ Then push `multiplyBy2(10)` onto the call stack → create an execution context 
 
 ## 2. Variables
 
-## block scoping with let
+## 2. 1 block scoping with let
 
 ```js
 var teacher = 'kyle'
@@ -84,6 +84,7 @@ Kyle's stylistic opinion:
 
 ## 3. Functions
 
+### 3.1 Function Declarations and Function Expressions
 <div align="center">
 
 Function declarations vs Function expressions
@@ -114,7 +115,7 @@ Why would you actually have the named function on the right side of the expressi
 - You've probably more often seen it as an anonymous function there...
 - And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
 
-## Named function expressions
+### 3.2 Named function expressions
 
 
 A function expression thats been given a name.
@@ -147,7 +148,7 @@ Using **named function expressions** should be used more often because:
 2. More debuggable stack traces - in the stack traces you'll get `Anonymous Function` in the stack traces - but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
 3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... Where as with function declarations the purpose of the function is in the name
 
-### IIFEs, another form of anonymous function expressions
+### 3.3 IIFEs, another form of anonymous function expressions
 
 <p align="center">
 
@@ -163,7 +164,7 @@ And then at the end of the function definition, you can see an extra set of pare
 The main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
 
 
-### Arrow functions, another form of anonymous function expressions
+### 3.4 Arrow functions, another form of anonymous function expressions
 
 ```js
 var ids = people.map(person => person.id);
@@ -216,9 +217,9 @@ Personally I believe this is the heirarchy of function types that should be used
 
 
 
-### Callbacks & Higher Order Functions
+### 3.5 Callbacks & Higher Order Functions
 
-### Arrow Function
+### 3.6 Arrow Function
 
 <p align="center">
 
@@ -248,7 +249,7 @@ That comes for free in all of our regular functions in JS, but not arrow functio
 Automatic returns in arrow functions can be tricky, its always better to explicitly write a return statement inside your arrow function
 
 
-## Scope & this
+## 4. Scope & this
 
 Scope: where to look for things
 
@@ -453,7 +454,7 @@ If I go to the trouble to write a `this` aware set of code, and then most of my 
 On the other hand, if i go through the trouble to write a `this` aware system and then everyone or most of my call sites **have** to use `.bind()`, that's a clue to me that Im doing this the hard way and should use `closures` and lexical scope instead.
 
 
-## 3rd way of invoking a function: `new`
+### 3rd way of invoking a function: `new`
 **The purpose of the new keyword is actually to invoke a function with a `this` keyword pointing at a whole new empty object**
 If we have invoking function functions and pointing them at a context object
 
@@ -502,7 +503,7 @@ because everytime it gets called, the how of the call controls what the `this` k
 3. Is the funcion called on a context object? Like `workshop.ask()`? - If so, use that object
 4. And if none of the previous 3 apply - we default onto the global object (except strict mode)
 
-## Arrow-functions and `this`
+### Arrow-functions and `this`
 
 <p align="center">
 
@@ -624,7 +625,7 @@ if you have one that defines the same method name in a chold as in the parent.
 
 You can refer to the parent from the child by saying `super.` --> in our example we did `super.ask(msg.UpperCase())`
 
-## 4. Prototype & __proto__
+## 5. Prototype & __proto__
 
 The prototype system is what the `class` keyword is built on top of
 
@@ -668,15 +669,15 @@ or reactJS.ask() on line 5 we're actually saying reactJS.teacher
 
 It's because we have found a function through the prototype chain, invoked it, but it still is deremine what the `this` keyword is gonna point at by the call sites on line 11 or line 14
 
-## 5. `new`
+## 6. `new`
 
-## 6. `class`
+## 7. `class`
 
-### 6.1 `super`
+### 7.1 `super`
 
-### 6.2 `extends`
+### 7.2 `extends`
 
-## 7. Closure
+## 8. Closure
 
 Closure is when a function remembers the variables outside of it, even if you pass that function elsewhere
 
@@ -707,7 +708,7 @@ var myQuestion = ask("What is closure")
 myQuestion(); // What is closure
 ```
 
-## 8. Asynchronous Javascript
+## 9. Asynchronous Javascript
 
 **XMLHttpRequest Synchronous**
 
@@ -748,7 +749,7 @@ fetch('http://example.com/movies.json').then(function(response) {
 
 Fetch makes more sense, since you can read in order which steps it takes
 
-### 8.1 Promises
+### 9.1 Promises
 
 **Fulfillment**
 
@@ -825,11 +826,11 @@ doSomething().then((result) => {
 })();
 ```
 
-### 8.2 Iterators
+### 9.2 Iterators
 
-### 8.3 Generators
+### 9.3 Generators
 
-### 8.4 Async/Await
+### 9.4 Async/Await
 
 Async/Await built from Generators
 
