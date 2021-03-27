@@ -18,8 +18,7 @@ const nameImprover = function nameImprover(name, adi){
 }
 // Named function expressions
 ```
-
-![FunctionDec_Exp](https://carbon.now.sh/?bg=rgba%280%2C0%2C0%2C1%29&t=3024-night&wt=boxy&l=auto&ds=false&dsyoff=20px&dsblur=68px&wc=true&wa=true&pv=56px&ph=56px&ln=true&fl=1&fm=dm&fs=14px&lh=133%25&si=false&es=2x&wm=false&code=function%2520teacher%28%29%2520%257B%2520%252F*%2520..%2520%2520*%252F%257D%250A%252F%252F%2520This%2520is%2520a%2520function%2520declaration%250A%250Aconst%2520nameImprover%2520%253D%2520function%28name%252C%2520adj%29%2520%257B%250A%2520%2520return%2520%27Col%27%2520%252B%2520name%2520%252B%2520%27%2520MC%27%2520%252B%2520adj%2520%252B%2520%27%2520pants%27%253B%250A%257D%250A%252F%252F%2520This%2520is%2520an%2520anonymous%2520function%2520expression%250A%250Aconst%2520nameImprover%2520%253D%2520function%2520nameImprover%28name%252C%2520adi%29%257B%250A%2520%2520return%2520%27Col%27%2520%252B%2520name%2520%252B%2520%27%2520MC%27%2520%252B%2520adj%2520%252B%2520%27%2520pants%27%253B%250A%257D%250A%252F%252F%2520Named%2520function%2520expressions)
+![FuncDec_Exp](Images/js_snippet1.png)
 
 **It's a stylistic choice based on scope**!
 
