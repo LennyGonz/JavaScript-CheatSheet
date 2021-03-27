@@ -18,7 +18,11 @@ const nameImprover = function nameImprover(name, adi){
 }
 // Named function expressions
 ```
-![FuncDec_Exp](Images/js_snippet1.png)
+<p align="center">
+
+<image src="/Images/js_snippet1.png">
+
+</p>
 
 **It's a stylistic choice based on scope**!
 
