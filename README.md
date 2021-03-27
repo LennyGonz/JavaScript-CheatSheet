@@ -4,13 +4,14 @@
 
 Function declarations vs Function expressions
 
-Function declarations are when we assign it to a variable
-
 ```js
+function teacher() { /* ..  */}
+// This is a function declaration
+
 const nameImprover = function(name, adj) {
   return 'Col' + name + ' MC' + adj + ' pants';
 }
-// This is an anonymous function declaration
+// This is an anonymous function expression
 
 const nameImprover = function nameImprover(name, adi){
   return 'Col' + name + ' MC' + adj + ' pants';
@@ -18,55 +19,9 @@ const nameImprover = function nameImprover(name, adi){
 // Named function expressions
 ```
 
-Function expressions is a named function
+**It's a stylistic choice based on scope**!
 
-```js
-function nameImprover(name, adj) {
-  return 'Col' + name + ' MC' + adj + ' pants';
-}
-```
-
-It's a stylistic choice based on scope
-
-
-### IFFEs, which stands for Immediately Invoked Function Expression
-
-```js
-var teacher = 'Will'
-
-(function anotherTeacher(){
-  var teacher = 'Kyle'
-  console.log(teacher) // Kyle
-})();
-
-console.log(teacher)
-```
-
-You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
-That's what makes it a function expression, instead of a function declaration.
-
-And then at the end of the function definition, you can see an extra set of parenthesis, which means it's getting invoked. Hence the 'immediately ivoked' part of the name
-
-It's being executed immediately after we describe that function expression as a value, it immediately invokes it.
-
-And thats what makes it an IIFE, and the main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
-
-
-```js
-function teacher() { /* ..  */}
-```
-
-This is a function declaration
-
-```js
-const myTeacher = function anotherTeacher(){
-  console.log(anotherTeacher)
-}
-```
-
-This is a function expression
-
-```js
+```js {.line-numbers}
 function teacher() { /* .. */ }
 
 const myTeacher = function anotherTeacher(){
@@ -90,6 +45,33 @@ There's also a little nuance... `anotherTeacher()` is read-only - you cannot rea
 Why would you actually have the named function on the right side of the expression?
 - You've probably more often seen it as an anonymous function there...
 - And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
+
+
+### IIFEs, which stands for Immediately Invoked Function Expression
+
+```js
+var teacher = 'Will'
+
+(function anotherTeacher(){
+  var teacher = 'Kyle'
+  console.log(teacher) // Kyle
+})();
+
+console.log(teacher)
+```
+
+You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
+That's what makes it a function expression, instead of a function declaration.
+
+And then at the end of the function definition, you can see an extra set of parenthesis, which means it's getting invoked. Hence the 'immediately ivoked' part of the name
+
+It's being executed immediately after we describe that function expression as a value, it immediately invokes it.
+
+And thats what makes it an IIFE, and the main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
+
+### End of IIFE
+
+
 
 ## Named function expressions
 
