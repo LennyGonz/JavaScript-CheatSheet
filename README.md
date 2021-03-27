@@ -1,177 +1,6 @@
-<div align="center"> <h1>Understanding JavaScript</h1>Understanding JavaScript </div>
+<div align="center"> <h1>Understanding JavaScript</h1></div>
 
-## 1. Functions
-
-<div align="center">
-
-Function declarations vs Function expressions
-
-<image src="/Images/js_snippet01.png">
-
-<strong>It's a stylistic choice based on scope!</strong>
-</div>
-
-
-
-<div align="center">
-
-<image src="/Images/js_snippet02.png">
-
-> The last console log - will throw a ReferenceError, there is no `anotherTeacher()` global scope will never had heard of this function
-</div>
-
-
-**One of the key differences** between *function declarations* and *function expressions* is that function declarations and their name they are attached to the enclosing scope
-
-Where as function expressions are attached to their own scope
-Function expressions put their identifier into their own scope.
-
-There's also a little nuance... `anotherTeacher()` is read-only - you cannot reassign `anotherTeacher()` on line 4, you could not reassign it to some other value
-
-Why would you actually have the named function on the right side of the expression?
-- You've probably more often seen it as an anonymous function there...
-- And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
-
-
-### IIFEs, which stands for Immediately Invoked Function Expression
-
-<p align="center">
-
-<image src="/Images/js_snippet03.png">
-
-</p>
-
-You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
-That's what makes it a function expression, instead of a function declaration.
-
-And then at the end of the function definition, you can see an extra set of parenthesis, which means it's getting invoked. Hence the 'immediately ivoked' part of the name
-
-It's being executed immediately after we describe that function expression as a value, it immediately invokes it.
-
-And thats what makes it an IIFE, and the main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
-
-### End of IIFE
-
-
-
-## Named function expressions
-
-
-A function expression thats been given a name.
-
-```js
-var clickHandler = function() {
-  // ...
-}
-
-var keyHandler = function keyHandler(){
-  // ...
-}
-```
-One line 1, i'm declaring a function expression - why is it a function expression? - because its not a function declaration.. How do we know if somethings a function declaration? If the word function is literally the first thing in the statement.
-So if it's not the first thing in the statement, if there's a variable or an operator or a parenthesis or anything, then it's not a declaration... **it is an expression**
-**BUT** we see no name, so it's an anonymous function expressions
-
-whereas the one on line 5 is a named function expression.
-
-So setting aside the differences between the two, here I just want to focus our attention to the difference between anonymous function expressions and named function expressions
-Even though anonymous function expressions are vastly more common, vastly more popular, most of you probably have never even seen a named function expression (Thats how uncommon and unpopular it is) Im going to make the claim that you should always (100%, 0 exceptions) you should prefer named function expression over the anonymous function expression
-
-Why?
-
-1. The name produces or creates a reliable self reference to the function from inside of itself. that's useful if youre going to make the function recursive, if that function is an event handler of some sort and it needs to reference itself to **unbind itself**, its useful if you need to access any properties on that function object (i.e name, length, etc). Any time you need a self reference to the function, the single only right answer to that question is, it needs to have a name.
-2. More debuggable stack traces - in the stack traces you'll get `Anonymous Function` in the stack traces - but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
-3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... Where as 
-
-
-## Arrow functions
-
-```js
-var ids = people.map(person => person.id);
-
-var ids = people.map(function getId(person){
-  return person.id;
-})
-```
-
-arrow functions are anonymous... kyle doesn't think you should use anonymous function expressions... for the reasons above
-
-**You should definitely not be using arrow functions for general replacements for all other functions** !
-You shouldn't be using them because theyre short and concise...
-The shorter the syntax the more complex the edge cases are...
-
-The arrow function (while obvious) the reader still has to infer the purpose of the function
-Whereas the second one we know it gets an ID, we could even call it `getPersonID()`
-
-Promise-chains are other scenarios you might use arrow functions
-
-```js
-getPerson()
-.then(person => getData(person.id))
-.then(renderData)
-
-getPerson()
-.then(function getDataFrom(person){
-  return getData(person.id)
-})
-.then(renderData)
-```
-
-Named function Expressions vs Anonymous function expressions
-
-well you can still do Named (Arrow) Function Expressions...
-
-```js
-var getID = person => person.id;
-var ids = people.map(getID)
-
-// ****************************
-
-var getDataFrom = person => getData(person.id);
-getPerson()
-.then(getDataFrom)
-.then(renderData);
-```
-
-Its more characters to define the function as an arrow function then it is to make it a function declaration
-
-So Kyle's thoughts on functions (which he prefers)
-
-1. (Named) Function Declarations
-2. Named Function Expressions
-3. Anonymous Function Expressions
-
-## block scoping with let
-
-```js
-var teacher = 'kyle'
-{
-  let teacher = "Suzy"
-  console.log(teacher) // Suzy
-}
-console.log(teacher) // kyle
-```
-
-```js
-
-function diff(x,y) {
-  if (x > y) {
-    let tmp = x;
-    x = y;
-    y = tmp;
-  }
-
-  return y - x
-}
-```
-
-This is great bc tmp only exists in the if statement, no where else
-
-Kyle's stylistic opinion:
-`var` always behave as if it belongs to the function
-`lets` are great inside of blocks
-
-## Execution Context - Thread of Execution - Global Memory - Call Stack
+## 1. Execution Context - Thread of Execution - Global Memory - Call Stack
 
 There are two halves to the process of executing code
 
@@ -220,9 +49,176 @@ In the example above, our call stack would push `multiplyBy2(num)` → create an
 
 Then push `multiplyBy2(10)` onto the call stack → create an execution context (return result) → pop `multiplyBy2(10)` off the stack and return to global
 
-## Callbacks & Higher Order Functions
+## 2. Variables
 
-## Arrow Function
+## block scoping with let
+
+```js
+var teacher = 'kyle'
+{
+  let teacher = "Suzy"
+  console.log(teacher) // Suzy
+}
+console.log(teacher) // kyle
+```
+
+```js
+
+function diff(x,y) {
+  if (x > y) {
+    let tmp = x;
+    x = y;
+    y = tmp;
+  }
+
+  return y - x
+}
+```
+
+This is great bc tmp only exists in the if statement, no where else
+
+Kyle's stylistic opinion:
+`var` always behave as if it belongs to the function
+`lets` are great inside of blocks
+
+
+## 3. Functions
+
+<div align="center">
+
+Function declarations vs Function expressions
+
+<image src="/Images/js_snippet01.png">
+
+<strong>It's a stylistic choice based on scope!</strong>
+</div>
+
+
+
+<div align="center">
+
+<image src="/Images/js_snippet02.png">
+
+> The last console log - will throw a ReferenceError, because there is no `anotherTeacher()` in global scope therefore global scope will never had heard of this function
+</div>
+
+
+**One of the key differences** between *function declarations* and *function expressions* is:
+- that function declarations attach their name to the enclosing scope
+
+- Where as function expressions are attached to their own scope, they put their identifier into their own scope.
+
+There's also a little nuance. `anotherTeacher()` is read-only - you cannot reassign `anotherTeacher()` on line 4, you could not reassign it to some other value
+
+Why would you actually have the named function on the right side of the expression?
+- You've probably more often seen it as an anonymous function there...
+- And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
+
+## Named function expressions
+
+
+A function expression thats been given a name.
+
+```js
+var clickHandler = function() {
+  // ...
+}
+
+var keyHandler = function keyHandler(){
+  // ...
+}
+```
+`clickHandler()`, I'm declaring a function expression:
+- why is it a function expression?
+  - because its not a function declaration...
+    - How do we know if somethings a function declaration? 
+      - If the word function is literally the first thing in the statement.
+
+So if `function` is not the first thing in the statement, if there's a variable or an operator or a parenthesis or anything, then it's not a declaration... **it is an expression**
+**BUT also,** we see no name, so it's an anonymous function expression
+
+whereas `keyHandler()` is a named function expression.
+
+So setting aside the differences between the anonymous function expressions and named function expressions
+Even though anonymous function expressions are vastly more common/popular, they make debugging code much harder. 
+Using **named function expressions** should be used more often because:
+
+1. The name produces or creates a reliable self reference to the function from inside of itself. that's useful if youre going to make the function recursive, if that function is an event handler of some sort and it needs to reference itself to **unbind itself**, its useful if you need to access any properties on that function object (i.e name, length, etc). Any time you need a self reference to the function, the single only right answer to that question is, it needs to have a name.
+2. More debuggable stack traces - in the stack traces you'll get `Anonymous Function` in the stack traces - but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
+3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... Where as with function declarations the purpose of the function is in the name
+
+### IIFEs, another form of anonymous function expressions
+
+<p align="center">
+
+<image src="/Images/js_snippet03.png">
+
+</p>
+
+You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
+That's what makes it a function expression, instead of a function declaration.
+
+And then at the end of the function definition, you can see an extra set of parenthesis, which means it's getting invoked. Hence the 'immediately ivoked' part of the name
+
+The main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
+
+
+### Arrow functions, another form of anonymous function expressions
+
+```js
+var ids = people.map(person => person.id);
+
+var ids = people.map(function getId(person){
+  return person.id;
+})
+```
+
+The arrow function;s purpose (while obvious) the reader still has to **infer** the purpose of the function
+Whereas the second one we know it gets an ID, we could even call it `getPersonID()` to be more descriptive
+
+**You should definitely not be using arrow functions for general replacements for all other functions** !
+
+One of the main reasons you should use arrow functions comes from it's **lexical `this` capabilities**
+
+Another is: **Promise-chains**
+
+```js
+getPerson()
+.then(person => getData(person.id))
+.then(renderData)
+
+getPerson()
+.then(function getDataFrom(person){
+  return getData(person.id)
+})
+.then(renderData)
+```
+
+And while you can do Named (Arrow) Function Expressions...
+Its more characters to define the function as an arrow function then it is to make it a function declaration
+```js
+var getID = person => person.id;
+var ids = people.map(getID)
+
+// ****************************
+
+var getDataFrom = person => getData(person.id);
+getPerson()
+.then(getDataFrom)
+.then(renderData);
+```
+
+Personally I believe this is the heirarchy of function types that should be used:
+
+1. (Named) Function Declarations
+2. Named Function Expressions
+3. Anonymous Function Expressions
+
+
+
+### Callbacks & Higher Order Functions
+
+### Arrow Function
 
 <p align="center">
 
@@ -268,7 +264,8 @@ function otherClass() {
 otherClass(); // Welcome
 
 teacher; // Suzy
-topic; // React -> this variable wasn't defined anywhere so JS does ahead and makes it in the global scope (this is while JS is in "sloppy-mode" not strict-mode)
+topic; // React -> this variable wasn't defined anywhere so JS 
+// goes ahead and makes it in the global scope (this is while JS is in "sloppy-mode" not strict-mode)
 ```
 
 undefined vs undeclared
@@ -627,116 +624,9 @@ if you have one that defines the same method name in a chold as in the parent.
 
 You can refer to the parent from the child by saying `super.` --> in our example we did `super.ask(msg.UpperCase())`
 
-## Asynchronous Javascript
+## 4. Prototype & __proto__
 
-## Closure
-
-Closure is when a function remembers the variables outside of it, even if you pass that function elsewhere
-
-1) A function is remembering variables outside of it, we mean variables that were declared in some outer scope
-2) We can only observe that as a closure if we take that function and we pass it somewhere (return it or pass it as a callback argument or assign it to some property and pass that object around)
-
-```js
-function ask(question) {
-  setTimeout(function waitASect(){
-    console.log(question)
-  }, 100);
-}
-
-ask("what is closure");
-```
-
-It is said that `waitASec` as a function has closure over the question variable
-
-```js
-function ask(question){
-  return function holdYourQuestion(){
-    console.log(question)
-  };
-}
-
-var myQuestion = ask("What is closure")
-
-myQuestion(); // What is closure
-```
-
-## Promises
-
-#### Fulfillment
-
-One day, I fulfill that promise. It makes you so happy that you post about it on Twitter!
-
-#### Rejection
-
-One day, I tell you that I can't fulfill the promise
-
-You make a sad post on Twitter about how I didn't do what I had promised.
-
-Both scenarios cause an action. The first is a positive one, and the next is a negative one.
-
-Keep this scenario in mind while going through how Javascript `promises` work.
-
-#### When to use a promise
-
-Javascript is a synchronous. It runs from top to bottom. Every line of code below will wait for the execution of the code above it
-
-But when you want to get data from an API, you don't know how fast you will get the data back. Rather, you don't know if you will get the data or an error yet,
-
-Errors happen all the time, and those things can't be planned. But we can be prepared for it.
-
-So when you're waiting to get a result from the API, your code is blocking the browser.
-It will freeze the browser. Neither we nor our users are happy about that at all!
-
-Perfect situation for a `Promise`!
-
-#### How to use a Promise
-
-Now that we know that you should use a `Promise` when you make Ajax requests, we can dive into using `Promises`. First, I will show you how to define a function that returns a `Promise`. Then, we will dive into how you can use a function that returns a `Promise`
-
-```js
-function doSomething(value){
-  return new Promise((resolve, reject) => {
-    // Fake a API call
-    setTimeout(() => {
-      if(value) {
-        resolve(value)
-      }
-      else {
-        reject('The value was not truthy')
-      }
-    }, 5000)
-  })
-}
-```
-
-This function returns a `promise`. This `promise` can be resolved or rejected
-
-Like a real-life promise, a `promise` can be fulfilled or rejected
-
-#### Use a function with a promise
-
-Using a function that returns a `Promise`
-
-```js
-doSomething().then((result) => {
-  // Do something with the result
-}.catch(error){
-  console.error('Error message: ', error)
-})
-
-// Use a return Promise with Async/Await
-
-(async () => {
-  let data = null
-  try {
-    data = await doSomething()
-    // So something with the result
-  } catch(error) {
-    console.err('Error message: ', error)
-  }
-})();
-```
-
+The prototype system is what the `class` keyword is built on top of
 
 Using prototypes is uncommon now b/c of the `new` keyword
 
@@ -778,7 +668,48 @@ or reactJS.ask() on line 5 we're actually saying reactJS.teacher
 
 It's because we have found a function through the prototype chain, invoked it, but it still is deremine what the `this` keyword is gonna point at by the call sites on line 11 or line 14
 
-#### XMLHttpRequest Synchronous
+## 5. `new`
+
+## 6. `class`
+
+### 6.1 `super`
+
+### 6.2 `extends`
+
+## 7. Closure
+
+Closure is when a function remembers the variables outside of it, even if you pass that function elsewhere
+
+1) A function is remembering variables outside of it, we mean variables that were declared in some outer scope
+2) We can only observe that as a closure if we take that function and we pass it somewhere (return it or pass it as a callback argument or assign it to some property and pass that object around)
+
+```js
+function ask(question) {
+  setTimeout(function waitASect(){
+    console.log(question)
+  }, 100);
+}
+
+ask("what is closure");
+```
+
+It is said that `waitASec` as a function has closure over the question variable
+
+```js
+function ask(question){
+  return function holdYourQuestion(){
+    console.log(question)
+  };
+}
+
+var myQuestion = ask("What is closure")
+
+myQuestion(); // What is closure
+```
+
+## 8. Asynchronous Javascript
+
+**XMLHttpRequest Synchronous**
 
 Before async Javascript was a thing, we used XMLHttpRequest(XHR) to call an API to get data without refreshing our page
 
@@ -817,7 +748,90 @@ fetch('http://example.com/movies.json').then(function(response) {
 
 Fetch makes more sense, since you can read in order which steps it takes
 
-#### Async/Await
+### 8.1 Promises
+
+**Fulfillment**
+
+One day, I fulfill that promise. It makes you so happy that you post about it on Twitter!
+
+**Rejection**
+
+One day, I tell you that I can't fulfill the promise
+
+You make a sad post on Twitter about how I didn't do what I had promised.
+
+Both scenarios cause an action. The first is a positive one, and the next is a negative one.
+
+Keep this scenario in mind while going through how Javascript `promises` work.
+
+**When to use a promise**
+
+Javascript is a synchronous. It runs from top to bottom. Every line of code below will wait for the execution of the code above it
+
+But when you want to get data from an API, you don't know how fast you will get the data back. Rather, you don't know if you will get the data or an error yet,
+
+Errors happen all the time, and those things can't be planned. But we can be prepared for it.
+
+So when you're waiting to get a result from the API, your code is blocking the browser.
+It will freeze the browser. Neither we nor our users are happy about that at all!
+
+Perfect situation for a `Promise`!
+
+**How to use a Promise**
+
+Now that we know that you should use a `Promise` when you make Ajax requests, we can dive into using `Promises`. First, I will show you how to define a function that returns a `Promise`. Then, we will dive into how you can use a function that returns a `Promise`
+
+```js
+function doSomething(value){
+  return new Promise((resolve, reject) => {
+    // Fake a API call
+    setTimeout(() => {
+      if(value) {
+        resolve(value)
+      }
+      else {
+        reject('The value was not truthy')
+      }
+    }, 5000)
+  })
+}
+```
+
+This function returns a `promise`. This `promise` can be resolved or rejected
+
+Like a real-life promise, a `promise` can be fulfilled or rejected
+
+**Use a function with a promise**
+
+Using a function that returns a `Promise`
+
+```js
+doSomething().then((result) => {
+  // Do something with the result
+}.catch(error){
+  console.error('Error message: ', error)
+})
+
+// Use a return Promise with Async/Await
+
+(async () => {
+  let data = null
+  try {
+    data = await doSomething()
+    // So something with the result
+  } catch(error) {
+    console.err('Error message: ', error)
+  }
+})();
+```
+
+### 8.2 Iterators
+
+### 8.3 Generators
+
+### 8.4 Async/Await
+
+Async/Await built from Generators
 
 ```js
 (async () => {
@@ -831,16 +845,3 @@ To use `await` with the `Fetch`, we have to wrap it in a `sync` fuction
 In this case, we wrapped it in an IIFE *(Immediately Invoking Function Expression)*
 
 When the fetch has returned a `Promise` the first time, the result is put in the `const resp`, so the next variable waits until the fetch gets a response. The console is only outputting data whn the `jsonData` variable has got the data.
-
-## __proto__ & Prototype
-The prototype system is what the `class` keyword is built on top of
-
-## Classes
-
-
-
-### More on functions
-
-
-<hr>
-
