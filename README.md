@@ -797,6 +797,7 @@ function ask(question){
     console.log(question)
   };
 }
+```
 
 var myQuestion = ask("What is closure")
 
