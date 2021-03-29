@@ -51,7 +51,9 @@ Then push `multiplyBy2(10)` onto the call stack → create an execution context 
 
 ## 2. Variables
 
-## 2. 1 block scoping with let
+With the addition of `let` and `const`, we solve the scoping issue of `var`
+
+## 2.1 block scoping with let
 
 ```js
 var teacher = 'kyle'
@@ -81,6 +83,75 @@ Kyle's stylistic opinion:
 `var` always behave as if it belongs to the function
 `lets` are great inside of blocks
 
+Another example:
+
+```js
+function start() {
+  for(let i = 0; i < 5; i++){
+    console.log(i)
+  }
+  console.log(i) // this will throw a reference error
+  // because outside the for-loop i does not exist
+}
+```
+
+`let` is great for using inside of blocks
+
+```js
+function start(){
+  for(var i = 0; i < 5; i++){
+    console.log(i)
+  }
+  console.log(i) // using var-the reference error goes away
+  // and this actually prints 5
+}
+```
+
+`i` becomes accessible outside the scope, and we can display the current value of i.
+
+for `var` variables - it's scope is confined to the function in which it's defined.
+
+so
+
+
+`var` => function-scoped variables
+`let` & `const` => block-scoped variables
+
+```js
+function start(){
+  for(var i=0; i<5; i++){
+    if(true){
+      var color = 'red';
+    }
+  }
+
+  console.log(color);
+}
+```
+This above example - swap out var/let for `color` and you'll see a difference
+
+```js
+var color = 'red';
+let age = 20
+```
+
+When we use `var` outside a function it creates a global variable and attaches that global variable to the window object in the browser
+
+so if you do `window.color` in the browser console you'll see it print `red`
+
+On the other hand, when you use the let keyword to define a global variable, that global variable is not attached to the window object
+
+And attaching yourself to the window object is always a bad idea, and can cause problems.
+
+The same goes for functions:
+
+```js
+function sayHi() {
+  console.log("hi")
+}
+```
+
+This is a global function that will attach itself to the window object and can be avoided using modules
 
 ## 3. Functions
 
@@ -252,6 +323,68 @@ Automatic returns in arrow functions can be tricky, its always better to explici
 ## 4. Scope & this
 
 Scope: where to look for things
+
+Function Scoping
+
+```js
+var teacher = "Lenny"
+
+console.log(teacher)
+```
+
+```js
+var teacher = "Lenny"
+
+var teacher = "Suzy";
+console.log(teacher); // Suzy
+
+console.log(teacher) // Suzy 
+```
+
+How do we solve the problem of having 2 of the same variable names?
+
+```js
+var teacher = 'Will'
+
+function anotherTeacher() {
+  var teacher = 'Suzy'
+  console.log(teacher) // Suzy
+}
+
+anotherTeacher();
+
+console.log(teacher) // Will
+```
+
+
+
+### 4.1 Lexical Scope
+
+### 4.2 Dynamic Scope
+
+Dynamic Scope **does not exist in JavaScript!**
+
+Add image from slides
+
+### 4.3 Block Scoping
+
+Anything within `{}` is a block
+
+```js
+function blockScope(){
+  const x = 5;
+  if (true) {
+    let x = 25;
+    // console.log(x) -> 25
+  }
+  console.log(x) // 5
+}
+```
+This shows the block scoping capabilities of `const` and `let`
+`let` is confined to the scope of the if-statement
+`const` is 1 layer up
+
+however, if you switch the `let` to a `var` it will throw a reference error
 
 ```js
 var teacher = 'kyle'
@@ -825,6 +958,39 @@ doSomething().then((result) => {
   }
 })();
 ```
+
+<hr>
+
+```js
+let wordnikAPI = "https://api.wordnik.com/v4/words"
+let giphyAPI = "https://api.gihpy.com/v1/gifs/search"
+
+function setup() {
+  noCanvas();
+  loadJSON(wordnikAPI, gotData)
+}
+
+function gotData(data){
+  createP(data.word)
+  loadJSON(giphyAPI + data.word + gotDataData);
+}
+
+function gotDataData(data){
+  console.log(data.data[0].images)
+  createImg(data.data[0].images['fixed_height_small'])
+}
+```
+
+*This snippet uses the p5 library so functions like createImg(), loadJSON(), createP(), they come from there*
+For `loadJSON()` we pass in a url and a callback function
+
+But the problem with this pattern is we fall into something called "callback hell"
+
+```js
+
+```
+
+And we need to pass multiple callback functions to handle different scenarios.
 
 ### 9.2 Iterators
 
