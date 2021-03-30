@@ -286,9 +286,35 @@ Personally I believe this is the heirarchy of function types that should be used
 2. Named Function Expressions
 3. Anonymous Function Expressions
 
+```js
+function copyArrayAndManipulate(array, instructions){
+  const output = []
+  for(let i=0; i < array.length; i++){
+    output.push(instructions(array[i]))
+  }
+  return output
+}
+```
+*We call this function: `map()`*
+
+Which is our higher order function?
+- The outer function that **takes in** a function is our higher order funcion
+- In this case our higher order function is: `copyArrayAndManipulate()`
+
+Which is our callback function?
+- The function **we insert** is our callback function
+- In this case our callback function is `multiplyBy2()`
+
+**The notion of passing in a function to the running of another function in a very different way is going to turn out to be the backbone of asynchronous JavaScript**. Even if we're using promises, even if we're using async/await... behind the scenes - passing in a function to another function is going to be the core of those concepts
 
 
 ### 3.5 Callbacks & Higher Order Functions
+
+Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
+
+1. Assigned to variables and properties of other objects
+2. Passed as arguments into functions
+3. Returned as values from functions
 
 ### 3.6 Arrow Function
 
