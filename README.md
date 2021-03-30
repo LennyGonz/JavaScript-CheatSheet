@@ -56,7 +56,7 @@ ES6 introduced 2 additional keywords to declare a variable:
 - let
 - const
 
-> `const` variables cannot be reassigned, while `let` and `var` can.
+> `const` variables cannot be reassigned, while `let` and `var` can
 > 
 > `let` provides a solution to the scoping issue seen with `var`
 > 
@@ -66,16 +66,18 @@ ES6 introduced 2 additional keywords to declare a variable:
 
 ## 2.1 block scoping with let
 
+An example using `var`:
+
 ```js
-var teacher = 'kyle'
-{
-  let teacher = "Suzy"
-  console.log(teacher) // Suzy
+function start() {
+  for(var i = 0; i < 5; i++){
+    console.log(i)
+  }
+  console.log(i) // 5
 }
-console.log(teacher) // kyle
 ```
 
-Another example:
+You'd expect the second `console.log(i)` to throw a reference error, but `var`s scope is confined to `start()`
 
 ```js
 function start() {
@@ -87,16 +89,16 @@ function start() {
 }
 ```
 
+This behavior is more expected, `i` is confined to the for-block. So attempting to see its value outside will throw a reference error
 `let` is great for using inside of blocks - if we were to swap `let` with `var` the error would go away
 Because `i` becomes accessible outside the scope, and we can display the current value of i.
 
-for `var` variables - it's scope is confined to the function in which it's defined.
-onsole.log(x)
+> Referencing block-scoped identifiers before they are defined will produce a `ReferenceError`
 
-let x = 5
 ## 3. Functions
 
 ### 3.1 Function Declarations and Function Expressions
+
 <div align="center">
 
 Function declarations vs Function expressions
