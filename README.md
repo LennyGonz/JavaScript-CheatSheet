@@ -51,7 +51,18 @@ Then push `multiplyBy2(10)` onto the call stack → create an execution context 
 
 ## 2. Variables
 
-With the addition of `let` and `const`, we solve the scoping issue of `var`
+There are 3 keywords available to declare a variable:
+- var
+- let
+- const
+
+`const` variables cannot be reassigned, while `let` and `var` can.
+
+And `let` provides a solution to the scoping issue seen with `var`
+
+Actually `let` and `const` both have their scope in the block for which they are declared, whereas `var` scope is the entire enclosing function
+
+**And** unlike `var`, `let` and `const` statements are not hoisted to the top of their enclosing scope
 
 ## 2.1 block scoping with let
 
@@ -63,25 +74,6 @@ var teacher = 'kyle'
 }
 console.log(teacher) // kyle
 ```
-
-```js
-
-function diff(x,y) {
-  if (x > y) {
-    let tmp = x;
-    x = y;
-    y = tmp;
-  }
-
-  return y - x
-}
-```
-
-This is great bc tmp only exists in the if statement, no where else
-
-Kyle's stylistic opinion:
-`var` always behave as if it belongs to the function
-`lets` are great inside of blocks
 
 Another example:
 
@@ -95,63 +87,10 @@ function start() {
 }
 ```
 
-`let` is great for using inside of blocks
-
-```js
-function start(){
-  for(var i = 0; i < 5; i++){
-    console.log(i)
-  }
-  console.log(i) // using var-the reference error goes away
-  // and this actually prints 5
-}
-```
-
-`i` becomes accessible outside the scope, and we can display the current value of i.
+`let` is great for using inside of blocks - if we were to swap `let` with `var` the error would go away
+Because `i` becomes accessible outside the scope, and we can display the current value of i.
 
 for `var` variables - it's scope is confined to the function in which it's defined.
-
-so
-
-
-`var` => function-scoped variables
-`let` & `const` => block-scoped variables
-
-```js
-function start(){
-  for(var i=0; i<5; i++){
-    if(true){
-      var color = 'red';
-    }
-  }
-
-  console.log(color);
-}
-```
-This above example - swap out var/let for `color` and you'll see a difference
-
-```js
-var color = 'red';
-let age = 20
-```
-
-When we use `var` outside a function it creates a global variable and attaches that global variable to the window object in the browser
-
-so if you do `window.color` in the browser console you'll see it print `red`
-
-On the other hand, when you use the let keyword to define a global variable, that global variable is not attached to the window object
-
-And attaching yourself to the window object is always a bad idea, and can cause problems.
-
-The same goes for functions:
-
-```js
-function sayHi() {
-  console.log("hi")
-}
-```
-
-This is a global function that will attach itself to the window object and can be avoided using modules
 
 ## 3. Functions
 
@@ -1018,6 +957,13 @@ Fetch makes more sense, since you can read in order which steps it takes
 
 ### 9.1 Promises
 
+<p align="center">
+
+<image src="/Images/promises.png">
+
+</p>
+
+
 **Fulfillment**
 
 One day, I fulfill that promise. It makes you so happy that you post about it on Twitter!
@@ -1111,7 +1057,7 @@ function gotData(data){
 
 function gotDataData(data){
   console.log(data.data[0].images)
-  createImg(data.data[0].images['fixed_height_small'])
+  createImg(data.data[0].images['fixed_height_small'].url)
 }
 ```
 
@@ -1120,11 +1066,107 @@ For `loadJSON()` we pass in a url and a callback function
 
 But the problem with this pattern is we fall into something called "callback hell"
 
-```js
+And we need to pass multiple callback functions to handle different scenarios.
 
+Callback functions are more useful for events, when the mouse is pressed, trigger this function its an event
+
+But if I want to sequence asychronous things that happen in my program, multiple api requests etc, you'll drown in callback hell
+
+```js
+function setup(){
+  noCanvas()
+  loadJSON(wordnikAPI, function(data){
+    createP(data.word)
+    loadJSON(giphyAPI + data.word, function(data){
+      console.log(data.data[0].images)
+      createImg(data.data[0].images['fixed_height_small'].url)
+    })
+  })
+}
+```
+This still works but if something fails, everything breaks unless we pass a callback function that'll deal with the error
+But notice how indented everything gets, and we can keep going, passing more and more functions
+We need error callbacks, success callbacks... etc
+
+Promises have 3 states:
+
+1. pending
+2. fulfilled
+3. rejected
+
+We can use the built in `.then()` to act on the promise when the state is `fulfilled`
+Or we can use the built in `.catch()` to act on the promise if the state is `rejected`
+
+```js
+function setup(){
+  noCanvas();
+
+  fetch(wordnikAPI)
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+}
 ```
 
-And we need to pass multiple callback functions to handle different scenarios.
+The great thing about the new promise chaining is, we can have multiple `.then()` functions
+and as long as `.catch()` is at the bottom, it'll catch the error no matter where the error occurs
+
+It's also important to note that in order to successfully chain `.then()` functions you need to return promises
+Shorthand arrow function syntax automatically returns it when its 1 line
+
+```js
+function setup(){
+  noCanvas()
+  fetch(wordnikAPI)
+    .then(response => {
+      return response.json();
+    })
+    .then(json => {
+      createP(json.word)
+      return fetch(giphyAPI + json.word)
+    })
+    .then(response => {
+      createImg(json.data[0].images['fixed_height_small'].url)
+    })
+    .catch(err => console.log(err))
+}
+```
+So the finished product looks like this
+
+JS also supports promises natively
+```js
+function setup(){
+  noCanvas();
+  delay(1000)
+    .then(() => createP('hello'))
+    .catch((err) => console.error(err))
+}
+
+function delay(time){
+  return new Promise()
+}
+
+```
+This will throw an error, 'Promise resolver undefined is not a function at new Promise'
+If I want to make my own promise, I have to provide pathways to resolve the promise and rejection.
+
+So we do this:
+```js
+function setup(){
+  deplay('blah blah')
+    .then(() => createP('hello'))
+    .catch(() => console.error(err))
+}
+
+function delay(time){
+  return new Promise((resolve, reject) => {
+    if (isNaN(time)){
+      reject(new Error('delay requires a valid number'))
+    }
+    setTimeout(resolve, time)
+  })
+}
+```
+So we write an anonymous function that'll handle how we resolve/reject the promises
 
 ### 9.2 Iterators
 
