@@ -91,7 +91,9 @@ function start() {
 Because `i` becomes accessible outside the scope, and we can display the current value of i.
 
 for `var` variables - it's scope is confined to the function in which it's defined.
+onsole.log(x)
 
+let x = 5
 ## 3. Functions
 
 ### 3.1 Function Declarations and Function Expressions
@@ -174,7 +176,52 @@ And then at the end of the function definition, you can see an extra set of pare
 The main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
 
 
-### 3.4 Arrow functions, another form of anonymous function expressions
+### 3.4 Arrow functions (another form of anonymous function expressions)
+
+```js
+function myFunc() {
+  this.myVar = 0
+  var that = this; // that = this trick
+  setTimeout(
+    function () { // A new *this* is created in this function scope
+      that.myVar++;
+      console.log(that.myVar) // 1
+      
+      console.log(this.myVar) // undefined 
+    }, 0);
+}
+
+function myFunc() {
+  this.myVar = 0;
+  setTimeout(
+    () => { // this is taken from surrounding, meaning myFunc here
+      this.myVar++;
+      console.log(this.myVar) // 1
+    }, 0);
+}
+```
+
+Syntax differences:
+We don't have to wrap our parameters in parenthesis if there's only 1 parameters
+If the function body is only 1 line - we don't need to wrap it in curly braces
+
+It binds the context, and the context is the value that 'this' has ... to its parent context
+
+All functions have a keyword 'this' that gets bound at call time...
+
+Arrow functions do not have their own value for `this`
+They inherit, they reach up to the parent scope and grab that value of `this` in that parent scope
+
+And this functionality of arrow functions replaces the need to use `.bind()` or `var that = this -> that = randomObj`
+
+Another thing is that arrow functions don't have its own value for the arguments keyword
+So the arguments keyword, at call time, gets bound to all the arguments that are being passed to the function
+
+The arguments keyword is the same as the arguments that are being passed, except it's an object-like-array
+That comes for free in all of our regular functions in JS, but not arrow functions
+
+Automatic returns in arrow functions can be tricky, its always better to explicitly write a return statement inside your arrow function
+
 
 ```js
 var ids = people.map(person => person.id);
@@ -221,9 +268,17 @@ getPerson()
 
 Personally I believe this is the heirarchy of function types that should be used:
 
-1. (Named) Function Declarations
+1. Function Declarations
 2. Named Function Expressions
 3. Anonymous Function Expressions
+
+### 3.5 Callbacks & Higher Order Functions
+
+Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
+
+1. Assigned to variables and properties of other objects
+2. Passed as arguments into functions
+3. Returned as values from functions
 
 ```js
 function copyArrayAndManipulate(array, instructions){
@@ -245,45 +300,6 @@ Which is our callback function?
 - In this case our callback function is `multiplyBy2()`
 
 **The notion of passing in a function to the running of another function in a very different way is going to turn out to be the backbone of asynchronous JavaScript**. Even if we're using promises, even if we're using async/await... behind the scenes - passing in a function to another function is going to be the core of those concepts
-
-
-### 3.5 Callbacks & Higher Order Functions
-
-Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
-
-1. Assigned to variables and properties of other objects
-2. Passed as arguments into functions
-3. Returned as values from functions
-
-### 3.6 Arrow Function
-
-<p align="center">
-
-<image src="/Images/js_snippet05.png">
-
-</p>
-
-Syntax differences:
-We don't have to wrap our parameters in parenthesis if there's only 1 parameters
-If the function body is only 1 line - we don't need to wrap it in curly braces
-
-It binds the context, and the context is the value that 'this' has ... to its parent context
-
-All functions have a keyword 'this' that gets bound at call time...
-
-Arrow functions do not have their own value for `this`
-They inherit, they reach up to the parent scope and grab that value of `this` in that parent scope
-
-And this functionality of arrow functions replaces the need to use `.bind()` or `var that = this -> that = randomObj`
-
-Another thing is that arrow functions don't have its own value for the arguments keyword
-So the arguments keyword, at call time, gets bound to all the arguments that are being passed to the function
-
-The arguments keyword is the same as the arguments that are being passed, except it's an object-like-array
-That comes for free in all of our regular functions in JS, but not arrow functions
-
-Automatic returns in arrow functions can be tricky, its always better to explicitly write a return statement inside your arrow function
-
 
 ## 4. Scope & this
 
