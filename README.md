@@ -57,8 +57,11 @@ ES6 introduced 2 additional keywords to declare a variable:
 - const
 
 > `const` variables cannot be reassigned, while `let` and `var` can.
+> 
 > `let` provides a solution to the scoping issue seen with `var`
+> 
 > Both `let` and `const` are block scoped, whereas `var`s scope is confined to the function in which it's defined
+> 
 > **And** unlike `var`, `let` and `const` statements are not hoisted to the top of their enclosing scope
 
 ## 2.1 block scoping with let
