@@ -867,6 +867,114 @@ var myQuestion = ask("What is closure")
 myQuestion(); // What is closure
 ```
 
+<hr>
+
+We can achieve **memoization** using closures
+
+Every time a function gets excuted it creates a brand new local memory
+We create a brand new execution context, every time we run a function AND when we finish running that function we delete the execution context and the memory stored within it
+
+Functions with memories:
+- when our functions get called, we create a live store of data for that functions execution context
+- when the function finishes executing, its local memory is deleted except the returned value **BUT**
+- **But** what if our functions could hold onto live data between executions?
+  - This would let our function definitions have an associated cache(persistant memory)
+  - local memory, variable environment, state - these 3 names represent the same thing, live data at a particular moment
+- But this is only possible when we **return a function from another function**
+
+```js
+function createfunction(){
+  function multiplyByTwo(num){
+    return num*2
+  }
+  return multiplyByTwo;
+}
+
+const generatedFunc = createfunction();
+const result = generatedFunc(3);
+```
+
+What's happening is we execute `createfunction()` but it's only saving the function label and definition `multiplyByTwo`
+Then we return `multiplyByTwo`... but what does `multiplyByTwo` mean?
+We look into memory and usees the label (`multiplyByTwo`) to take the value
+And function definitions are a value, a thing that can be stored
+We grab the value of the label `multiplyByTwo` and return it
+
+```js
+generatedfunc = function(num) {
+  return num*2
+}
+```
+
+*When we return `multiplyByTwo`, it does not get returned with that lable, `multiplyByTwo`*
+So `generatedFunc` **was** the result of `createfunction()`
+**generatedfunc is the code that was originally `multiplyByTwo`**
+
+```js
+function outer() {
+  let counter = 0
+  function incrementCounter(){ counter++ }
+  return incrementCounter;
+}
+
+const myNewFunction = outer()
+myNewFunction() // counter = 1
+myNewFunction() // counter = 2
+```
+
+This example demonstrates that when I executed outer() and saved the result of that execution in the const `myNewFunction` it returned **all** of the surrounding data from where that function was saved where it was born, where it was stored...
+It grabbed its surrounding data and it was attached to the function definition!
+
+**Everything in local memory got returned with the function definition of incrementCounter**, that's how we're able to increment counter even though it was initialized outside of the incrementCounter function definition
+
+**How does the function get to grab onto what its surrounding data and return it out with the function definition?**
+
+Under the hood, we would see the actual function definition and a hidden property
+And in the JS engine, you know it's a hidden property when there are 2 pairs of brackets enclosing the property name
+In this case its `[[scope]]` -> its a hidden property that **LINKS TO** and **WHERE** all the surrounding data is being stored
+... it gives a link to where all that surrounding data is stored.
+
+Meaning that when I return `incrementCounter()` out of `outer()` **into** `myNewFunction()` you bet it brings its hidden property and pulls that data **with it** through its hidden square bracket
+- and we can't get access to this data(our backpack) unless we run `myNewFunction()` - because its private data
+  - private in the sense that we cannot change the value of `counter` like this: `let counter = 100`
+
+Anything that the function `incrementCounter()` ever makes a reference to when it would get run eventually gets pulled out with the function on its back into `myNewFunction()`
+
+- But if there's a variable that is never referenced and it gets returned out then there's no point of that variable being in the backpack and would therefore be a memory leak
+
+The "correct" term which is used to refer to the thing that results in the backpack existing and they call the backpack this umbrella term "closure" 
+
+People call local memory -> variable environment | some developers call the backpack the "c.o.v.e"
+that is to say we close the lid on the data, "closed over the variable environment" (cove)
+the data in the cove is persistant, it never gets deleted
+
+Scope is the rules in any programming language, for at any given line of code, what data do I have available to me?
+JS has lexical(static) scoping:
+
+that is where I save my function determines for the rest of that life, for the life of that function.
+Whenever it gets run, under whatever label is gets, what data it will have access to when that function runs
+
+So **Persistant lexically scoped referenced data**, our rule is...where my function was saved determines what data I have access to, when its eventually run -> which is why we must return the nested function... to save all the data surrounding it
+
+So P.L.S.R.D -> otherwise called closures
+
+However, **closures are too complex** to have an umberlla term
+The backpack is a result of Javascript being a lexically scoped language
+
+Closures give our functions persistant memory
+
+- allow iterators and generators to be possible
+- module pattern
+- asynchronous JS - callbacks and promises rely on closures to persist state in an asychronous environment
+
+So since JS is a lexical scoped language - that means that even if I returned my function out and theoretically all the memory in our execution context's local memory should get deleted -> **nope!**
+B/c I have this fundamental rule of lexically scoped language
+I'm going to grab all that data and pull it out on the backpack such that when I run the function, I still have all the data from when the function was born.
+
+
+
+
+
 ## 9. Asynchronous Javascript
 
 **XMLHttpRequest Synchronous**
