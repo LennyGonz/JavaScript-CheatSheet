@@ -51,18 +51,15 @@ Then push `multiplyBy2(10)` onto the call stack → create an execution context 
 
 ## 2. Variables
 
-There are 3 keywords available to declare a variable:
-- var
+ES6 introduced 2 additional keywords to declare a variable:
+
 - let
 - const
 
-`const` variables cannot be reassigned, while `let` and `var` can.
-
-And `let` provides a solution to the scoping issue seen with `var`
-
-Actually `let` and `const` both have their scope in the block for which they are declared, whereas `var` scope is the entire enclosing function
-
-**And** unlike `var`, `let` and `const` statements are not hoisted to the top of their enclosing scope
+> `const` variables cannot be reassigned, while `let` and `var` can.
+> `let` provides a solution to the scoping issue seen with `var`
+> Both `let` and `const` are block scoped, whereas `var`s scope is confined to the function in which it's defined
+> **And** unlike `var`, `let` and `const` statements are not hoisted to the top of their enclosing scope
 
 ## 2.1 block scoping with let
 
@@ -128,7 +125,6 @@ Why would you actually have the named function on the right side of the expressi
 - And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
 
 ### 3.2 Named function expressions
-
 
 A function expression thats been given a name.
 
