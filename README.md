@@ -99,35 +99,40 @@ Because `i` becomes accessible outside the scope, and we can display the current
 
 ### 3.1 Function Declarations and Function Expressions
 
-<div align="center">
-
 Function declarations vs Function expressions
 
-<image src="/Images/js_snippet01.png">
+```js
+function teacher() { / ... / }
+// function declaration
 
-<strong>It's a stylistic choice based on scope!</strong>
-</div>
+const nameImprover = function(name, adj){
+  return 'Col' + name + ' Mc' + adji + ' pants'
+}
+// This is an anonymous function expression
 
+const nameImprover = function nameImprover(name, adj){
+  return 'Col' + name + ' Mc' + adji + ' pants'
+}
+// named function expression
+```
 
+> It's a stylistic choice based on scope !
 
-<div align="center">
+```js
+function teacher() { / ... / }
 
-<image src="/Images/js_snippet02.png">
+const myTeacher = function anotherTeacher(){
+  console.log(anotherTeacher)
+}
+```
 
 > The last console log - will throw a ReferenceError, because there is no `anotherTeacher()` in global scope therefore global scope will never had heard of this function
-</div>
 
 
 **One of the key differences** between *function declarations* and *function expressions* is:
+
 - that function declarations attach their name to the enclosing scope
-
-- Where as function expressions are attached to their own scope, they put their identifier into their own scope.
-
-There's also a little nuance. `anotherTeacher()` is read-only - you cannot reassign `anotherTeacher()` on line 4, you could not reassign it to some other value
-
-Why would you actually have the named function on the right side of the expression?
-- You've probably more often seen it as an anonymous function there...
-- And we're about to discuss the difference between what are so-called named functions expressions and the more common anonymous function expressions
+- whereas function expressions put their identifier into their own scope.
 
 ### 3.2 Named function expressions
 
@@ -142,32 +147,48 @@ var keyHandler = function keyHandler(){
   // ...
 }
 ```
+
 `clickHandler()`, I'm declaring a function expression:
 - why is it a function expression?
   - because its not a function declaration...
     - How do we know if somethings a function declaration? 
-      - If the word function is literally the first thing in the statement.
+      - if the word function is literally the first thing in the statement
 
-So if `function` is not the first thing in the statement, if there's a variable or an operator or a parenthesis or anything, then it's not a declaration... **it is an expression**
+So if `function` is not the first thing in the statement, if there's a variable or an operator or parenthesis, then it's not a declaration... **it is an expression** <br>
 **BUT also,** we see no name, so it's an anonymous function expression
 
 whereas `keyHandler()` is a named function expression.
 
-So setting aside the differences between the anonymous function expressions and named function expressions
-Even though anonymous function expressions are vastly more common/popular, they make debugging code much harder. 
+Setting aside the syntax differences between the anonymous function expressions and named function expressions <br>
+Even though anonymous function expressions are vastly more common/popular, they make debugging code much harder <br>
 Using **named function expressions** should be used more often because:
 
-1. The name produces or creates a reliable self reference to the function from inside of itself. that's useful if youre going to make the function recursive, if that function is an event handler of some sort and it needs to reference itself to **unbind itself**, its useful if you need to access any properties on that function object (i.e name, length, etc). Any time you need a self reference to the function, the single only right answer to that question is, it needs to have a name.
-2. More debuggable stack traces - in the stack traces you'll get `Anonymous Function` in the stack traces - but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
-3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... Where as with function declarations the purpose of the function is in the name
+1. The name produces or creates a reliable self reference to the function from inside of itself 
+   - that's useful if the function is recursive
+   - if the function is an event handler and it needs to reference itself to **unbind itself**
+   - its useful if you need to access any properties on that function object (i.e name, length, etc)
+   - Any time you need a self reference to the function, the single only right answer to that question is, it needs to have a name.
+2. More debuggable stack traces, in the stack traces you'll get `Anonymous Function` in the stack traces <br> but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
+3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... <br> Where as with function declarations the purpose of the function is in the name
 
-### 3.3 IIFEs, another form of anonymous function expressions
+### 3.3 IIFEs (another form of anonymous function expressions)
 
-<p align="center">
+Immediatelly Invoked Function Expressions
 
-<image src="/Images/js_snippet03.png">
+1. Immediately Invoked - runs immediately
+2. Function - a typical anonymous javascript function
+3. Expression - a javascript expression is a piece of code that simply evaluates to a value
 
-</p>
+```js
+var teacher = 'Will'
+
+(function anotherTeacher(){
+  var teacher = 'Lenny'
+  console.log(teacher)
+})();
+
+console.log(teacher)
+```
 
 You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
 That's what makes it a function expression, instead of a function declaration.
@@ -175,6 +196,71 @@ That's what makes it a function expression, instead of a function declaration.
 And then at the end of the function definition, you can see an extra set of parenthesis, which means it's getting invoked. Hence the 'immediately ivoked' part of the name
 
 The main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
+
+> One of the well-known uses of IIFEs is avoiding global scope pollution
+> Local variables declared using `var` keyword are scoped to the closest containing function
+> And if there is no fnuction that exists, the variables will be global and would pollute the global scope
+> To avoid this we simply wrap the `var` variables in an IIFE such that they are scoped within and isolated from global 
+
+**However,** after the introduction `let` and `const`, this use case lost its popularity
+
+**another usecase is Closures and Private Data**, IIFEs enable you to create closures that can maintain private Data
+
+```js
+const uniqueId = (function(){
+  let count = 0;
+  return function(){
+    ++count;
+    return `id_${count}`;
+  };
+})();
+
+console.log(uniqueId()); // "id_1"
+console.log(uniqueId()); // "id_2"
+console.log(uniqueId()); // "id_3"
+```
+
+> By wrapping a local variable and have it accessed by a function that will be returned by the IIFE. 
+> This implementation provides a closure that enables the function to access the local variable even when that function function is executed **outside** of the IIFE's lexical scope
+> And the `count` variable cannot be accessed or modified from outside the scope making it **truly** private.
+> The only way to access the variable is through the function being returned by the IIFE
+
+**another usecase is enabling the Await keyword outside of Asnyc Functions**
+
+If you use the `await` keyword outside of an `async` function, you'll get a Syntax Error
+So as a workwround is to use async IIFEs, but handling the errors within is tricky
+
+```js
+(async() => {
+  await Promise.resolve("resolved");
+})();
+
+// Uncaught Errors
+(async() => {
+  await Promise.reject("rejected");
+})();
+
+// Catching errors
+
+// Method 1
+(async () => {
+  try {
+    await Promise.reject("rejected");
+  } catch(err) {
+    console.log(err)
+  }
+})();
+
+// Method 2
+(async() => {
+  await Promise.reject("rejected");
+})().catch(err => {
+  console.log(err);
+});
+```
+
+The top level await proposal would remove the need for async IIFEs coupled with `await` keywords
+However, [top-level awaits](https://blog.bitsrc.io/why-should-you-use-top-level-await-in-javascript-a3ba8139ef23#:~:text=Top%2Dlevel%20await%20allows%20us,promises%20are%20resolved%20in%20middleware.) still have their problems
 
 
 ### 3.4 Arrow functions (another form of anonymous function expressions)
@@ -232,7 +318,7 @@ var ids = people.map(function getId(person){
 })
 ```
 
-The arrow function;s purpose (while obvious) the reader still has to **infer** the purpose of the function
+The arrow functions purpose (while obvious) the reader still has to **infer** the purpose of the function
 Whereas the second one we know it gets an ID, we could even call it `getPersonID()` to be more descriptive
 
 **You should definitely not be using arrow functions for general replacements for all other functions** !
