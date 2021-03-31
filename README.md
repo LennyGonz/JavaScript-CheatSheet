@@ -259,7 +259,7 @@ So as a workwround is to use async IIFEs, but handling the errors within is tric
 });
 ```
 
-The top level await proposal would remove the need for async IIFEs coupled with `await` keywords
+The top level await proposal would remove the need for async IIFEs coupled with `await` keywords <br>
 However, [top-level awaits](https://blog.bitsrc.io/why-should-you-use-top-level-await-in-javascript-a3ba8139ef23#:~:text=Top%2Dlevel%20await%20allows%20us,promises%20are%20resolved%20in%20middleware.) still have their problems
 
 
