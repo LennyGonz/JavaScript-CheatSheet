@@ -376,7 +376,7 @@ function copyArrayAndManipulate(array, instructions){
   return output
 }
 ```
-*We call this function: `map()`*
+*otherwise known as `map()`*
 
 Which is our higher order function?
 - The outer function that **takes in** a function is our higher order funcion
@@ -633,7 +633,7 @@ So when we pass an object as the first argument, we're saying invoke the `ask()`
 
 <p align="center">
 
-<image src="/Images/js_snippet010.png">
+<image src="/Images/js_snippet10.png">
 
 </p>
 
