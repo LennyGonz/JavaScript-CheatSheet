@@ -359,6 +359,129 @@ Personally I believe this is the heirarchy of function types that should be used
 2. Named Function Expressions
 3. Anonymous Function Expressions
 
+### Arrow-functions and `this`
+
+<p align="center">
+
+<image src="/Images/js_snippet13.png">
+
+</p>
+
+Here `this` is correctly pointing to the workshop object
+**How is this not implicit binding???????**
+The behavior is actually called "lexical `this` behavior
+
+Lexical `this`: many people think that an arrow function is essentially a hardbound function to the parent's `this` ... this is not accurate
+The proper way to think of what an arrow function is... **an arrow function does not define the `this` keyword at all**
+there is no such thing as a `this` keyword in an arrow function, which means **IF** you put a `this` keyword inside an arrow function it's going to behave **like any other variable**
+Which means it's going to lexically resolve to some enclosing scope - that does define a `this` keyword
+
+In the example above, when we say `this.` ... there is no `this` in that arrow function **NO MATTER HOW IT GETS INVOKED**
+So we lexically go up one level of scope which is, the `ask()` function...
+`this` goes out from the `callback` function (the  arrow function) that scope ---> to the enclosing scope, which is??? `ask()`
+AND `ask()`'s definition of the `this` keyword is **determined by HOW IT IS INVOKED**...
+`workshop.ask("Is this lexical `this`?");` ... `ask()` is being invoked by the workshop object... so `this` inside the arrow function determines what is pointing to by how `ask()` gets invoked.
+
+So it resolves lexically, meaning if you had 5 nested arrow function it will go up 5 levels and keeps on going until it finds a function that defines a `this` keyword and whatever the `this` keyword points at for that function, that's what it uses.
+
+The **spec sheet** for Arrow function says:
+
+1. An arrow function does not defined local bindings for `arguments`, `super`, `this` or `new.target`. **Any reference to `arguments`, `super`, `this` or `new.target` within an arrow function must resolve to a binding in a lexically enclosing environment**
+2. If you call `new` on an arrow function, you get an exception ... an error
+
+
+<p align="center">
+
+<image src="/Images/js_snippet14.png">
+
+</p>
+
+We tend to think that `{}` curly braces are scopes, theyre blocks, theyre function bodies ... they must be scopes!
+**No!** 
+In this example, when `this` goes up one level to resolve what `this` is pointing to... it won't point to the workshop object! just because it has curly braces doesn't mean its a scope! **Objects are not scopes!!!**, **Object properties aren't scoped, properties arent lexical identifiers**
+
+**You have to think about an arrow function as not having a `this` and resolving it lexically!** 
+So what is the parents scope!? There are only 2 scopes in the function above!
+1) ask() - but its an arrow function
+2) global scope 
+Thats it! so `this` points to the global scope, and will therefore return `undefined`
+
+**Nonetheless,** this arrow function lexical `this` behavior is a much better way of doing it rather than `var self = this` or even doing `function.bind()`
+Because when you use it, you want the `this` to behave lexically, we don't want the arrow function to have some magical `this` behavior to it.
+We want it to just adopt the `this` keyword of some parent scope.
+
+Cannot stress this enough: **Only use `=>` arrow functions when you need lexical `this`**
+
+
+```js
+class Workshop {
+  constructor(teacher) {
+    this.teacher = teacher
+  }
+  ask(question) {
+    console.log(this.teacher, question)
+  }
+}
+
+var deepJS = new Workshop("Kyle");
+var reactJS = new Workshop("Lenny");
+```
+
+you can extend
+
+```js
+class Workshop {
+  constructor(teacher) {
+    this.teacher = teacher
+  }
+  ask(question) {
+    console.log(this.teacher, question)
+  }
+}
+
+class AnotherWorkshop extends Workshop{
+  speakUp(msg){
+    this.ask(msg)
+  }
+}
+
+var JSRecentParts = new AnotherWorkshop("Will")
+
+JSRecentParts.speakUp("Are classes getting better");
+// Will Are classes getting better
+```
+
+As a matter of fact, the class system also now has a `super` keyword in it:
+
+```js
+class Workshop {
+  constructor(teacher) {
+    this.teacher = teacher
+  }
+  ask(question) {
+    console.log(this.teacher, question)
+  }
+}
+
+class AnotherWorkshop extends Workshop{
+  ask(msg) {
+    super.ask(msg.toUpperCase())
+  }
+}
+
+var JSRecentParts = new AnotherWorkshop("Will")
+
+JSRecentParts.speakUp("Are classes Super?");
+// Will Are classes super?
+```
+
+`super` allows you to do relative polymorphism
+If you have a child class that defines a method of the same name as a parent class, so called shadowing,
+if you have one that defines the same method name in a chold as in the parent.
+
+You can refer to the parent from the child by saying `super.` --> in our example we did `super.ask(msg.UpperCase())`
+
+
 ### 3.5 Callbacks & Higher Order Functions
 
 Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
@@ -704,127 +827,6 @@ because everytime it gets called, the how of the call controls what the `this` k
 3. Is the funcion called on a context object? Like `workshop.ask()`? - If so, use that object
 4. And if none of the previous 3 apply - we default onto the global object (except strict mode)
 
-### Arrow-functions and `this`
-
-<p align="center">
-
-<image src="/Images/js_snippet13.png">
-
-</p>
-
-Here `this` is correctly pointing to the workshop object
-**How is this not implicit binding???????**
-The behavior is actually called "lexical `this` behavior
-
-Lexical `this`: many people think that an arrow function is essentially a hardbound function to the parent's `this`... this is not accurate
-The proper way to think of what an arrow function is... **an arrow function does not define the `this` keyword at all**
-there is no such thing as a `this` keyword in an arrow function, which means **IF** you put a `this` keyword inside an arrow function it's going to behave **like any other variable**
-Which means it's going to lexically resolve to some enclosing scope - that does define a `this` keyword
-
-In the example above, when we say `this.` ... there is no `this` in that arrow function **NO MATTER HOW IT GETS INVOKED**
-So we lexically go up one level of scope which is, the `ask()` function...
-`this` goes out from the `callback` function (the  arrow function) that scope ---> to the enclosing scope, which is??? `ask()`
-AND `ask()`'s definition of the `this` keyword is **determined by HOW IT IS INVOKED**...
-`workshop.ask("Is this lexical `this`?");` ... `ask()` is being invoked by the workshop object... so `this` inside the arrow function determines what is pointing to by how `ask()` gets invoked.
-
-So it resolves lexically, meaning if you had 5 nested arrow function it will go up 5 levels and keeps on going until it finds a function that defines a `this` keyword and whatever the `this` keyword points at for that function, that's what it uses.
-
-The **spec sheet** for Arrow function says:
-
-1. An arrow function does not defined local bindings for `arguments`, `super`, `this` or `new.target`. **Any reference to `arguments`, `super`, `this` or `new.target` within an arrow function must resolve to a binding in a lexically enclosing environment**
-2. If you call `new` on an arrow function, you get an exception ... an error
-
-
-<p align="center">
-
-<image src="/Images/js_snippet14.png">
-
-</p>
-
-We tend to think that `{}` curly braces are scopes, theyre blocks, theyre function bodies ... they must be scopes!
-**No!** 
-In this example, when `this` goes up one level to resolve what `this` is pointing to... it won't point to the workshop object! just because it has curly braces doesn't mean its a scope! **Objects are not scopes!!!**, **Object properties aren't scoped, properties arent lexical identifiers**
-
-**You have to think about an arrow function as not having a `this` and resolving it lexically!** 
-So what is the parents scope!? There are only 2 scopes in the function above!
-1) ask() - but its an arrow function
-2) global scope 
-Thats it! so `this` points to the global scope, and will therefore return `undefined`
-
-**Nonetheless,** this arrow function lexical `this` behavior is a much better way of doing it rather than `var self = this` or even doing `function.bind()`
-Because when you use it, you want the `this` to behave lexically, we don't want the arrow function to have some magical `this` behavior to it.
-We want it to just adopt the `this` keyword of some parent scope.
-
-Cannot stress this enough: **Only use `=>` arrow functions when you need lexical `this`**
-
-
-```js
-class Workshop {
-  constructor(teacher) {
-    this.teacher = teacher
-  }
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
-
-var deepJS = new Workshop("Kyle");
-var reactJS = new Workshop("Lenny");
-```
-
-you can extend
-
-```js
-class Workshop {
-  constructor(teacher) {
-    this.teacher = teacher
-  }
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
-
-class AnotherWorkshop extends Workshop{
-  speakUp(msg){
-    this.ask(msg)
-  }
-}
-
-var JSRecentParts = new AnotherWorkshop("Will")
-
-JSRecentParts.speakUp("Are classes getting better");
-// Will Are classes getting better
-```
-
-As a matter of fact, the class system also now has a `super` keyword in it:
-
-```js
-class Workshop {
-  constructor(teacher) {
-    this.teacher = teacher
-  }
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
-
-class AnotherWorkshop extends Workshop{
-  ask(msg) {
-    super.ask(msg.toUpperCase())
-  }
-}
-
-var JSRecentParts = new AnotherWorkshop("Will")
-
-JSRecentParts.speakUp("Are classes Super?");
-// Will Are classes super?
-```
-
-`super` allows you to do relative polymorphism
-If you have a child class that defines a method of the same name as a parent class, so called shadowing,
-if you have one that defines the same method name in a chold as in the parent.
-
-You can refer to the parent from the child by saying `super.` --> in our example we did `super.ask(msg.UpperCase())`
 
 ## 5. Prototype & __proto__
 
@@ -1291,3 +1293,176 @@ To use `await` with the `Fetch`, we have to wrap it in a `sync` fuction
 In this case, we wrapped it in an IIFE *(Immediately Invoking Function Expression)*
 
 When the fetch has returned a `Promise` the first time, the result is put in the `const resp`, so the next variable waits until the fetch gets a response. The console is only outputting data whn the `jsonData` variable has got the data.
+
+# 10. Functional Programming
+### 10.1 Pure Functions
+
+Pure functions take in an input and outputs something
+
+How is that different from other functions?
+
+The functions we typically write have side effects, such as turning on LEDS, event handlers, etc
+Pure functions are functions that do not have any side effects
+all it looks at is whatever is passed in as an input, and returns its output value.
+
+Not Pure:
+
+```js
+let name = "Lenny"
+
+function greet() {
+  console.log(`Hello, ${name}`);
+}
+
+greet(); // Hello Lenny
+
+name = "Harry"
+greet(); // Hello Harry
+```
+
+Pure:
+
+```js
+
+function greet(name) {
+  console.log(`Hello, ${name}`);
+}
+
+greet("Lenny"); // Hello, Lenny
+greet("Harry"); // Hello, Harry
+```
+
+The first snippet is not a pure function because the side effect is output is unexpected when the global variable `name` changes. No return statement is also an indication of an unpure function, and logging something to console is a **side-effect!**
+
+Whereas in the second snippet we know the exact output because we're passing in the value
+
+Some great guiding principles for function programming are:
+
+1) Do everything with functions
+    - Our program needs to become a function
+    - So instead of thinking again about a program as an impertive series of commands of "we have to do this and then that and then the other thing
+    - We can start thinking of our program as a function. What are the inputs to my function, what are the outputs.
+    - This is a different way of thinking... we're used to "how should my program run", which is an imperative question to ask ourselves. We **should** be asking ourselves: "What should my program take in? And what should my program, return out?"
+
+Imperitve:
+
+```js
+let name = "Alonzo";
+let greeting = "Hi";
+
+console.log(`${greeting}, ${name}!`);
+// Hi, Alonzo!
+
+greeting = "Howdy";
+console.log(`${greeting}, ${name}!`);
+// Howdy, Alonzo!
+```
+Here we have a series of commands, where are the inputs, what are the outputs?
+We're not really asking ourselves questions in the imperative style.
+
+But in the Functional Style:
+
+```js
+function greet(greeting, name) {
+  return `${greeting}, ${name}!`;
+}
+
+greet("Hi", "Alonzo");
+// "Hi, Alonzo!"
+
+greet("Howdy", "Alan");
+// "Howdy, Alan!
+```
+
+Our program takes in 2 inputs (1) Greeting (2) Name
+
+Functional programming is great for data transformation, where you know what type of thing is coming in, and what thing you want to come out.
+
+**So avoid side effects**!
+
+Side Effects:
+
+```js
+let thesis = {name: "Church's", date: 1936};
+
+function renameThesis(newName) {
+    thesis.name = newName;
+    console.log("Renamed!");
+}
+
+renameThesis("Church-Turing"); // Renamed!
+thesis; //{name: "Church-Turing", date: 1936}
+```
+
+No Side Effects:
+
+```js
+const thesis = {name: "Church's", date: 1936};
+
+function renameThesis(oldThesis, newName) {
+  return {
+    name: newName, date: oldThesis.date
+  }
+}
+
+const thesis2 = renameThesis(thesis, "Church-Turing"); 
+thesis; // {name: "Church's", date: 1936}
+thesis2; // {name: "Church-Turing", date: 1936}
+```
+
+A pure function has two characteristics:
+
+No Side Effects: A pure function has no effect on the program or the world besides outputting its return value
+Deterministic: Given the same input values, a pure function will always return the same output. This is because its return value depends only on its input parameters, and not on any other information (e.g. global program state)
+
+[examples]()
+
+### 10.2 Recursion
+
+Iteration: imperative looping stateful
+Recursion: functional self-referential stateless
+
+These 2 are concepts are different ways of thinking about how to get the computer to do the same operation, lots of different times.
+
+In the iteration mini paradigm or sub-paradigm, we think about that repetition in terms of loops for `for` or `while` usually.
+And that loop as we go, we're probably going to be changing some variable like a counter or like `i`
+an element of an array. So we have a value changing over time, which means it's stateful.
+And when you have a complex iterative loop, sometimes it can be hard to think about what the value of `i` is, which loop are we in, hard to think about state.
+
+In the recursive sub-paradigm, instead of using `for`, `while`, stateful loops, we're going to use self reference.
+We're going to have a function call itself from within itself, so we have an "inception" of self-reference.
+And that's how we're going to execute the same chunk of code multiple times.
+
+iterative code:
+
+```js
+function sum(numbers){
+  let total = 0;
+  for(let i = 0; i < numbers.length; i++){
+    total += numbers[i]
+  }
+  return total
+}
+```
+
+Now let's make it recursive
+
+```js
+function sum(numbers){
+  if(numbers.length === 1){
+    // base case
+    return numbers[0]
+  }
+  else {
+    // recursive case
+    return numbers[0] + sum(numbers.slice(1));
+  }
+}
+
+sum([0,1,2,3,4]);
+```
+
+Recursive functions have 2 parts:
+
+1) base case
+2) Recursive case
