@@ -28,3 +28,25 @@ function rgbToHex(R, G, B){
 ```
 > This is a pure function
 > A function is pure if its output depends on nothing but its inputs, it does nothing except return its output, and it always returns the same output if called with the same input
+
+```js
+function setColor(R, G, B){
+  const hex = rgbToHex(R, G, B);
+  const colorMe = document.getElementById('color-me');
+
+  colorMe.setAttribute('style', 'color: ' + hex);
+}
+```
+> This is not a pure function
+> A function is not pure if it does anything besides return its output.
+> Any other effect it has on the program or world is a side effect (in this case, changing the properties of an HTML element on the page)
+
+```js
+async function readJsonFile(filename){
+  const file = await fetch(filename);
+
+  return await file.json();
+}
+```
+> This is not a pure function
+> A function is not pure if its output depends on the state of the world (in this case, the contends of web-hosted file), or if calling the function at different times with the same inputs can give different outputs.
