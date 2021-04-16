@@ -30,14 +30,20 @@
 // firstFunction();
 // secondFunction();
 
-let snack = 'Meow Mix';
+// var snack = 'Meow Mix';
 
-function getFood(food) {
-    if (food) {
-        let snack = 'Friskies';
-        return snack;
-    }
-    return snack;
+// function getFood(food) {
+//     if (food) {
+//         var snack = 'Friskies';
+//         return snack;
+//     }
+//     return snack;
+// }
+
+// console.log(getFood(false)); // 'Meow Mix'
+
+{
+    let food = 'mexican'
+    console.log(food)
 }
-
-console.log(getFood(false)); // 'Meow Mix'
+console.log(food)
