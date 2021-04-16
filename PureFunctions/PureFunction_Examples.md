@@ -50,3 +50,46 @@ async function readJsonFile(filename){
 ```
 > This is not a pure function
 > A function is not pure if its output depends on the state of the world (in this case, the contends of web-hosted file), or if calling the function at different times with the same inputs can give different outputs.
+
+```js
+function writeJsonString(Object){
+  return JSON.stringify(object, null, 2);
+}
+```
+> This is a pure function
+> A function is pure if its output depends on nothing but its inputs, and it always returns the same output if called with the same input
+> In this case, calling it on the same object will always return the same string
+
+```js
+function exclusiveOr(A,B){
+  return (A || B) && !(A && B);
+}
+```
+> This is a pure function
+> A function is pure if its utput depends on nothing but its inputs, it does nothing except return its output, and it always returns the same output if called with the same input
+
+```js
+function computeTruthTable(operator){
+  const truthValues = [true, false];
+  const table = []
+
+  for(const A of truthValues){
+    for(const B of truthValues){
+      const value = operator(A, B);
+      table.push({ A, B, value });
+    }
+  }
+  return table;
+}
+```
+> This is a pure function
+> A function is pure if its output depends on nothing but its input, it does nothing except return its output, and it always returns the same output if called with the same input
+
+```js
+function showTruthTable(operator){
+  console.table(computeTruthTable(operator));
+}
+```
+> This is not a pure function
+> A function is not pure if it does anything besides return its output.
+> Any other effect it has on the program or world is a side effect (in this case, logging information to the console)
