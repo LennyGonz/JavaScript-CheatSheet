@@ -1478,7 +1478,12 @@ A function which either takes or returns another function is called a higher-ord
 
 The higher-order functions `filter()`, `map()`, and `reduce()` are three of the most useful tools in a functional programmer's toolbox.
 
-**Filter**
+**[Filter](Code/filter.js)**
+In the above file you can find examples of how these higher order functions work
+
+The filter function takes a "predicate" function (a function that takes in a value and returns a boolean) and an array, 
+applies the predicate function to each value in the array,
+and returns a new array with only those values for which the predicate function returns true.
 
 Here is an implementation of filter:
 
@@ -1491,47 +1496,42 @@ function filter(predicateFn, array) {
   const filteredFirst = predicateFn(firstItem) ? [firstItem] : [];
   return concat(filteredFirst, filter(predicateFn, tail(array)));
 }
-```
 
-Here are a couple of example callback functions we can use to help filter the array
-
-```js
 function isEven(n) {
   return n % 2 === 0;
 }
 
 evens = filter(isEven, wholes) // [0, 2, 4, 6, 8, 10]
+
+// filetedFirst = isEven(0) ? [firstItem] ; [] 
+// concat(0, filter(predicateFn, [1,2,3,4,5,6,7,8,9,10]))
+// concat([], filter(predicateFn, [2,3,4,5,6,7,8,9,10])
+// concat(2, filter(predicateFn, [3,4,5,6,7,8,9,10])
+// concat([], filter(predicateFn, [4,5,6,7,8,9,10])
+// concat(4, filter(predicateFn, [5,6,7,8,9,10])
+// concat([], filter(predicateFn, [6,7,8,9,10])
+// concat(6, filter(predicateFn, [7,8,9,10])
+// concat([], filter(predicateFn, [8,9,10])
+// concat(8, filter(predicateFn, [9,10])
+// concat([], filter(predicateFn, [10])
+// concat(10, filter(predicateFn, [])
+
+// Now we start resolving our chain of functions
+
+// concat(10, filter(predicateFn, []) -> [10]
+// concat([], filter(predicateFn, [10]) -> [10]
+// concat(8, filter(predicateFn, [10]) -> [8, 10]
+// concat([], filter(predicateFn, [8, 10]) -> [8, 10]
+// concat(6, filter(predicateFn, [8, 10]) -> [6, 8, 10]
+// concat([], filter(predicateFn, [6, 8, 10]) -> [6, 8, 10]
+// concat(4, filter(predicateFn, [6, 8, 10]) -> [4, 6, 8, 10]
+// concat([], filter(predicateFn, [4, 6, 8, 10]) -> [4, 6, 8, 10]
+// concat(2, filter(predicateFn, [4, 6, 8, 10]) -> [2, 4, 6, 8, 10]
+// concat([], filter(predicateFn, [2, 4, 6, 8, 10]) -> [2, 4, 6, 8, 10]
+// concat(0, filter(predicateFn, [2, 4, 6, 8, 10])) -> [0, 2, 4, 6, 8, 10]
 ```
-Create an array filtered to only have even numbers
 
-```js
-odds = filter(n => {
-  return !isEven(n);
-}, wholes)
-
-// [1,3,5,7,9]
-```
-Create an array filtered to only have odd numbers
-
-```js
-greaterThanFour = filter(n => n > 4, wholes)
-```
-Create an array filtered to only have numbers greater than 4
-
-```js
-function isPrime(n) {
-  if (n <= 1) return false;
-  const wholes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const possibleFactors = filter(m => m > 1 && m < n, wholes);
-  const factors = filter(m => n % m === 0, possibleFactors);
-  return factors.length === 0 ? true : false;
-}
-
-primes = filter(isPrime, wholes) // [2,3,5,7]
-```
-Create an array filtered to only have prime numbers
-
-**Map**
+**[Map](Code/map.js)**
 
 The map function takes a one-argument function and an array, and applies the function to each element in the array, returning a new array of the resulting values.
 
@@ -1542,24 +1542,39 @@ To move towards a functional mindset, these helper functions are very useful ins
 - length(array) to return the number of elements in the array (e.g. length([1,2,3]) returns 3)
 
 ```js
+wholes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 function map(fn, array) {
-  if (length(array) === 0) return [];
-  return [fn(head(array))].concat(map(fn, tail(array)));
+  if (length(array) === 0) return []; // map always retuns a new array - so if map gets called on an empty array - return an empty array
+// Return the number of items in an array
+  return [fn(head(array))].concat(map(fn, tail(array))); // so here we perform the transformation (call the function on the head of the array)
+  // THEN combine it with the rest of the array, where do we a recursive call to continue working on the rest of the array
 }
 
 doubled = map(n => n * 2, wholes) // [0,2,4,6,8,10,12,14,16,18,20]
+// doesn't concatenate the arrays until it finishes all the recursive calls
+// [fn(0)].concat(map(fn, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])) -> [fn(1)].concat(map(fn, [2, 3, 4, 5, 6, 7, 8, 9, 10]))
+// [fn(2)].concat(map(fn, [3, 4, 5, 6, 7, 8, 9, 10])) -> [fn(3)].concat(map(fn, [4, 5, 6, 7, 8, 9, 10]))
+// [fn(4)].concat(map(fn, [5, 6, 7, 8, 9, 10])) -> [fn(5)].concat(map(fn, [6, 7, 8, 9, 10]))
+// [fn(6)].concat(map(fn, [6, 7, 8, 9, 10])) -> [fn(7)].concat(map(fn, [7, 8, 9, 10]))
+// [fn(8)].concat(map(fn, [8, 9, 10])) -> [fn(9)].concat(map(fn, [10]))
+// [fn(10)].concat(map(fn, [])) -> here we've reached our base case
 
-halved = map(n => n / 2, wholes) // [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+// start resolving each resursive call
 
-fizzBuzz = map(n => {
-  const fizzed = n % 3 === 0 ? 'fizz' : '';
-  const buzzed = n % 5 === 0 ? 'buzz' : '';
-  return fizzed || buzzed ? fizzed + buzzed : n;
-}, wholes)
-// ["fizzbuzz", 1, 2, "fizz", 4, "buzz", "fizz", 7, 8, "fizz", "buzz"]
+// [fn(10)].concat([]) -> [20]
+// [fn(9)].concat([20]) -> [18,20]
+// [fn(8)].concat([18,20]) -> [16,18,20]
+// [fn(7)].concat([[16,18,20]]) -> [14,16,18,20]
+// [fn(6)].concat([14,16,18,20]) -> [12,14,16,18,20]
+// [fn(5)].concat([12,14,16,18,20]) -> [10,12,14,16,18,20]
+// [fn(4)].concat([10,12,14,16,18,20]) -> [8,10,12,14,16,18,20]
+// [fn(3)].concat([8,10,12,14,16,18,20]) -> [6,8,10,12,14,16,18,20]
+// [fn(2)].concat([6,8,10,12,14,16,18,20]) -> [4,6,8,10,12,14,16,18,20]
+// [fn(1)].concat([4,6,8,10,12,14,16,18,20]) -> [2,4,6,8,10,12,14,16,18,20]
+// [fn(0)].concat([0,2,4,6,8,10,12,14,16,18,20]) -> [0,2,4,6,8,10,12,14,16,18,20]
 ```
 
-**Reduce**
+**[Reduce](Code/reduce.js)**
 
 The reduce function is the odd one of the bunch. Unlike filter and map, which each take an array and return another array, reduce takes in an array and returns a single value - in other words, it "reduces" an array to a single value.
 
@@ -1570,29 +1585,42 @@ reduce takes three arguments:
 - the array to reduce
 
 ```js
-const wholes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const wholes = [0, 1, 2, 3, 4, 5];
 
 function reduce(reducerFn, initialValue, array) {
   if (length(array) === 0) return initialValue;
-  const newInitialValue = reducerFn(initialValue, head(array));
-  return reduce(reducerFn, newInitialValue, tail(array));
+  const newInitialValue = reducerFn(initialValue, head(array)); // this line calculates 1 value
+  console.log("newInitialValue: " + newInitialValue);
+  return reduce(reducerFn, newInitialValue, tail(array)); // this line will recursively call itself so we can get through the rest of the elements in the array
 }
 
-sum = reduce(
-  (accumulator, value) => {
-    return accumulator + value;
-  },
-  0,
-  wholes
-) // sum = 55
+sum = reduce((accumulator, value) => { return accumulator + value;}, 0, wholes) // sum = 15
 
-max = reduce(
-  (acc, val) => {
-    return val > acc ? val : acc;
-  },
-  0,
-  [7, 1, 3, 5, 6, 2, 8, 10, 0, 4, 9]
-) // max = 10
+/**
+ * [0,1,2,3,4,5]
+ * 
+ * reducerFn -> (accumulator, value) => return accumulator + value // so we're just adding inputA and inputB
+ * initialValue -> 0
+ * wholes -> [0,1,2,3,4,5]
+ * 
+ * newInitialValue = reducerFn -> return 0 + 0 = 0
+ * return reduce(reducerFn, 0, [1,2,3,4,5]) // notice how we splice the array - we NEED to remove the initial value so we can continue to work with the "head"
+ * 
+ * newInitialValue = reducerFn -> return 0 + 1 = 1
+ * return reduce(reducerFn, 1, [2,3,4,5])
+ * 
+ * newInitialValue = reducerFn -> return 1 + 2 = 3
+ * return reduce(reducerFn, 3, [3,4,5])
+ * 
+ * newInitialValue = reducerFn -> return 3 + 3 = 6
+ * return reduce(reducerFn, 6, [4,5])
+ * 
+ * newInitialValue = reducerFn -> return 6 + 4 = 10
+ * return reduce(reducerFn, 10, [5])
+ * 
+ * newInitialValue = reducerFn -> return 10 + 5 = 15
+ * return reduce(reducerFn, 15, []) -> 15
+ */
 ```
 
 The functions below let us work with JavaScript arrays using a functional API (e.g. length(array)), instead of the usual object-oriented method-calling API (e.g. array.length).
