@@ -1466,3 +1466,159 @@ Recursive functions have 2 parts:
 
 1) base case
 2) Recursive case
+
+> Remember to mention the arity of a function (how many inputs a function is expecting)
+
+### 10.3 Higher-Order Functions
+
+We say a language has "first-class functions" if it supports functions being passed as input or output values of other functions. 
+JS has this feature, and JavaScripters take advantage of it all the time - for example, it's what allows us to pass a callback function as an input parameter for another function. 
+It's also possible to have a function as a return value. 
+A function which either takes or returns another function is called a higher-order function.
+
+The higher-order functions `filter()`, `map()`, and `reduce()` are three of the most useful tools in a functional programmer's toolbox.
+
+**Filter**
+
+Here is an implementation of filter:
+
+```js
+wholes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+function filter(predicateFn, array) {
+  if (length(array) === 0) return [];
+  const firstItem = head(array);
+  const filteredFirst = predicateFn(firstItem) ? [firstItem] : [];
+  return concat(filteredFirst, filter(predicateFn, tail(array)));
+}
+```
+
+Here are a couple of example callback functions we can use to help filter the array
+
+```js
+function isEven(n) {
+  return n % 2 === 0;
+}
+
+evens = filter(isEven, wholes) // [0, 2, 4, 6, 8, 10]
+```
+Create an array filtered to only have even numbers
+
+```js
+odds = filter(n => {
+  return !isEven(n);
+}, wholes)
+
+// [1,3,5,7,9]
+```
+Create an array filtered to only have odd numbers
+
+```js
+greaterThanFour = filter(n => n > 4, wholes)
+```
+Create an array filtered to only have numbers greater than 4
+
+```js
+function isPrime(n) {
+  if (n <= 1) return false;
+  const wholes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const possibleFactors = filter(m => m > 1 && m < n, wholes);
+  const factors = filter(m => n % m === 0, possibleFactors);
+  return factors.length === 0 ? true : false;
+}
+
+primes = filter(isPrime, wholes) // [2,3,5,7]
+```
+Create an array filtered to only have prime numbers
+
+**Map**
+
+The map function takes a one-argument function and an array, and applies the function to each element in the array, returning a new array of the resulting values.
+
+To move towards a functional mindset, these helper functions are very useful instead of the equivalent object-oriented array methods:
+
+- head(array) to return the first element of an array (e.g. head([1,2,3]) -> 1)
+- tail(array) to return the rest of the array after the first element (e.g. tail([1,2,3]) returns [2,3])
+- length(array) to return the number of elements in the array (e.g. length([1,2,3]) returns 3)
+
+```js
+function map(fn, array) {
+  if (length(array) === 0) return [];
+  return [fn(head(array))].concat(map(fn, tail(array)));
+}
+
+doubled = map(n => n * 2, wholes) // [0,2,4,6,8,10,12,14,16,18,20]
+
+halved = map(n => n / 2, wholes) // [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+
+fizzBuzz = map(n => {
+  const fizzed = n % 3 === 0 ? 'fizz' : '';
+  const buzzed = n % 5 === 0 ? 'buzz' : '';
+  return fizzed || buzzed ? fizzed + buzzed : n;
+}, wholes)
+// ["fizzbuzz", 1, 2, "fizz", 4, "buzz", "fizz", 7, 8, "fizz", "buzz"]
+```
+
+**Reduce**
+
+The reduce function is the odd one of the bunch. Unlike filter and map, which each take an array and return another array, reduce takes in an array and returns a single value - in other words, it "reduces" an array to a single value.
+
+reduce takes three arguments:
+
+- a "reducer" function, which takes two arguments - an accumulator and the next value from the array - and returns a single value. This function will be applied to each value in the array, with the accumulator storing the reduced value so far.
+- an initial value, passed to the first call of the reducer function
+- the array to reduce
+
+```js
+const wholes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+function reduce(reducerFn, initialValue, array) {
+  if (length(array) === 0) return initialValue;
+  const newInitialValue = reducerFn(initialValue, head(array));
+  return reduce(reducerFn, newInitialValue, tail(array));
+}
+
+sum = reduce(
+  (accumulator, value) => {
+    return accumulator + value;
+  },
+  0,
+  wholes
+) // sum = 55
+
+max = reduce(
+  (acc, val) => {
+    return val > acc ? val : acc;
+  },
+  0,
+  [7, 1, 3, 5, 6, 2, 8, 10, 0, 4, 9]
+) // max = 10
+```
+
+The functions below let us work with JavaScript arrays using a functional API (e.g. length(array)), instead of the usual object-oriented method-calling API (e.g. array.length).
+
+```js
+concat = ƒ(array1, array2)
+// Concatenate two arrays into a new single array
+function concat(array1, array2) {
+  return array1.concat(array2);
+}
+
+length = f(array)
+// Return the number of items in an array
+function length(array) {
+  return array.length;
+}
+
+head = ƒ(array)
+// Return the first item in an array
+function head(array) {
+  return array[0];
+}
+
+tail = ƒ(array)
+// Return the rest of an array after the first item
+function tail(array) {
+  return array.slice(1);
+}
+```
