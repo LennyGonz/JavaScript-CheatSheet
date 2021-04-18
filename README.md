@@ -1526,6 +1526,8 @@ instead we auto trigger the resumption of the `createFlow()` execution
 
 ![Async/Await2](Images/AsyncAwait2.png)
 
+Another example:
+
 ```js
 (async () => {
   const resp = await fetch("https://api.github.com/users/github");
@@ -1724,7 +1726,7 @@ A function which either takes or returns another function is called a higher-ord
 The higher-order functions `filter()`, `map()`, and `reduce()` are three of the most useful tools in a functional programmer's toolbox.
 
 **[Filter](Code/filter.js)**
-In the above file you can find examples of how these higher order functions work
+In this file you can find examples of how these higher order functions work
 
 The filter function takes a "predicate" function (a function that takes in a value and returns a boolean) and an array, 
 applies the predicate function to each value in the array,
@@ -1778,7 +1780,7 @@ evens = filter(isEven, wholes) // [0, 2, 4, 6, 8, 10]
 // concat(0, filter(predicateFn, [2, 4, 6, 8, 10])) -> [0, 2, 4, 6, 8, 10]
 ```
 
-**[Map](Code/map.js)**
+**[Map](Code/map.js)** More examples in this file
 
 The map function takes a one-argument function and an array, and applies the function to each element in the array, returning a new array of the resulting values.
 
@@ -1821,7 +1823,7 @@ doubled = map(n => n * 2, wholes) // [0,2,4,6,8,10,12,14,16,18,20]
 // [fn(0)].concat([0,2,4,6,8,10,12,14,16,18,20]) -> [0,2,4,6,8,10,12,14,16,18,20]
 ```
 
-**[Reduce](Code/reduce.js)**
+**[Reduce](Code/reduce.js)** More examples in this file
 
 The reduce function is the odd one of the bunch. Unlike filter and map, which each take an array and return another array, reduce takes in an array and returns a single value - in other words, it "reduces" an array to a single value.
 
