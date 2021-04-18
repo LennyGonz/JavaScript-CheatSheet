@@ -1393,8 +1393,8 @@ the `yield` keyword which pauses function exection and returns(yields) a value
 
 2 parts of a Generator:
 
-- **Generator Function** U+02192 defined with an asterisk *near* the function name or keyword
-- **Generator Iterator** U+02192 created when you invoke the Generator Function
+- **Generator Function** → defined with an asterisk *near* the function name or keyword
+- **Generator Iterator** → created when you invoke the Generator Function
 
 ### 9.4 Async/Await
 
