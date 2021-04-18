@@ -1501,6 +1501,31 @@ By setting up the trigger to do so (returnNextElement.next()) to be run by our f
 
 ![Async/Await](Images/AsyncAwait.png)
 
+The `data` variable never got a value beause we hit `yield`
+So once the background work was completed `doWorkWhenReceived` autoriggered and inside we do `returnNextElement.next(value)`
+Which sends us **back** to its execution context with the argument: "hi" (b/c thats what our endpoint returned)
+Therefore `data="hi"` b/c what we pass to the generator is the value used...
+And we continue to execute `returnNextElement` which is `createFlow`.
+
+**Using the keywords: Async/Await**
+
+```js
+async function createFlow(){
+  console.log("Me First!");
+  const data = await fetch("https://twitter.com/lenny/tweets/1");
+  console.log(data);
+}
+
+createFlow();
+console.log("Me Second!");
+```
+
+No need for a triggered function on the promise resolution,
+instead we auto trigger the resumption of the `createFlow()` execution
+(this functionality is still added to the microtask queue tho)
+
+![Async/Await2](Images/AsyncAwait2.png)
+
 ```js
 (async () => {
   const resp = await fetch("https://api.github.com/users/github");
@@ -1509,7 +1534,7 @@ By setting up the trigger to do so (returnNextElement.next()) to be run by our f
 })();
 ```
 
-To use `await` with the `Fetch`, we have to wrap it in a `sync` fuction
+To use `await` with the `Fetch`, we have to wrap it in a `async` fuction
 In this case, we wrapped it in an IIFE *(Immediately Invoking Function Expression)*
 
 When the fetch has returned a `Promise` the first time, the result is put in the `const resp`, so the next variable waits until the fetch gets a response. The console is only outputting data whn the `jsonData` variable has got the data.
