@@ -1275,7 +1275,126 @@ So we write an anonymous function that'll handle how we resolve/reject the promi
 
 ### 9.2 Iterators
 
+```js
+const numbers [4,5,6]
+
+for(let i = 0; i <numbers.length; i++){
+  console.log(numbers[i]);
+}
+```
+
+Programs store data and apply function to it.
+But there are 2 two parts to applying functions to collections of data
+
+1. The process of accessing each element
+2. What we want to do to each element
+
+Iterators automate the accessing of each element - so we can focus on what to do to each element, and make it available to us in a smooth way
+
+Iterators allow functions to stores elements and each time we run the function it would return out the next element
+*Our function has to remember which element was next up*
+
+To make this easier, we need to think of our array/list as a "stream/flow" of data with our functions returning the next element from out "stream"
+
+```js
+function createNewFunction(){
+  function add(num){
+    return num + 2;
+  }
+  return add2;
+}
+
+const newFunction = createNewFunction();
+const result = newFunction(3);
+```
+
+When we return a function from another function we get a bonus...
+This bonus will be critical for us to build out our own functions that when we call them gives us our next element from our flow of data, in other words an iterator
+
+We want to create a function that holds both our array, the position we are currently at in our stream of elements
+And has the ability to return the next element
+
+```js
+function createFunction(array){
+  let i = 0;
+  function inner(){
+    const element = array[i];
+    i++;
+    return element;
+  }
+  return inner;
+}
+
+const returnNextElement = createFunction([4,5,6]);
+const element1 = returnNextElement(); // 1
+const element2 = returnNextElement(); // 2
+```
+
+When the function 'inner' is defined, it gets a bond to the surrounding Local Memory in which it has been defined
+
+When we return out `inner()`, that surrounding live data is returned out too, attached on the "back" of the function definition itself (which we now give a new global label "returnNextElement")
+
+When we call `returnNextElement` and don't find "array" or "i" in the immediate execution context, we look into the function defienition "backpack" of persistent live data
+
+Any function that when called returns out the next element from my flow od data is called an: iterator
+
+So iterators turn our data into "streams" of actual values we can access one after another
+Now we have functions that:
+
+- hold our underlying array
+- the position we're currently at in the array
+- and return out the next item in the 'stream' of elements from our array when run
+
+Iterators are powerful in that they provide a means to access items in a collection one at a time, while keeping track of the current index, built-in iterators are actually objects with a `next` method that when called returns the next element from the "stream"/flow
+
+```js
+function makeIterator(array) {
+  let nextIndex = 0;
+  console.log("nextInde =>", nextIndex);
+
+  return(
+    next: function(){
+      return nextIndex < array.length
+        ? { value: array[nextIndex++], done: false}
+        : { done: true };
+    }
+  );
+}
+
+let it = makeIterator(["simple","iterator"]);
+
+console.log(it.next()); // {value: 'simple, done: false}
+console.log(it.next()); // {value: 'iterator, done: false}
+console.log(it.next()); // {done: true}
+```
+
+Above we pass in a simple array with 2 values and we iterate over the values by 
+calling it.next().
+
 ### 9.3 Generators
+
+Generators are functions that serve as a factory for iterators.
+
+```js
+function* sample(){
+  yield "simple";
+  yield "generator";
+}
+
+let it = sample();
+
+console.log(it.next()); // {value: 'simple, done: false}
+console.log(it.next()); // {value: 'generator, done: false}
+console.log(it.next()); // {value: undefined. done true}
+```
+
+*Note the syntax*, the `*` indicates that the function is a generator and
+the `yield` keyword which pauses function exection and returns(yields) a value
+
+2 parts of a Generator:
+
+- **Generator Function** U+02192 defined with an asterisk *near* the function name or keyword
+- **Generator Iterator** U+02192 created when you invoke the Generator Function
 
 ### 9.4 Async/Await
 
@@ -1503,7 +1622,9 @@ function isEven(n) {
 
 evens = filter(isEven, wholes) // [0, 2, 4, 6, 8, 10]
 
-// filetedFirst = isEven(0) ? [firstItem] ; [] 
+// filetedFirst = isEven(0) ? [firstItem] ; []
+// isEven is our predicateFn
+
 // concat(0, filter(predicateFn, [1,2,3,4,5,6,7,8,9,10]))
 // concat([], filter(predicateFn, [2,3,4,5,6,7,8,9,10])
 // concat(2, filter(predicateFn, [3,4,5,6,7,8,9,10])
