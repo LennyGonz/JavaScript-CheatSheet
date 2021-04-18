@@ -1396,9 +1396,110 @@ the `yield` keyword which pauses function exection and returns(yields) a value
 - **Generator Function** → defined with an asterisk *near* the function name or keyword
 - **Generator Iterator** → created when you invoke the Generator Function
 
+Communication with Generators can happen in both directions,
+Generators can yield values to iterators, but
+iterators can also send values to Geneartors in the `iterator.next('somevalue')` method
+
+```js
+function* favBeer(){
+  const reply = yield "What is your favorite type of beer?";
+  console.log(reply);
+  if (reply !== "ipa") return "No soup for you!";
+  return "Ok, soup"
+}
+
+{
+  const it = favBeer();
+  const q = it.next().value; // Iterator asks question
+  console.log(q);
+  const a = it.next("lager").value; // Question is answered
+  console.log(a);
+}
+
+// What is your favorite beer?
+// lager
+// No soup for you!
+
+{
+  const it = favBeer();
+  const q = it.next().value; // Iterator asks question
+  console.log(q);
+  const a = it.next("ipa").value; // Question is answered
+  console.log(a);
+}
+
+// What is your favorite beer?
+// ipa
+// OK, soup.
+```
+
+So Generators + Promises form the foundation for the async/await expression
+Instead of yielding values the Generator yielded Promise functions
+Then wrap the generator in a function that could wait for the Promise to resolve and return the Promise value to the Generator in the `.next()` method
+
+There is a popular library called **coroutines** that does just that
+
+```js
+co(function* doStuff){
+  let result = yield someAsyncMethod();
+  let another = yield anotherAsyncFunction();
+}
+```
+
 ### 9.4 Async/Await
 
 Async/Await built from Generators
+
+In asynchronous JS we want to:
+
+1) Intiate a task that takes a long time (e.g requesting data from the server)
+2) Move on to more synchronous regular code in the meantime
+3) Run some functionality once the requested data has come back
+
+*What if we were to yield out of the function at the moment of sending off the long-time task and return to the function only when the task is complete*
+
+`returnNextElement` is a special object(a generator object) that when its 'next' method is run → starts (or continues) running `createFlow` until it hits yield and returns out the value byeing "yielded"
+
+```js
+function* createFlow(){
+  const num = 10;
+  const newNum = yield num;
+  yield 5 + newNum;
+  yield 6;
+}
+
+const returnNextElement = createFlow();
+const element1 = returnNextElement.next(); // 10
+const element2 = returnNextElement.next(); // 7
+```
+
+We end up with a "stream"/flow of values that we can get one-by-one by running returnNextElement.next()
+
+With generator objects we have a property that tells us where we left off so we can pick up where we left off
+
+We can use the ability to pause `createFlow's` running and then restart it only when our data returns
+
+```js
+function doWhenDataReceived(value){
+  returnNextElement.next(value);
+}
+
+function* createFlow(){
+  const data = yield fetch("http://twitter.com/lenny/tweets/1");
+  console.log(data)
+}
+
+const returnNextElement = createFlow();
+const futureData = returnNextElement.next();
+
+futureData.then(doWhenDataReceived)
+```
+*This code is basically building Async/Await by scratch*
+
+We get to control when we return back to `createFlow` and continue executing
+By setting up the trigger to do so (returnNextElement.next()) to be run by our function that was triggered by the promise resolution (when the value returned from Twitter)
+
+[Async/Await](Images/AsyncAwait.png);
 
 ```js
 (async () => {
