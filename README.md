@@ -1499,7 +1499,7 @@ futureData.then(doWhenDataReceived)
 We get to control when we return back to `createFlow` and continue executing
 By setting up the trigger to do so (returnNextElement.next()) to be run by our function that was triggered by the promise resolution (when the value returned from Twitter)
 
-[Async/Await](Images/AsyncAwait.png);
+![Async/Await](Images/AsyncAwait.png)
 
 ```js
 (async () => {
