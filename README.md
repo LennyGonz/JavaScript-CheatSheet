@@ -64,7 +64,7 @@ ES6 introduced 2 additional keywords to declare a variable:
 > 
 > **And** unlike `var`, `let` and `const` statements are not hoisted to the top of their enclosing scope
 
-## 2.1 block scoping with let
+### 2.1 block scoping with let
 
 An example using `var`:
 
