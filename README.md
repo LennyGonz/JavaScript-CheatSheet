@@ -1899,3 +1899,196 @@ function tail(array) {
   return array.slice(1);
 }
 ```
+
+
+
+
+
+### 10.4 Closures & Partial Application & Currying
+
+**Closures**
+
+Functions can defined functions -> return the inner function, the inner function will 'remember' values from the scope from which it was defined even if the function does not use those values
+
+example:
+
+```js
+function makeAdjectifier(adjective){
+  return function(noun) {
+    return adjective + " " + noun;
+  }
+}
+
+const coolify = makeAdjectifier("cool");
+coolify("workshop"); // "cool workshop"
+coolyf("drink"); // "cool drink"
+```
+
+`coolify` is the new label for the inner anonymous function we return, and by initially passing the string "cool"
+The value for `adjective` (cool) will always be remembered, hence why when we execute `coolify` using 2 different nouns, "cool" is still used.
+
+**Partial Application & Currying**
+
+This lets us "partially apply" functions ... to "lock in" some arguments and make more reusable functions
+
+So what this lets us do, is it lets us take a function, which takes multiple arguments, and kind of locks in some of the values.
+
+Another way of saying this is... it lets us **partially apply** a function
+And so partial application is this notion of kind of remembering certain arguments and being able to then reuse functions more easily because I don't have to keep passing in the same value...
+
+**Currying**
+
+breaks up a multi-argument function into a series of single-argument ones
+
+This is the process of taking a multi-argument function, a function that makes in multiple values as its input arguments and breaking it up (in a sense), into a series of single argument functions, which successively, remember the outer scope, so that I can partially apply each of those multiple arguments to create a more reusable function that I can use to create more complex programs out of simple functions
+
+```js
+function greet(greeting, name){
+  return `${greeting}, ${name}`
+}
+
+function curryGreet(greeting) {
+  return function (name) {
+    return `${greeting}, ${name}!`
+  }
+};
+
+const greetItal = curryGreet("Ciao");
+greetItal("Alonzo"); // "Ciao, Alonzo"
+
+const greetTex = curryGreet("Howdy");
+greetTex("Alonzo"); // "Howdy, Alonzo"
+greetTex("Alan"); // "Howdy, Alan"
+```
+
+We have our `greet` function that takes in 2 arguments: `greeting` and `name` -> which returns out: "Hi lenny" or whatever
+Now we make a curryed version - which is a single argument: `greeting` then it returns **another single argument function, which takes in a `name`**, which then returns the same same result as our original `greet` function
+
+So now if I want to greet lots of people with the same greeting, I don't have to keep passing in that greeting over and over again...
+I can create a new function like `greetItal`, that I'm going to create by calling `curryGreet` on the greeting that I want to use like "Ciao"
+And now I have a function that I can call on anybody's name and because of Clousures, the inner function will always the remember the greeting and all it requires is the name
+
+Same process with our `greetTex` function, we don't need to repeat our greeting, just pass in the names we want to greet!
+
+### 10.5 Function Composition
+
+So the idea with functional programming is, we inputs coming in and outputs coming out, and those outputs can also become new inputs for th next function whose outputs can becaome new inputs for another function.
+
+Need to think how the data is gonna flow through your different functions to tran.sform the input to get the result that I want.
+
+Function composition lets us make complex programs out of simple functions, composing them together to create complex programs.
+
+```js
+let ender = (ending) => (input) => input + ending;
+
+let adore = ender(" rocks");
+
+let announce = ender(", y'all");
+
+let exclaim = ender("!");
+
+let hypeUp = (x) => exclaim(announce(adore(x)));
+hypeUp("JS"); // "JS rocks, y'all!"
+hypeUp("FP"); // "FP rocks, y'all!"
+```
+
+In functional programming we construct programs entirely out of modular pure functions, <br> using function composition to "combine" several functions' effects to create a pipeline through <br> which our program's data can flow.
+
+```js
+function pipeline(...functions) {
+  if (length(functions) === 0) return input => input;
+  if (length(functions) === 1) return input => head(functions)(input);
+  return function(input) {
+    return pipeline(...tail(functions))(head(functions)(input));
+  };
+}
+```
+
+This function takes as arguments any number of single-argument functions <br> and should return a single function representing their composition <br> i.e.) A function that passes the input value through a "pipeline" of the functions.
+
+```js
+pluralize = singularWord => singularWord + 's'
+heart = word => "I ❤️ " + word
+exclaim = sentence => sentence + "!"
+
+showSomeLove = pipeline(pluralize, heart, exclaim); // exclaim(heart(pluralize(input))) 
+// we ressolve our functions from within 
+// 1. pluralize(input)
+// 2. heart(output of pluralize(input))
+// 3. exclaim (output of heart(output of pluralize(input)))
+
+pipelineLove = showSomeLove('pipeline') // "I ❤️ pipelines!"
+functionLove = showSomeLove('pure function') // "I ❤️ pure functions!"
+wrongOrder = loveSomeShow('pipeline') // "I ❤️ pipeline!s"
+```
+
+We can also use `reduce` to achieve this pipeline function
+
+```js
+function reducePipeline(...functions) {
+  return input => reduce((acc, fn) => fn(acc), input, functions);
+}
+```
+We take whatever functions are coming in `...functions`
+return a new function, which takes input and calls `reduce` on our little function 
+that is going to take an accumulator `acc` (which is basically going to be our output so far)
+And the next function to apply, the next function to call on that output: `fn`, the next function in our pipeline
+And it's going to call that function on the output that we've seen so far: `fn(acc)`
+And so we start this off with our initial value `input` is whatever the first input was, that's gonna be the first value coming in
+And we can reduce over that array of functions `functions` to successively call them on the result of all the calls that we've made so far
+
+### 10.6 Immutability
+
+Avoid mutability for happier programming - dont' change in-place! Instead, replace!
+
+Functional programming goes hand in hand with immutability, and if you work only with immutable data there's less chance of accidental side effects!
+
+Mutable data and mutating functions/methods allow us to change things in place - meaning we have values changing over time, aka state - the functional programmer's enemy. Immutable data, on the other hand, can never be changed once it has been created.
+
+With immutable data, when we need to update something we can create a new, slightly different copy, rather than changing the original. This lets us avoid state and all the headaches that come with it.
+
+```js
+let cities = ["Delhi", "Bombay", "Bangalore"]
+
+cities[1] = "Mumbai"
+
+cities; // ["Delhi", "Bombay", "Bangalore]
+
+// Better way to do it
+
+const old_cities = ["Delhi", "Bombay", "Bangalore"];
+
+const newCities = oldCities.map((city) => {
+  if (city === "Bombay" ) return "Mumbai";
+  if (city === "Bangalore") return "Bengaluru";
+  return city
+});
+
+newCities; // ["Delhi", "Bombay", "Bangalore"];]
+oldCities; // ["Delhi", "Mumbai", "Bengaluru"];
+```
+
+Notice how we replace the old values but copying the old data replacing it into a new array - and thus we don't affect old cities array
+
+Copying data isn't very efficient...
+Immutable (aka persistant) data structures to the rescure! Use 'structural sharing' to reuse unchanged data
+
+
+In JavaScript, many common array operations mutate the array, i.e. change the array in-place. <br> So here are examples where we replace these mutating operations with functions that return a new array instead of modifying the existing one.
+
+```js
+function push(element, array) {
+  return [...array, element];
+}
+
+function update(index, value, array) {
+  return array
+    .slice(0, index)
+    .concat([value])
+    .concat(array.slice(index + 1));
+}
+
+function pop(array) {
+  return array.slice(0, -1);
+}
+```
