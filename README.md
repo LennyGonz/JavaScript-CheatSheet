@@ -95,9 +95,23 @@ Because `i` becomes accessible outside the scope, and we can display the current
 
 > Referencing block-scoped identifiers before they are defined will produce a `ReferenceError`
 
-## 3. Functions
 
-### 3.1 Function Declarations and Function Expressions
+
+
+
+
+
+## 3. Destructuring
+
+### 3.1 Array Destructuring
+
+### 3.2 Object Destructuring
+
+### 3.3 Further Destructuring
+
+## 4. Functions
+
+### 4.1 Function Declarations and Function Expressions
 
 Function declarations vs Function expressions
 
@@ -134,7 +148,7 @@ const myTeacher = function anotherTeacher(){
 - that function declarations attach their name to the enclosing scope
 - whereas function expressions put their identifier into their own scope.
 
-### 3.2 Named function expressions
+### 4.2 Named function expressions
 
 A function expression thats been given a name.
 
@@ -171,7 +185,7 @@ Using **named function expressions** should be used more often because:
 2. More debuggable stack traces, in the stack traces you'll get `Anonymous Function` in the stack traces <br> but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
 3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... <br> Where as with function declarations the purpose of the function is in the name
 
-### 3.3 IIFEs (another form of anonymous function expressions)
+### 4.3 IIFEs (another form of anonymous function expressions)
 
 Immediatelly Invoked Function Expressions
 
@@ -263,7 +277,7 @@ The top level await proposal would remove the need for async IIFEs coupled with 
 However, [top-level awaits](https://blog.bitsrc.io/why-should-you-use-top-level-await-in-javascript-a3ba8139ef23#:~:text=Top%2Dlevel%20await%20allows%20us,promises%20are%20resolved%20in%20middleware.) still have their problems
 
 
-### 3.4 Arrow functions (another form of anonymous function expressions)
+### 4.4 Arrow functions (another form of anonymous function expressions)
 
 ```js
 function myFunc() {
@@ -482,7 +496,7 @@ if you have one that defines the same method name in a chold as in the parent.
 You can refer to the parent from the child by saying `super.` --> in our example we did `super.ask(msg.UpperCase())`
 
 
-### 3.5 Callbacks & Higher Order Functions
+### 4.5 Callbacks & Higher Order Functions
 
 Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
 
@@ -511,7 +525,7 @@ Which is our callback function?
 
 **The notion of passing in a function to the running of another function in a very different way is going to turn out to be the backbone of asynchronous JavaScript**. Even if we're using promises, even if we're using async/await... behind the scenes - passing in a function to another function is going to be the core of those concepts
 
-## 4. Scope & this
+## 5. Scope & this
 
 Scope: where to look for things
 
@@ -828,7 +842,7 @@ because everytime it gets called, the how of the call controls what the `this` k
 4. And if none of the previous 3 apply - we default onto the global object (except strict mode)
 
 
-## 5. Prototype & __proto__
+## 6. Prototype & __proto__
 
 The prototype system is what the `class` keyword is built on top of
 
@@ -872,15 +886,15 @@ or reactJS.ask() on line 5 we're actually saying reactJS.teacher
 
 It's because we have found a function through the prototype chain, invoked it, but it still is deremine what the `this` keyword is gonna point at by the call sites on line 11 or line 14
 
-## 6. `new`
+## 7. `new`
 
-## 7. `class`
+## 8. `class`
 
-### 7.1 `super`
+### 8.1 `super`
 
-### 7.2 `extends`
+### 8.2 `extends`
 
-## 8. Closure
+## 9. Closure
 
 Closure is when a function remembers the variables outside of it, even if you pass that function elsewhere
 
@@ -1019,7 +1033,7 @@ I'm going to grab all that data and pull it out on the backpack such that when I
 
 
 
-## 9. Asynchronous Javascript
+## 10. Asynchronous Javascript
 
 **XMLHttpRequest Synchronous**
 
@@ -1060,7 +1074,7 @@ fetch('http://example.com/movies.json').then(function(response) {
 
 Fetch makes more sense, since you can read in order which steps it takes
 
-### 9.1 Promises
+### 10.1 Promises
 
 <p align="center">
 
@@ -1273,7 +1287,7 @@ function delay(time){
 ```
 So we write an anonymous function that'll handle how we resolve/reject the promises
 
-### 9.2 Iterators
+### 10.2 Iterators
 
 ```js
 const numbers [4,5,6]
@@ -1371,7 +1385,7 @@ console.log(it.next()); // {done: true}
 Above we pass in a simple array with 2 values and we iterate over the values by 
 calling it.next().
 
-### 9.3 Generators
+### 10.3 Generators
 
 Generators are functions that serve as a factory for iterators.
 
@@ -1446,7 +1460,7 @@ co(function* doStuff){
 }
 ```
 
-### 9.4 Async/Await
+### 10.4 Async/Await
 
 Async/Await built from Generators
 
@@ -1541,8 +1555,8 @@ In this case, we wrapped it in an IIFE *(Immediately Invoking Function Expressio
 
 When the fetch has returned a `Promise` the first time, the result is put in the `const resp`, so the next variable waits until the fetch gets a response. The console is only outputting data whn the `jsonData` variable has got the data.
 
-# 10. Functional Programming
-### 10.1 Pure Functions
+# 11. Functional Programming
+### 11.1 Pure Functions
 
 Pure functions take in an input and outputs something
 
@@ -1664,7 +1678,7 @@ Deterministic: Given the same input values, a pure function will always return t
 
 [examples]()
 
-### 10.2 Recursion
+### 11.2 Recursion
 
 Iteration: imperative looping stateful
 Recursion: functional self-referential stateless
@@ -1716,7 +1730,7 @@ Recursive functions have 2 parts:
 
 > Remember to mention the arity of a function (how many inputs a function is expecting)
 
-### 10.3 Higher-Order Functions
+### 11.3 Higher-Order Functions
 
 We say a language has "first-class functions" if it supports functions being passed as input or output values of other functions. 
 JS has this feature, and JavaScripters take advantage of it all the time - for example, it's what allows us to pass a callback function as an input parameter for another function. 
@@ -1904,7 +1918,7 @@ function tail(array) {
 
 
 
-### 10.4 Closures & Partial Application & Currying
+### 11.4 Closures & Partial Application & Currying
 
 **Closures**
 
@@ -1970,7 +1984,7 @@ And now I have a function that I can call on anybody's name and because of Clous
 
 Same process with our `greetTex` function, we don't need to repeat our greeting, just pass in the names we want to greet!
 
-### 10.5 Function Composition
+### 11.5 Function Composition
 
 So the idea with functional programming is, we inputs coming in and outputs coming out, and those outputs can also become new inputs for th next function whose outputs can becaome new inputs for another function.
 
@@ -2037,7 +2051,7 @@ And it's going to call that function on the output that we've seen so far: `fn(a
 And so we start this off with our initial value `input` is whatever the first input was, that's gonna be the first value coming in
 And we can reduce over that array of functions `functions` to successively call them on the result of all the calls that we've made so far
 
-### 10.6 Immutability
+### 11.6 Immutability
 
 Avoid mutability for happier programming - dont' change in-place! Instead, replace!
 
