@@ -103,11 +103,328 @@ Because `i` becomes accessible outside the scope, and we can display the current
 
 ## 3. Destructuring
 
+Destructuring: decomposing a structure into its individual parts
+
+The purpose of destructuring as a feature is to assign individual pats from some larger structure. Assign to individual variables, assign to individual properties from some larger object
+
 ### 3.1 Array Destructuring
+
+```js
+let tmp = getSomeRecords();
+
+let first = tmp[0];
+let second = tmp[1];
+
+let firstName = first.name
+let firstEmail = first.email !== undefined ? first.email : "nobody@none.tld";
+
+let seconName = second.name
+let secondEmail = second.email !== undefined ? second.email : "nobody@none.tld";
+```
+
+This example of highly imperative can be done with this declarative destructuring syntax like this:
+
+```js
+let [
+  {
+    name: firtName,
+    email: firstEmail = "nobody@none.tld"
+  },
+  {
+    name: secondName,
+    email: secondEmail = "nobody@none.tld"
+  }
+] = getSomeRecords();
+```
+
+On the left hand side of our `=` we have what looks like an array and what looks inside of that array are objects...
+**But** this is not an array of objects... because its on the left hand side of an `=`, it's not a value at all -> It's actually a pattern
+
+It's a syntax that is describing the value that is expected from the right-hand side, which is where we call the `getSomeRecords` Api.
+
+And the purpose of that pattern is not just for code-documentation or describing the data, but the real purpose for describing it is so that we assign off those individal values as we need them
+
+For example `name: firtName,` -> this is essentially saying, go make me a variable called firstName, that has the value that is in this particular location of the data structure, which is the name property of the first object in an array
+
+It describes to JavaScript declaratively how it should break down that structure and make individual assignments for you.
+And here `email: firstEmail = "nobody@none.tld"` we include an `=` clause there, and its the default value expression that says if there's not an email property present go ahead and use this backup value to assign to firstEmail
+
+So with destructuring, any place where you would be trying to break down and assign off pieces from some larger data sttructure, a destructuing pattern can do that
+And it doesn't always have to be a crazy JSON object, it can be an API that returns a 2 element array and you only care about element at position 1 in the array...
+Where you would normally do is assign the array to a temporary variable then access temporary variable, position one. This is the imperative approach
+
+With the destructuring approach, I want to give the array this destructuring pattern for this assignment and then I'm going to leave the first element entry blank and only name the second entry, because that's the only one that I want to sign off
+
+The other take away is that destructuring (the pattern) does not have to account for the entirety of the value.
+The pattern only has to account for the part of the value that you care about at that moment... It does not have to fully describe it.
+And there could be a lot of properties on those object but we're saying we only care about the name and email properties.
+So this pattern is describing potentially, either the entire structure or just a subset of it, of the necessary structural parts to get at the things that we care about
+
+The other take away is that essentially this code in its declarative nature, is self-documentating, because in a sense we're documenting with syntax what we're expecting the value returned from the API call.
+It would be duplicative if we were to put a JS comment unless there was a significant amount of other information that we weren't putting in the desctruting patterns
+
+```js
+// old way of destructuring (imperative approach)
+function data(){
+  return [1,2,3,4,5];
+}
+
+var tmp = data();
+var first = tmp[0];
+var second = tmp[1] !== undefined ? tmp[1] : 10;
+var third = tmp[2];
+var fourth = tmp.slice(3);
+
+// ***************************************************************************************************
+
+// new way of desctructuring
+function data2(){
+  return [1,,3,4]
+}
+
+var [
+  first,
+  second = 10,
+  third,
+  ...fourth // we can use the spread operator to gather everything else up in an array called fourth
+] = data2(); // the square bracket is our pattern b/c it's on the left hand side of the equal sign
+```
+
+The spread operator must be at the end of the pattern, you cannot place it in the middle
+
+Another thing to note is destructuing is about the assignment not the declaration
+We could have done:
+```js
+function data2(){
+  return [1,2,3,4]
+}
+
+var first, second, third, fourth
+
+[
+  first,
+  second,
+  third,
+  ...fourth 
+] = data2();
+```
+
+If we have nested arrays that we want to destructure
+
+```js
+function data(){
+  return [1,[2,3],4]
+}
+
+var [
+  first,
+  [
+    second,
+    third
+  ],
+  fourth
+] = data();
+
+or 
+
+function data(){
+  return [1,undefined,4]
+}
+
+var [
+  first,
+  [
+    second,
+    third
+  ] = [],
+  fourth
+] = data();
+```
 
 ### 3.2 Object Destructuring
 
+In many ways it's similar to array destructuring:
+
+```js
+function data(){
+  return {a: 1, b: 2, c:3}
+}
+
+var tmp = data();
+var first = tmp.a;
+var second = tmp.b;
+var third = tmp.c;
+
+function data2(){
+  return {a: 1, b: 2, c:3}
+}
+
+var {
+  a: first,
+  b: second,
+  c: third
+  // since position doesn't matter with objects we have to tell it what's the source to be assigned
+  // And the way to tell it, is to give it a property name - in this case the property name that we're getting it from is "a"
+  // We want "a" to be assigned to a variable called first
+  // So the syntax is: source : target 
+} = data2();
+```
+
+If you want to collect any unaccountated properites you can do:
+
+```js
+function data2(){
+  return {a: 1, b: 2, c:3, d:4}
+}
+
+var {
+  a: first = 42,  // set a default if a is undefined
+  b: second,
+  ...third // c and d are in this third object now
+} = data2();
+
+// different way of writing our destructured object
+var first, second;
+({
+  b: second,
+  a: first
+} = data());
+```
+
+How to deal with sub-objects:
+
+```js
+function data(){
+  return {
+    a: 1,
+    b: {
+      c: 3,
+      d: 4
+    }
+  }
+}
+
+var tmp = data() || {}
+var a = tmp.a;
+var b = tmp.b;
+var c = b.c;
+var d = b.d;
+
+// or destructure way
+
+var {
+  a,
+  b: {
+    c,
+    d
+  } = {} // if the sub-object doesnt exist, the default value is empty object
+} = data() || {}
+```
+
+Paramter Objects
+
+```js
+function data(tmp = {}){
+  var {
+    a,
+    b
+  } = tmp;
+}
+
+// Better way is to:
+
+function data({
+  a,
+  b
+} = {}) {
+  // .. 
+}
+```
+
 ### 3.3 Further Destructuring
+
+destructuring: named arguments:
+
+```js
+// while JS does not support this 
+function lookupRecord(store="person-records", id = -1){
+  // ...
+}
+
+// we can do it this way
+function lookupRecord({
+  store = "person-records",
+  id = -1
+}) {
+  // ...
+}
+
+lookupRecord({ id: 42});
+```
+
+Destructuring and restructuring
+
+You have an object that represents some defaults (`var defaults`) and I store these defaults in an object b/c I want to mix them with some settings whenever I make an ajax call
+```js
+var defaults = {
+  url: "http://some.base.url/api",
+  method: "post",
+  headers: [
+    "Content-Type: text/plain"
+  ]
+}
+
+console.log(defaults);
+
+var settings = {
+  url: "http://some.other.url",
+  data: 42,
+  callback: function(resp) { // ... // }
+}
+
+ajax(_.extend({}, defaults,settings));
+```
+So I essentially have these two separate objects that I want to mix together at the call site for my AJAX Call
+At the call site we're using the underscore library `extend` method to take several objects(in this case default and settings) and it first copies defaults into the object and then it overrides anything that comes through with the settings into the object.
+
+A different approach to achieve the same thing:
+
+```js
+function ajaxOptions({
+  url = "http://some.base.url/api";
+  method = "post",
+  data,
+  callback,
+  headers: {
+    headers0 = "Content-Type: text/plain",
+    ...otherHeaders
+   } = {}
+} = {}) {
+  return {
+    url, method, data, callback,
+    headers: {
+      headers0,
+      ...otherHeaders
+    }
+  }
+}
+```
+
+Basically what's happening is you pass in an object of your settings and I'm using the default algorithm to mix in any defaults where your settings are missing, at any level of the declarative structure
+And what I end up with then is down at the bottom:
+```
+{
+  url, method, data, callback,
+  headers: {
+    headers0,
+    ...otherHeaders
+  }
+}
+```
+I have whole set of individual variables that I need to restructure back into the new merged object
+So destructuring happens at the top and at the bottom we recreate the object structure with all the new mixed in values
+
+In other words, in any place where I'm going to or would be inclined to use something like `_.extend` I just defined a function for that specific purpose and I give it a good semantic name like: `ajaxOptions` and instead of maintaining my defaults for my AJAX in a default AJAX options object, I just have those defaults inside of the function in its destructuring parameter signature
 
 ## 4. Functions
 
@@ -563,15 +880,15 @@ console.log(teacher) // Will
 
 
 
-### 4.1 Lexical Scope
+### 5.1 Lexical Scope
 
-### 4.2 Dynamic Scope
+### 5.2 Dynamic Scope
 
 Dynamic Scope **does not exist in JavaScript!**
 
 Add image from slides
 
-### 4.3 Block Scoping
+### 5.3 Block Scoping
 
 Anything within `{}` is a block
 
@@ -1554,6 +1871,288 @@ To use `await` with the `Fetch`, we have to wrap it in a `async` fuction
 In this case, we wrapped it in an IIFE *(Immediately Invoking Function Expression)*
 
 When the fetch has returned a `Promise` the first time, the result is put in the `const resp`, so the next variable waits until the fetch gets a response. The console is only outputting data whn the `jsonData` variable has got the data.
+
+<hr>
+
+Kyle Simpson's Async/Await
+
+Promises are a way of representing a future value in a time-independent way
+And so you can specify chains of asynchronous steps, like this:
+
+```js
+fetchCurrentUser()
+.then(function onUser(user){
+  return Promise.all([
+    fetchArchiveOrders(user.id),
+    fetchCurrentOders(user.id)
+  ]);
+})
+.then(function onOrders(
+  [archedOrders, currentOrders]
+){
+  // ...
+})
+```
+
+I could call `fetchCurrentUser`, and then I could call `.then()` on the returned promise
+And when `fetchCurrentUser` finished, it would invoke the onUser and provide me the user that was fetched
+And then I could fetch bother their archived orders and current orders and wait for all of those to come back
+And move on to the next step, where I then say print out the user orders
+
+This is called promise chaining - which used to the be accepted standard for doing asynchronous programming, instead of doing callback hell
+
+But doing `.then` chaining isn't always great -> and using async-await pattern is great.
+
+Now recall Generators - Another way of thinking about what Generators can do is that because there is an iterator protocol attached to it,
+it can pause itself by virtue of the `yield` keyword
+
+```js
+runner(function *main(){
+  var user = yield fetchCurrentUser();
+  
+  var [ archiveOrders, currentOrders] = yield Promise.all([
+    fetchArchivedOrders( user.id ),
+    fetchCurrentOrders( user.id )
+  ]);
+  // ...
+})
+```
+
+So we're saying -> fetch the current user and yield out the result of that, which is a promise
+And then wait for that to come back -> which is why we can say `user = ...` because that whole statement **pauses** until we get a user back
+The way it does the pausing is I'm using a utility library (i.e co, koa, bluebird and other promise utility libraries). They all have a utility on them which is able to run generators as if they're this sort of asynchronous/synchronous tradeoff pattern. Which means if you yield out a promise, it will wait for it to resolve before resuming your generator and give you the value back.
+
+So this syntax is much more straightforward - its a very synchronous looking syntax
+
+1. user = yield fetchCurrentUser 
+2. Then achivedOrders, currentOrders = the fetch archivedOrders and the fetched currentOrders
+
+And I'll just yield until those asynchronous orperations have finished
+
+This is called the async-sync pattern...
+
+However, we need a `runner` function that can manage that whole pause and resume thing with the iterator for you.
+
+However, with ES6 we were given async/await which does this natively
+
+```js
+async function main(){
+  var user = await fetchCurrentUser();
+
+  var [archivedOrders, currentOrders] = await Promise.all([
+    fetchArchivedOrders(user.id),
+    fetchCurrentOrders(user.id)
+  ]);
+  // ...
+}
+
+main()
+```
+
+The async function, now we use an `await` keyword instead of a `yield` keyword, it does the same thing... it locally pauses while that promise finishes resolving
+And once it finished it gives us the value back
+
+So inside of async fnuctions, all I have to do is await on a promise, and then get the value back
+And I have a very synchronous-looking style with assignments, instead of having to have this nested promise chaining kind of style of programming.
+
+Also notice, after our function declaration, all I have to do is call the async function and I don't need some library utiliy to run the iterator for me.
+
+**Async Iteration**
+
+```js
+async function loadFiles(files) {
+  // an array of promises
+  var prs = files.map(getFile);
+
+  prs.forEach(function output(pr) {
+    console.log(await pr)
+  })
+}
+```
+This throws a syntax error because we can't call await in a non-async function
+
+And if we add `async` to the anonymous function, but async functions come back with promises and the `forEach` method does not know what to do with a promise, it does not know how to wait on promises to finish.
+
+So, we need a asynchronous iterator.. so it can pause automatically at each iteration and wait for a promise before it comes back
+And this is currently not built in javascript
+
+So Kyle has his own library called [fasy](https://github.com/getify/fasy), it provides you with eager asynchronous iterator functions for all of your standard functions, like map, filter, reduce. 
+
+```js
+async function fetchFiles(files) {
+  var prs = await FA.concurrent.map(getFile, files);
+
+  await FA.serial.forEach(asynch function each(pr){
+    console.log(await pr)
+  })
+}
+```
+
+The await keyword is essentially a pull operation
+I am pulling a value from a promise that may resolve after a certain amount of time
+And while pull is great it's only half of what we often need to do and we already saw another example of the other half ... generators
+So what's conceptually missing is, we want the ability to pull and push ... in other words an async generator
+`async* ... yield await` -> the yield keyword for pushing and the await keyword for pulling
+
+```js
+async function fetchURLs(urls) {
+  var results = [];
+
+  for(let url of urls){
+    let resp = await fetch( url );
+    if(resp.status == 200) {
+      let text = await resp.text();
+      results.push(test.toUpperCase());
+    } else {
+      results.push(undefined)
+    }
+  }
+}
+```
+
+Here we have an async function, and what I'm really trying to do is loop through a set of URLs and fetch out those responses get the text asynchronously and push it into an array... And I'm having to do it all at once here because there's no way for me to pull from some ajax call and then push out the result now
+
+I have to collect them all into an array and do 1 single return with all of my results... And if there's only 2 or 3 its not big deal
+But what if there were 1000s of urls - why would I wait and get all of those responses before returning one single array
+Wouldn't it be nice if I could sort of lazily push a response out every single time i got a response from the ajax request.
+
+And if I can push it out then that means somebody else could lazily consimong that as a data source
+
+```js
+function *fetchURLs(urls) {
+  var prs = urls.map(fetch)
+
+  for(let url of urls){
+    let resp = yield fetch( url );
+    if(resp.status == 200) {
+      let text = yield resp.text();
+      yield test.toUpperCase();
+    } else {
+      yield undefined
+    }
+  }
+}
+```
+If we switch our async function into a generator then theoretically we could actually support that because when we call yield `yield fetch( url );` we're using it as a pull mechanism...
+Then later we use it as a push mechanism `yield test.toUpperCase();`
+
+So now we combine then
+
+```js
+async function *fetchURLs(urls) {
+  var prs = urls.map(fetch)
+  
+  for(let url of urls){
+    let resp = await fetch( url );
+    if(resp.status == 200) {
+      let text = await resp.text();
+      yield test.toUpperCase();
+    } else {
+      yield undefined
+    }
+  }
+}
+```
+Now we use `await` to listen to a pull of a promise, like an ajax call
+And then I can use `yield` to push out a value
+
+**async iterator**
+
+Async generators produces a different kind of interface for how you could work with this function
+As opposed to normal async function where you call them and get back a single promise that waits to resolve until it has all the results for you
+When you call an async generator, what you're gonna get back is a special kind of iterator, so that you can consume its results as it has them.
+Then I should be able to just wire up an async generator against a `for-of` loop, just like I can with a regular generator...
+
+```js
+async funct
+``````js
+async function *fetchURLs(urls) {
+  var prs = urls.map(fetch)
+  
+  for(let url of urls){
+    let resp = await fetch( url );
+    if(resp.status == 200) {
+      let text = await resp.text();
+      yield test.toUpperCase();
+    } else {
+      yield undefined
+    }
+  }
+}
+```
+If I was able to pull all those URLs upfront and then all of those results upfront and do the `yield` keyword as I went along, how would I consume that content?
+What would the consumption loop look like?
+
+```js
+for (let text of fetchURLs( favoriteSites )){
+  console.log( text );
+}
+```
+But the problem here is that the `fetchURLs` is going to return an iterator, but the iteration results... we don't know what the iteration results is because its asynchronous
+So what's going to break in our `for-of` loop is that when we call an async iterator and we call `.next()` on it, and we would get back something that we thought was an iterator result, that's what `for-of` is expecting
+What we're actually going to get back, every time we call `.next()` on an asynchronous iterator, is we're gonna get back a problem for an iterator result
+Not the iterator result, **but** a promise for the iterator result.
+Think about the difference about getting an iterator result back that had a promise for the value in it
+vs
+getting back a promise for the iterator result
+
+theyre different becaus if I got back an iterator result with a promise for the value, then what I would have is... I would know right now if it's done true or false
+But what if i cant even know if im done yet until after i get the result back... then i dont want an iterator result with a promise... I want a promise for the iterator result
+
+Thats the difference between asynchronous iteration of promises and a asynchronous iteration, which is what we actually want here.
+
+How would we consume an asychronous iterator?
+```js
+var it = fetchURLs( favoriteSites);
+
+while(true){
+  let res = it.next();
+  if (res.done) break;
+  let text = res.value;
+  
+  console.log(text)
+}
+```
+
+the `res` is going to be a promise... and thats the problem, because we're trying to look for `res.done`, and there is no `.done` on it. Which is also why the former example of the `for-of` loop isnt working, because we tried to call `it.next` and what we got back was not an iterator result. We got back a promise
+So let's just add an `await`
+```js
+async function main(favoriteSites){
+  var it = fetchURLs( favoriteSites);
+
+  while(true){
+    let res = await it.next();
+    if (res.done) break;
+    let text = res.value;
+    
+    console.log(text)
+  }
+}
+```
+I can call `it.next` and await the result of `it.next`, and then I'll have my iterator result. And I can check the `.done` and then use the `.value`
+
+So the difference between the approach without `await` and with `await`, is one of them is trying to through it right away, and it can't because we don't even know whether we have a next iteration or not
+And the better one says, okay I'll wait. I'll do one iterationr and wait for you to give me that result.
+And then another one, and wait for the result, and another one and wait for the result.
+
+The 2nd version is an effetive way to what we call asynchronougly iterate.
+It would be a lazy asynchronous iteration, as opposed to, eagar iteration (with fasy library).
+
+```js
+async function main(favoriteSites){
+  for await (let text of fetchURLs( favoriteSites)){
+    console.log(text);
+  }
+}
+```
+So under the covers of this, the `for-await` loop is automatically awaiting the iterator result before moving on to decide if it needs to do another iteration
+
+So now we have generators which can push out values, but they are immediate values that we can push out right away or we can push them out lazily
+That's the benefit of a push interface, is that we can get lazy synchronous iteration
+
+Then we can have asynchronous functions, which are pulls so we can pull values asyncronously... and then we saw something like fasy
+
+Now we have the ability to push and pull at the same time so that I can have lazy asynchronous iteration.
 
 # 11. Functional Programming
 ### 11.1 Pure Functions
