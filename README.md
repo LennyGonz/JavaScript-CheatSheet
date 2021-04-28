@@ -2705,3 +2705,182 @@ function pop(array) {
   return array.slice(0, -1);
 }
 ```
+
+<hr>
+
+
+<hr>
+
+# 12. Functional Programming with Brian Lonsdorf
+
+### Properties, Arguments & Currying
+
+```js
+
+// assoociative 
+add(add(x,y), z) == add(x (y,z))
+
+// commutative
+add(x,y) == add(y,x)
+
+// identity
+add(x, 0) == x
+
+// distributive
+add(multiply(x, y), multiply(x, z)) == add(multiplyx, add(y,z))
+```
+
+This is an example of actual calculcation functions, and these properties come in handy when dealing with composition
+
+```js
+const add = (x, y) => x + y
+
+const toPair = f => {
+  ([x,y]) => f(x,y)
+}
+// So I can take any function of two arguments and turn it into a fnuction that takes a pair and then still calls that function
+
+const fromPair = f => {
+  (x,y) => f([x,y])
+}
+
+const result = toPair(add)([1,2])
+console.log(result)
+
+const result2 = fromPair(toPair(add))(1,2)
+console.log(result2)
+
+const flip = f => {
+  (y, x) => f(x, y)
+}
+
+const result3 = flip(add)(1,3)
+console.log(result3)
+
+const curry = f =>
+  x => y => f(x, y)
+// so this is a function that takes an "x" and then returns a new function waiting for a "y" and then it will actually call the function
+
+const curriedAdd = curry(add)
+
+const increment = curriedadd(1)
+
+const result4 = increment(2)
+console.log(result4)
+```
+
+This is awesome, because I can give curry a functon or an arguemtn and it remember it.
+So then it's just waiting for it's `y`, it remembers x
+We have `curry` a function: `add`
+Then we passed it an `x` value: `1`
+Next we passed it a `y` value: `4`
+Then result is the new label for the `add` function and does `x + y = 1 + 4`
+
+```js
+const uncurry => f => (x,y) => f(x)(y)
+```
+
+This is basically a proof.
+I can take `add` and I can prove that I can turn it to and from a curry
+without actually changing the behavior of a function.
+
+It's the equivalent function, it has all the same data, it has the same inputs and outputs.
+
+So we can curry any function, we can take any function of multiple arguments, and make it take 1 argument at a time.
+
+This is very useful because:
+
+lets say we have:
+
+```js
+const modulo = curry((x,y) => y % 2)
+
+const isOdd = modulo(2)
+```
+
+What that's gonna do is preload modulo with one of its arguments
+And then I have a function (isOdd) waiting for its second argument
+
+So I've given `x` as 2, and I get a new function back that looks like this:
+`const isOdd = modulo(2); // (2, y) -> x % y`
+
+```js
+const result = isOdd(2)
+console.log(result) // 0 which means false
+```
+
+When do you know when to Curry or not to?
+
+You say I have a function and I have these options.
+And I know they're always gonna end up in the same equivalent definition
+So I'll choose currying when I **want to** remember an argument and pass that around...
+
+I usually say I'm going to curry a function when there's an obvious kind of
+configuration to pass in, and it'll just remember that from then on but let's look at more examples to see why you'd want to do use currying
+
+```js
+const curry = f => x => y => f(x, y)
+  
+const modulo = curry((x,y) => y % 2)
+
+const isOdd = modulo(2)
+
+const result = isOdd(2)
+
+const filter = curry((f, xs) => xs.filter(f))
+
+const getOdds = filter(isOdd)
+const result3 = getOdds([1, 2, 3, 4, 5])
+```
+
+So, instead of having to write the entire filter upfront
+I could define a whole new function in terms of just the curried functions
+`isOdd` is just modulo curried to 2, it's just remembering the 2
+`filter` is just remembering the function argument `isOdd`
+
+And so now, I have a brand new function just by remember arguments
+
+Also for our function `const filter = curry((f, xs) => xs.filter(f))`
+If we swapped the paramters `(xs,f)`, I would not be able to curry `isOdd`
+I don't have an array at the time of defining `getOdds`
+
+So a good way to order your arguments are:
+(arguments you should remember upfront, the data for which it operates on as the last argument) ... so `(f, xs)`
+
+That's the general rule you want to follow when defining curried functions, is the data it operates on ends up last
+
+```js
+import { curry } from 'ramda';
+```
+
+by using `ramda`'s curry, I wrote a curry with just 2 arguments
+Ramda's curry allows you to curry a function with as many arguments as you want
+
+```js
+import { curry } from 'ramda';
+
+const replace = curry((regex, replacement, str) =>
+  str.replace(regex, replacement)
+)
+
+const replaceVowels = replace(/[AEIOU]/ig, '!')
+
+const result = replaceVowels("Hey I Have Vowels")
+console.log(result) // H!y ! H!v! V!w!ls
+```
+
+There's a slight difference between partial application, which is giving a function some its arguments vs a curried function, which expects one argument at a time.
+And those lines kind of blur
+
+So in a way they're kind of dual of each other, where I say, `filter`,
+I've defined as a curried function that will take on argument at a time.
+If I never defined it upfront as a curried function, there's a way to call `filter` inline with this thing called partial and then you can give it some of its arguments and it'll kind of allow you to call uncurried functions at the time with a partial application.
+
+```js
+const filter = (f, xs) => xs.flter(f)
+
+partial(filter, '');
+```
+
+Partial has the same effect, it's just different, it's at the caller not the definiton
+[Extra-Practice](https://codepen.io/drboolean/pen/OJJOQMx?editors=1010)
