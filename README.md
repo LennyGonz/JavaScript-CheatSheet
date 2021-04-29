@@ -2713,7 +2713,7 @@ function pop(array) {
 
 # 12. Functional Programming with Brian Lonsdorf
 
-### Properties, Arguments & Currying
+### 12.1 Properties, Arguments & Currying
 
 ```js
 
@@ -2884,3 +2884,76 @@ partial(filter, '');
 
 Partial has the same effect, it's just different, it's at the caller not the definiton
 [Extra-Practice](https://codepen.io/drboolean/pen/OJJOQMx?editors=1010)
+
+### 12.2 Composition
+
+```js
+import { curry, compose } from 'ramda';
+
+const add = (x, y) => x + y
+
+const toUpper = str => str.toUpperCase()
+
+const exclaim = str => str + '!'
+
+const first = xs => xs[0]
+
+// By using ramda's compose we can pass in as many arguments as we want
+// const compose = (f, g) => x => f(g(x))
+// Compose takes two functions an `f` and a `g` and is defined as f of g of x
+// All we're saying is, I take an f and I take a g and I'm going to next this function call
+
+const shout = compose(exclaim, toUpper);
+console.log(shout('lenster'));
+// we're just nesting
+// const compose = x => exclaim(toUpper('lenster'));
+// Also note, we go right to left -> first g(x) then f(result of g(x))
+
+const loud = compose(first, exclaim, toUpper);
+console.log(loud("tears")) // T
+
+const louder = compose(exclaim, toUpper, first)
+console.log(louder('tears')) // T!
+```
+
+Composition allows us to create a pipeline for our data to flow through, and the order of parameters is important because the outcome depends on that order.
+Notice the difference between calling `first` first and calling it last.
+
+And we can combine this concept with Currying
+The two concepts play together because you're able to make every function into a unary function: a function that takes 1 argument instead of a binary or more
+And so as our data flows through our pipeline, we make everything into 1 arg at a time.
+
+Composition is also basically dot chaining:
+
+```js
+// chaining
+const doStuff = str =>
+  str
+  .toLowerCase()
+  .split(' ')
+  .map(c => c.trim())
+  .reverse()
+  .filter(x => x.length) > 3)
+  .join(' ')
+
+// composition
+const doStuff = _.compose(
+  join(' '),
+  _.filter(x => x.length > 3),
+  reverse,
+  _.map(trim),
+  split(' '),
+  toLowerCase
+)
+```
+
+And getting lost in composing function, so adding console log is a great way to help figure out where/what your data looks like at a certain point
+
+```js
+const log = tap => (console.log(tag, x), x)
+
+// curried form
+const log = curry((tag, x) => (console.log(tag, x),x))
+
+const shout = compose(concat("!"), log('here: ', loudFirst, log("start"));
+```
