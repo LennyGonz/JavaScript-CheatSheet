@@ -2957,3 +2957,6 @@ const log = curry((tag, x) => (console.log(tag, x),x))
 
 const shout = compose(concat("!"), log('here: ', loudFirst, log("start"));
 ```
+
+Composition Practice
+
