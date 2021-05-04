@@ -2954,7 +2954,46 @@ const shout = compose(concat("!"), log('here: ', loudFirst, log("start"));
 Composition Practice
 
 
-### 12.3 Functors
+### 12.3 [Functors](https://hackernoon.com/functors-in-javascript-20a647b8f39f)
+
+
+So, What are Functors? Functors are the containers that can be used with ‘map’ function.
+
+A Functor is a container which can be mapped upon by a Unary function.
+
+When I say mapped upon, I mean that this container can be treated with a special function(say flatmap or map) which applies any unary function to every content of this container and returns a container with the resulting values as its contents.
+
+In case of arrays, the special function is simply called the map function.
+
+Map function in arrays takes an array and applies a particular function to all of its elements one by one and returns another array.
+Since, we’ll always be getting another array from the map, we can always map it again to create a chain of array transformations.
+A Map function is more than an iterator function, remember, when our value is inside a container we cannot just directly apply a function on it and expect the value to be changed. For example,
+
+```js
+const a = [1, 2, 3]
+String(a) = ‘[1 ,2, 3]’ and not [‘1’, ‘2’, ‘3’]
+// A map function gives a function access to the contents of the container.
+map(String, [1, 2, 3]) = [‘1’, ‘2’, ‘3’]
+// Also, a map function never changes the container, instead it just act upon its contents. Keeping the container retained.
+// A map will not change the type of the container but it can change the type of its contents.
+// The type of the contents may change, and we can see that from the type definition of the map function.
+map :: (a -> b) -> [a] -> [b]
+// or
+fmap :: (a -> b) -> F a -> F b 
+```
+> Here, a and b can be of same type or different type.
+>
+> Now, if you squint your eyes really hard, you’ll see that map function is taking a function from a -> b and returning a function from Fa -> Fb
+>
+> Here, a -> b means any unary function that takes a and returns b like
+
+```js
+multiplyBy2(3) = 6 // is a -> b as 3 -> 6
+
+// and Fa -> Fb means any unary function that takes a Container with a inside and returns a Container with b inside
+
+multiplyArrBy2([1]) = [2] // is Fa -> Fb as [1] -> [2], F is []
+```
 
 So a thing with a map method can be defined in terms of objects or other things (aka functor)
 
