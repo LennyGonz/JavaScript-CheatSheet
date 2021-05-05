@@ -3025,3 +3025,79 @@ const result = nextCharForNumberString('    64');
 More examples of refactoring code to use chaining
 
 Flatmap is basically chaining **and** mapping
+
+
+### 12.4 Either Monda
+
+Either is a type, this is going to be a functor in a monad, meaning it has a map and chaining method and its going to have a fold method.
+
+Either (or the disjunct union) is a type that can either hold a value of type A or a value of type B but never at the same time.
+Typically it is used to represent computations that can fail with an error. Think of it as a better way to handle exceptions. 
+We think of an Either as having two sides, the success is held on the right and the failure on the left.
+This is a right biased either which means that map and flatMap (bind) will operate on the right side of the either.
+
+```js
+const Right = x => ({
+  chain: f => f(x),
+  map: f => Right(f(x)),
+  fold: (f, g) => g(x),
+  toString: `Right(${x})`
+})
+
+const Left = x => ({
+  chain: f => Left(x),
+  map: f => Left(x),
+  fold: (f, g) => f(x),
+  toString: `Left(${x})`
+})
+```
+Here we have 2 types: Right & Left - *Don't worry about the implementations*
+
+Right and Left, can be thought of as subclasses of a superclass we call **either**
+We can define the subclasses multiple ways
+
+```js
+const findColor = name => {
+  const found = {
+    red: '#ff4444',
+    blue: '#3b5998',
+    yellow: '#fff68f'}[name]
+    return found ? Right(found) : Left('dunno')
+}
+
+const res = findColor('red').map(x => x.toUpperCase())
+console.log(res) // 'Right(#FF4444)'
+
+const res_ = findColor('redd').map(x => x.toUpperCase())
+console.log(res_) // 'dunno'
+```
+
+There are libraries out there to implement `Box` and `Either` for you.
+
+**Refacotring** using the Either Monad:
+
+```js
+const getPort = () =>
+  tryCatch(() => fs.readFileSync('config.json'))
+    .map(contents => JSON.parse(contents))
+    .map(config => config.port)
+    .fold(() => 8080, x => x)
+
+const getPort_ = () => {
+  try {
+    const str = fs.readFileSync('config.json')
+    const config = JSON.parse(str)
+    return config.port
+  } catch (e) {
+    return 5000
+  }
+}
+```
+
+> `tryCatch()` was defined [here](Code/either.js).
+
+We enter the either monad through `tryCatch` - where an error sends us left & a response sends us right
+If we get a response we map through the json of contents and return an array of contents
+Then in the array of contents we grab the port
+Then when we fold we simply return the port `x => x`
+If we got an error we'd immediately fold and return `8080`
