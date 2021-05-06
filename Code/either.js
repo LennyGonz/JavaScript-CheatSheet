@@ -2,32 +2,18 @@
 const fs = require('fs');
 const config = require("../JSON/config.json");
 
-const Right_ = x => ({
+const Right= x => ({
   chain: f => f(x),
   map: f => Right(f(x)),
   fold: (f, g) => g(x),
   toString: `Right(${x})`
 })
 
-const Left_ = x => ({
+const Left = x => ({
   chain: f => Left(x),
   map: f => Left(x),
   fold: (f, g) => f(x),
   toString: `Left(${x})`
-})
-
-const Right = x =>
-({
-  map: f => Right(f(x)),
-  fold: (f, g) => g(x),
-  inspect: `Right(${x})`
-})
-
-const Left = x =>
-({
-  map: f => Left(x),
-  fold: (f, g) => f(x),
-  inspect: `Left(${x})`
 })
 
 const fromNullable = x => x != null ? Right(x) : Left()
@@ -79,4 +65,3 @@ const getPort_ = () => {
 
 const portex = getPort();
 console.log("getPort Example: " + portex) // 3000
-
