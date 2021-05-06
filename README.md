@@ -3101,3 +3101,23 @@ If we get a response we map through the json of contents and return an array of 
 Then in the array of contents we grab the port
 Then when we fold we simply return the port `x => x`
 If we got an error we'd immediately fold and return `8080`
+
+**Flattening Either Mondas with Chain**
+
+```js
+const readFileSync = path =>
+  tryCatch(() => fs.readFileSync(path))
+
+const parseJSON = contents =>
+  tryCatch(() => JSON.parse(contents))
+
+const getPort = () =>
+  readFileSync('../JSON/config.json')
+  .chain(contents => parseJSON(contents))
+  .map(config => config.port)
+  .fold(() => 8080, x => x)
+
+const result = getPort()
+
+console.log(result) // 3000
+```
