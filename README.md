@@ -3164,3 +3164,231 @@ const Box = x =>
 
 Box(() => 2).map( two => two + 1).fold()
 ```
+
+
+<hr>
+
+#### Beginning of Brian's Egghead video
+
+Create linear data flow with container style types (Box)
+
+```js
+const nextCharForNumberString = str => {
+  const trimmed = str.trim()
+  
+  const number = parseInt(trimmed)
+  
+  const nextNumber = number + 1
+  
+  return String.fromCharCode(nextNumber)
+}
+
+const result = nextCharForNumberString(' 64');
+
+console.log(result);
+```
+
+`nextCharForNumberString` takes a string like: '  64'
+We're going to trim it, parse the int, add 1 number to it, and get the char code from string
+
+The point of this function is not the functionality, but if you look at each of these lines they're doing different things.
+
+We have a method call in `const trimmed`
+We have a function call in `const number`
+An operator in `const nextNumber`
+And then a qualified class function in `return String.fromCharCode(nextNumber)`
+
+We want to unify it all and compose it into one linear work flow instead of seperate lines with a lot of assignments and state as we go along.
+
+How can we do this?
+Well `const result` returns `"A"`
+
+So how would this look if we wrote it the way we normally would:
+
+```js
+const nextCharForNumberString = str =>
+  String.fromCharCode(parseInt(str.trm()) + 1)
+```
+
+The control flow is extremely hard to follow, so lets borrow a trick from arrays
+
+The first thing we can do is put our string in a box, it's just an array with 1 value
+Now we can map our string, and trim it
+We can keep chaining these maps, convert our string into a number by calling parseInt on it
+We can say `i+1`, then turn our int back into a string
+
+```js
+const nextCharForNumberString = str =>
+  [str]
+  .map(s => s.trim())
+  .map(r => parseInt(r))
+  .map(i => i + 1)
+  .map(i => String.fromCharCode(i))
+
+const result = nextCharForNumberString('  64')
+console.log(result) // ['A]
+```
+
+When we run this we should have A in a box, which we do.
+
+What happens inside?
+We've captured each assignment in a very minimal context
+`s` cannot be used outside of the arrow functions
+
+The point is each expression has its own state completely contained
+and we can breakup our workflow and go top to bottom and do 1 thing at a time, composing together. That's key.
+Map is composition, because it takes input to output and passes it along to the next map
+So we're composing this way...
+
+Instead of an array with a bunch of maps on it, why don't we make it a bit more formal and make a type called `box`.
+
+Box is going to take an `x` and we'll define a map of our map that works exactly the same  way.
+
+We'll take some function: `f` and it will return a `Box of f(x) === Box(f(x))`
+And the reason it's returning Box(f(x)) is so we can keep chaining along, if we didn't return the box we wouldn't be able to call `.map` multiple times
+
+So we're running our function with f(x) and then putting it back in a box
+
+```js
+const Box = x =>
+({
+  map: f => Box(f(x)),
+  inspect: () => `Box({x})`
+  fold: f => f(x)
+})
+
+const nextCharForNumberString = str =>
+  Box(str)
+  .map(s => s.trim())
+  .map(r => parseInt(r))
+  .map(i => i + 1)
+  .map(i => String.fromCharCode(i))
+  .fold(c => c.toLowerCase())
+
+const result = nextCharForNumberString('  64') // { map: ƒ map(), inspect: ƒ inspect() } -> this is the definition of Box()
+```
+
+We add the inspect so that when we call `console.log` we actually see what the data structure is holding
+And we added fold as our last function inside of Box to release our string from the box, but it's the same definition as map it just doesn't contain the result in box, which is what we want
+So fold will remove it from the box as it runs whatever function you pass inside of fold: `c.toLowerCase`
+So result will be "a" instead of ["a"]
+
+Map isn't so much about iteration, but it has more to do with composition within a context. And in this case Box is our context
+And we're going to be using a lot of these container-y types to capture different behaviors as we compose... it allows us to compose in different ways
+Which is the identity functor, but we're going to call it Box for now cause its easier
+
+As far as efficiency is concerned you wouldnt be able to tell the difference, even in a large scale application
+
+
+**Refactor imperative code to a single composed expression using Box**
+
+Here's another example
+
+```js
+const moneyToFloat = str =>
+  parseFloat(str.replace(/\$/g, ''))
+
+const percentToFloat = str => {
+  const replaced = str.replace(/\$/g, '')
+  const number = parseFloat(replaced)
+  return number * 0.01
+}
+
+const applyDiscount = (price, discount) => {
+  const cost = moneyToFloat(price)
+  const savings = percentToFloat(discount)
+  return cost - cost * savings
+}
+
+const result = applyDiscount('$5.00', '20%')
+console.log(result)
+```
+
+We're going to refactor each using Box:
+
+```js
+const moneyToFloat = str =>
+  Box(str)
+    .map(str => str.replace(/\$/g, ''))
+    .map(res => parseFloat(res)) // changed from fold to map to keep res in box
+
+const percentToFloat = str =>
+  Box(str)
+    .map(str => str.replace(/\%/g, ''))
+    .map(num => parseFloat(num))
+    .map(res => res * 0.01) // we changed this from fold -> map b/c we want to keep the result in the box
+
+/**
+  * We could have also done it like this
+  * const percentToFloat = str =>
+      Box(str.replace(/\%/g, ''))
+      .map(replaced => parseFloat(replaced))
+      .fold(res => res * 0.01)
+*/
+
+// This is the challenging because we have 2 assignments being used at once
+// By tweaking moneyToFloat & percentToFloat to not use fold the results always stay in the box
+// Which is why we don't use Box here
+// And we nest the map functions, its bc we captured 'cost' in a closure to REUSE the result of
+// moneyToFloat(price) when we do 'map(cost => percentToFloat(discount)'
+const applyDiscount = (price, discount) =>
+  moneyToFloat(price)
+    .fold(cost => percentToFloat(discount)
+      .fold(savings => cost - cost * savings))
+
+// the 2 fold were previously map, but we had to change it because then we'll have a Box within a Box -> Box(Box())
+// So to get our result out, we simply fold twice
+const result2 = applyDiscount('$5.00', '20%')
+console.log(result2);
+```
+
+Still confused about box?
+
+Box alone doesn't do much
+It basically captures something in a context
+And we can keep mapping, and folding and composing in different ways aronud it.
+ 
+There are also things stronger than Box that will give us behaviors associated with 
+composition and give us new ways to compose functions
+
+#### Either Monads
+
+Either is defined as a Right or Left
+
+Right and Left are 2 sub-types/sub-classes of Either
+And either doesn't really come into play, it'll just refer to one of these two types
+
+Remember `fold` removes our value from the type, when we run our function, it'll remove it from our container type and give us value back
+
+However, now we havev 2 types (right/left)
+
+And usually we don't know if we have a Right or a left when we do our chaining
+
+```js
+const result = rightORleft.map(x => x+1).map(x => x/2)
+```
+
+So if our fold is going to handle either of these cases it needs to take 2 functions
+
+If it's the Right case it needs to do:
+`fold: (f, g) => g(x)`
+
+If it's the Left case it needs to do:
+`fold: (f, g) => f(x)`
+
+This allows us to branch our code and run the Left or Right side.
+
+```js
+const rez = Right(3).map(x => x + 1).map(x => x / 2).fold(x => 'error', x => x)
+```
+
+So if it is an error, the left function will execute, if it's not then the right function will execute
+
+```js
+const rez = Left(3).map(x => x + 1).map(x => x / 2).fold(x => 'error', x => x)
+```
+
+If we change it to a Left, it will ignore all our requests and dump out an "error"
+
+This allows us to do a pure functional error handling, error branching, null checks, and the concept "or"
+
