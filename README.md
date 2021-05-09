@@ -3392,3 +3392,298 @@ If we change it to a Left, it will ignore all our requests and dump out an "erro
 
 This allows us to do a pure functional error handling, error branching, null checks, and the concept "or"
 
+ADD THE GETPORT EXAMPLE AND COMMENTS
+
+Examples of Either Monad examples compared to imperative code
+
+```js
+const openSite = () => {
+  if(current_user) {
+    return renderPage(current_user)
+  } else {
+    return showLogin()
+  }
+}
+
+const openSite = () =>
+  fromNullable(currentUser)
+  .fold(showLogin, renderPage)
+
+const getPrefs = user => {
+  if(user.premium) {
+    return loadPreds(user.preferences)
+  } else {
+    return defaultPrefs
+  }
+}
+
+const getPrefs = user =>
+  (user.premium ? Right(user) : Left('not premium'))
+  .map(u => u.preferences)
+  .fold(() => defaultPrefs, prefs => loadPrefs(prefs))
+
+const streetName = user => {
+  const address = user.address
+
+  if(address){
+    const street = address.street
+
+    if (street) {
+      return street.name
+    }
+  }
+  return 'no street'
+}
+
+const streetName = user =>
+  fromNullable(user.address)
+  .chain(a => fromNullable(a.street))
+  .map(s => s.name)
+  .fold(e => 'no street', name => name)
+
+const concatUniq = (x , ys) => {
+  const found = ys.filter(y => y === x)[0]
+  return found ? ys : ys.concat(x)
+}
+
+const concatUniq = (x, ys) =>
+  fromNullable(ys.filter(y => y === x)[0])
+  .fold(() => ys.concat, y => ys)
+```
+
+**Create types with Semigroups**!
+
+A semigroup is a type with a concat method:
+
+```js
+const res = "a".concat("b")
+```
+
+String is the semigroup here, bc it has a concat method
+
+```js
+const res = [1,2].concat([3,4])
+```
+
+Array is the semigroup here...
+
+So why are these called semigroups?
+
+Semigroups come from abstract algebra and so we encoding this in our code so we can keep the name the same and understand the laws and properties that come with this mathematical structure
+
+We can't concat integers because it does not have it in its prototype, but we can still create it:
+
+```js
+const Sum = x =>
+({
+  concat: ({x : y}) => Sum(x + y),
+  inspect: () => `Sum({x})`
+})
+
+const res = Sum(1).concat(Sum(2))
+console.log(res) // {x: 3, concat: [Function]}
+```
+
+So what are other semigroups??
+
+well we have true && false = false
+true && true = true
+
+this is similar to concat, we take 2 inputs and output 1 value
+
+
+```js
+const All = x =>
+({
+  x,
+  concat: ({x : y}) => All(x && y),
+  inspect: () => `All(${x})`
+})
+
+const res = All(true).concat(All(true))
+console.log(res) // true
+
+// Always keep the first one
+const First = x =>
+({
+  x,
+  concat: _ => First(x),
+  inspect: () => `First(${x})`
+})
+
+const res = First("blah").concat(First("ice cream"))
+console.log(res) // "First(blah)"
+```
+
+So let's say we have a player who created 2 accounts in a game, and he wants to combine the accounts
+
+Whenever we think of combining we should be thinking semigroup, because that is a way to concat two things or combine 2 things together
+
+A property we can exploit of semigroups is if a data structure is entirely made up of semigroups it will be a semigroup itself
+
+```js
+const { Map } = require("immutable-ext")
+
+const acct1 = Map({name: First('Nico'), isPaid: All(true), points: Sum(10), friends: ['Franklin']})
+
+const acct2 = Map({name: First('Nico'), isPaid: All(false), points: Sum(2), friends: ['Gatsby']})
+
+const res = acct1.concat(acct2)
+
+/* result of acc1.concat(acct2)
+{
+  name: First(Nico),
+  isPaid: All(false),
+  points: Sum(12),
+  friends: ['Franklin', 'Gatsby']
+}
+*/
+```
+
+**Ensure failsafe combination using monoids**
+
+Let's consider addition:
+
+1 + 0 // 1
+2 + 0 // 2
+x + 0 // x
+
+Remember a semigroup is a type with a concat method, and if addition is our concatenation - we have a neutral element here that acts as an identity of sorts that gives us back our element we're trying to concatenate
+
+So if we have a special element like the zero (under addition), then we have what's called a **monoid**
+
+That is, a semigroup with a special element in there that acts like a neutral identity
+
+We'll say that Sum is a monoid if it has a concat method, so a semigroup that also has an empty function on it that will return us a special tag
+
+```js
+Sum.empty = () => Sum(0)
+
+const res = Sum.empty.concat(Sum(1).concat(Sum(2)))
+
+const res = Sum(1).concat(Sum(2))
+
+// Both output the same thing, which is what we want
+
+const All = x =>
+({
+  x,
+  concat: ({x : y}) => All(x && y),
+  inspect: () => `All(${x})`
+})
+
+All.empty = () => All(true)
+
+const res = All(true).concat(All(true)).concat(All.empty())
+```
+
+**A curated collection of monoids and their uses**
+
+```js
+const Sum = x =>
+({
+  x,
+  concat: ({ x: y }) => Sum(x + y)
+})
+
+Sum.empty = () => Sum(0)
+
+const Product = x =>
+({
+  x,
+  concat: ({x : y}) => Product(x * y)
+})
+
+Product.empty = () => Product(1)
+
+const Any = x =>
+({
+  x,
+  concat: ({ x: y }) => Any(x || y)
+})
+
+Any.empty = () => Any(false)
+
+const All = x =>
+({
+  x,
+  concat: ({ x: y }) => All(x && y)
+})
+
+All.empty = () => All(true)
+
+const Max = x =>
+({
+  x,
+  concat: ({x : y}) => Max(x > y ? x : y)
+})
+
+Max.empty = () => Max(-Infinity)
+
+const Min = x =>
+({
+  x,
+  concat: ({x : y}) => Max(x < y ? x : y)
+})
+
+Min.empty = () => Min(Infinity)
+
+const Right_ = x =>
+({
+  fold: (f, g) => g(x),
+  map: f => Right(f(x)),
+  concat: o => o.fold(e => Left(e), r => Right(x.concat(r)))
+})
+
+const Left_ = x =>
+({
+  fold: (f, g) => f(x),
+  map: f => Left(x),
+  concat: f => Left(x)
+})
+
+const stats = List.of(
+  { page: 'Home', views: 40 },
+  { page: 'About', views: 10 },
+  { page: 'Blog', views: 4}
+)
+
+stats.foldMap(x =>
+  fromNullable(x.views).map(Sum), Right(Sum(0)))
+
+const First = either =>
+({
+  fold: f => f(either),
+  concat: o => either.isLeft ? o : First(either)
+})
+
+First.empty = () => First(Left())
+
+const find = (xs, f) =>
+  List(xs)
+    .foldMap(x => First(f(x) ? Right(x) : Left()), First.empty())
+    .fold(x => x)
+
+find([3, 4, 5, 6, 7], x => x > 4)
+
+const Fn = f =>
+({
+  fold: f,
+  concat: o => Fn(x => f(x).concat(o.fold(x)))
+})
+
+const hasVowels = x => !!x.match(/[aeiou]/ig)
+const longWord = x => x.length >= 5
+
+const both = Fn(compose(All), hasVowels).concat(Fn(compose(All, longWord)))
+
+['gym', 'bird', 'lilac'].filter(x => both.fold(x).x)
+// lilac
+
+const Pair = (x, y) =>
+({
+  x,
+  y,
+  concat: ({x: x1, y: y1}) => Pair(x.concat(x1), y.concat(y1))
+})
+```
