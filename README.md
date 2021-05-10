@@ -4,10 +4,11 @@
 
 There are two halves to the process of executing code
 
-1) the ability to walk through the code line-by-line → known as the thread of execution <br> All that is, is the ability to take line one → execute it, line two → execute it, and so on. <br> It's threading its way down our code (top → bottom) <br>
+1) The ability to walk through the code line-by-line → known as the thread of execution <br> All that is, is the ability to take line one → execute it, line two → execute it, and so on. <br> It's threading its way down our code (top → bottom) <br>
 2) Simultaneously, the other part that's required to run our code is a place to store the bits of data that we announce as we go through our codes global execution context, which is the global memory.
 
-So to reiterate,when Javascript code is run, the thread of execution reads each line of code. Line-by-line and when it reads each line it also saves everything in global memory:
+So to reiterate, when Javascript code is run, the thread of execution reads each line of code. Line-by-line and when it reads each line it also saves everything in global memory:
+
   - function definitions
   - variables
   - etc...
@@ -23,9 +24,9 @@ And when it reads a line where a function is invoked, Javascript creates a `loca
 > When we execute `multiplyByTwo(10)` Javascript creates a execution context
 > Inside we run the code of a function and keep track of the variables inside the function definition using Local Memory
 >
-> Engine: Line one. There’s a variable! Cool. Let’s store it in the Global Memory.
+> Engine: Line one. There’s a variable → Let’s store it in the Global Memory.
 >
-> Engine: Line two. I see a function declaration. Cool. Let’s store that in the Global Memory too!
+> Engine: Line two. I see a function declaration → Let’s store that in the Global Memory too!
 >
 > Engine: Line 3. Declare a variable and the output is the return value of the execution of multiplyByTwo(num)
 >
@@ -62,38 +63,21 @@ ES6 introduced 2 additional keywords to declare a variable:
 
 An example using `var`:
 
-```js
-function start() {
-  for(var i = 0; i < 5; i++){
-    console.log(i)
-  }
-  console.log(i) // 5
-}
-```
+<p align="center">
 
-You'd expect the second `console.log(i)` to throw a reference error, but `var`s scope is confined to `start()`
+<image src="/Images/blockscope.png">
 
-```js
-function start() {
-  for(let i = 0; i < 5; i++){
-    console.log(i)
-  }
-  console.log(i) // this will throw a reference error
-  // because outside the for-loop i does not exist
-}
-```
+</p>
 
-This behavior is more expected, `i` is confined to the for-block. So attempting to see its value outside will throw a reference error
+You'd expect the `console.log(i)` in `start` to throw a reference error, but `var` scope is confined to `start()`
+
+This behavior in `start_` is more expected, `i` is confined to the for-block. 
+So attempting to see its value outside will throw a reference error
+
 `let` is great for using inside of blocks - if we were to swap `let` with `var` the error would go away
 Because `i` becomes accessible outside the scope, and we can display the current value of i.
 
 > Referencing block-scoped identifiers before they are defined will produce a `ReferenceError`
-
-
-
-
-
-
 
 ## 3. Destructuring
 
@@ -116,7 +100,7 @@ let seconName = second.name
 let secondEmail = second.email !== undefined ? second.email : "nobody@none.tld";
 ```
 
-This example of highly imperative can be done with this declarative destructuring syntax like this:
+This example of highly imperative code can be done with this declarative destructuring syntax like this:
 
 ```js
 let [
@@ -132,7 +116,7 @@ let [
 ```
 
 On the left hand side of our `=` we have what looks like an array and what looks inside of that array are objects...
-**But** this is not an array of objects... because its on the left hand side of an `=`, it's not a value at all → It's actually a pattern
+**But** this is not an array of objects... because its on the left hand side of an `=`, it's not a value at all <br> It's actually a **pattern**
 
 It's a syntax that is describing the value that is expected from the right-hand side, which is where we call the `getSomeRecords` Api.
 
@@ -143,15 +127,15 @@ For example `name: firtName,` → this is essentially saying, go make me a varia
 It describes to JavaScript declaratively how it should break down that structure and make individual assignments for you.
 And here `email: firstEmail = "nobody@none.tld"` we include an `=` clause there, and its the default value expression that says if there's not an email property present go ahead and use this backup value to assign to firstEmail
 
-So with destructuring, any place where you would be trying to break down and assign off pieces from some larger data sttructure, a destructuing pattern can do that
-And it doesn't always have to be a crazy JSON object, it can be an API that returns a 2 element array and you only care about element at position 1 in the array...
+So with destructuring, any place where you would be trying to break down and assign off pieces from some larger data sttructure, a destructuing pattern can do that <br>
+And it doesn't always have to be a crazy JSON object, it can be an API that returns a 2 element array and you only care about element at position 1 in the array... <br>
 Where you would normally do is assign the array to a temporary variable then access temporary variable, position one. This is the imperative approach
 
 With the destructuring approach, I want to give the array this destructuring pattern for this assignment and then I'm going to leave the first element entry blank and only name the second entry, because that's the only one that I want to sign off
 
-The other take away is that destructuring (the pattern) does not have to account for the entirety of the value.
-The pattern only has to account for the part of the value that you care about at that moment... It does not have to fully describe it.
-And there could be a lot of properties on those object but we're saying we only care about the name and email properties.
+The other take away is that destructuring (the pattern) does not have to account for the entirety of the value. <br>
+The pattern only has to account for the part of the value that you care about at that moment... It does not have to fully describe it. <br>
+And there could be a lot of properties on those object but we're saying we only care about the name and email properties. <br>
 So this pattern is describing potentially, either the entire structure or just a subset of it, of the necessary structural parts to get at the things that we care about
 
 The other take away is that essentially this code in its declarative nature, is self-documentating, because in a sense we're documenting with syntax what we're expecting the value returned from the API call.
@@ -184,7 +168,7 @@ var [
 ] = data2(); // the square bracket is our pattern b/c it's on the left hand side of the equal sign
 ```
 
-The spread operator must be at the end of the pattern, you cannot place it in the middle
+The spread operator **must be at the end** of the pattern, you cannot place it in the middle
 
 Another thing to note is destructuing is about the assignment not the declaration
 We could have done:
@@ -378,8 +362,8 @@ var settings = {
 
 ajax(_.extend({}, defaults,settings));
 ```
-So I essentially have these two separate objects that I want to mix together at the call site for my AJAX Call
-At the call site we're using the underscore library `extend` method to take several objects(in this case default and settings) and it first copies defaults into the object and then it overrides anything that comes through with the settings into the object.
+So essentially there are two separate objects that can be mixed together at the call site for the AJAX Call <br>
+At the call site we're using the underscore library's `extend` method to take several objects(in this case default and settings) and it first copies defaults into the object and then it overrides anything that comes through with the settings into the object.
 
 A different approach to achieve the same thing:
 
@@ -415,7 +399,7 @@ And what I end up with then is down at the bottom:
   }
 }
 ```
-I have whole set of individual variables that I need to restructure back into the new merged object
+I have whole set of individual variables that I need to restructure back into the new merged object <br>
 So destructuring happens at the top and at the bottom we recreate the object structure with all the new mixed in values
 
 In other words, in any place where I'm going to or would be inclined to use something like `_.extend` I just defined a function for that specific purpose and I give it a good semantic name like: `ajaxOptions` and instead of maintaining my defaults for my AJAX in a default AJAX options object, I just have those defaults inside of the function in its destructuring parameter signature
