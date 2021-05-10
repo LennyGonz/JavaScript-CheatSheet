@@ -16,13 +16,7 @@ And when it reads a line where a function is invoked, Javascript creates a `loca
 
 <p align="center">
 
-<image src="/Images/js_snippet04.png">
-
-</p>
-
-<p align="center">
-
-<image src="/Images/ExecutionContext.png">
+<image src="/Images/executioncontextex.png">
 
 </p>
 
