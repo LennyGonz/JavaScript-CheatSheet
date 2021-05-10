@@ -132,13 +132,13 @@ let [
 ```
 
 On the left hand side of our `=` we have what looks like an array and what looks inside of that array are objects...
-**But** this is not an array of objects... because its on the left hand side of an `=`, it's not a value at all -> It's actually a pattern
+**But** this is not an array of objects... because its on the left hand side of an `=`, it's not a value at all → It's actually a pattern
 
 It's a syntax that is describing the value that is expected from the right-hand side, which is where we call the `getSomeRecords` Api.
 
 And the purpose of that pattern is not just for code-documentation or describing the data, but the real purpose for describing it is so that we assign off those individal values as we need them
 
-For example `name: firtName,` -> this is essentially saying, go make me a variable called firstName, that has the value that is in this particular location of the data structure, which is the name property of the first object in an array
+For example `name: firtName,` → this is essentially saying, go make me a variable called firstName, that has the value that is in this particular location of the data structure, which is the name property of the first object in an array
 
 It describes to JavaScript declaratively how it should break down that structure and make individual assignments for you.
 And here `email: firstEmail = "nobody@none.tld"` we include an `=` clause there, and its the default value expression that says if there's not an email property present go ahead and use this backup value to assign to firstEmail
@@ -624,7 +624,7 @@ All functions have a keyword 'this' that gets bound at call time...
 Arrow functions do not have their own value for `this`
 They inherit, they reach up to the parent scope and grab that value of `this` in that parent scope
 
-And this functionality of arrow functions replaces the need to use `.bind()` or `var that = this -> that = randomObj`
+And this functionality of arrow functions replaces the need to use `.bind()` or `var that = this → that = randomObj`
 
 Another thing is that arrow functions don't have its own value for the arguments keyword
 So the arguments keyword, at call time, gets bound to all the arguments that are being passed to the function
@@ -703,7 +703,7 @@ Which means it's going to lexically resolve to some enclosing scope - that does 
 
 In the example above, when we say `this.` ... there is no `this` in that arrow function **NO MATTER HOW IT GETS INVOKED**
 So we lexically go up one level of scope which is, the `ask()` function...
-`this` goes out from the `callback` function (the  arrow function) that scope ---> to the enclosing scope, which is??? `ask()`
+`this` goes out from the `callback` function (the  arrow function) that scope → to the enclosing scope, which is??? `ask()`
 AND `ask()`'s definition of the `this` keyword is **determined by HOW IT IS INVOKED**...
 `workshop.ask("Is this lexical `this`?");` ... `ask()` is being invoked by the workshop object... so `this` inside the arrow function determines what is pointing to by how `ask()` gets invoked.
 
@@ -804,7 +804,7 @@ JSRecentParts.speakUp("Are classes Super?");
 If you have a child class that defines a method of the same name as a parent class, so called shadowing,
 if you have one that defines the same method name in a chold as in the parent.
 
-You can refer to the parent from the child by saying `super.` --> in our example we did `super.ask(msg.UpperCase())`
+You can refer to the parent from the child by saying `super.` → in our example we did `super.ask(msg.UpperCase())`
 
 
 ### 4.5 Callbacks & Higher Order Functions
@@ -891,7 +891,7 @@ function blockScope(){
   const x = 5;
   if (true) {
     let x = 25;
-    // console.log(x) -> 25
+    // console.log(x) → 25
   }
   console.log(x) // 5
 }
@@ -914,7 +914,7 @@ function otherClass() {
 otherClass(); // Welcome
 
 teacher; // Suzy
-topic; // React -> this variable wasn't defined anywhere so JS 
+topic; // React → this variable wasn't defined anywhere so JS 
 // goes ahead and makes it in the global scope (this is while JS is in "sloppy-mode" not strict-mode)
 ```
 
@@ -1030,7 +1030,7 @@ We can call that same `ask()` function, lots of different ways... and provide lo
 
 Thats why `this` exists, so we can invoke functions in these different contexts
 
-if you were to do `ask("Why?")` instead you'll get -> "undefined why?"
+if you were to do `ask("Why?")` instead you'll get → "undefined why?"
 
 
 There are 4 different ways of invoking a function, and each way is going to answer: "what is the `this` keyword?" differently
@@ -1056,7 +1056,7 @@ When we invoke the `ask()` method on the workshop objecy, how does it figure out
 > `workshop.ask()` says invoke `ask()` with the `this` keyword pointing at workshop - thats what the implicit binding rule says
 > And thats how the `this` keyword works in all other languages - so this is the most common and intuitive 
 
-2) this: dynamic binding -> sharing
+2) this: dynamic binding → sharing
 
 <p align="center">
 
@@ -1085,11 +1085,11 @@ So when we pass an object as the first argument, we're saying invoke the `ask()`
 
 </p>
 
-Looking at `setTimeout(workshop.ask,10,"Lost this?");` -> the method is on the workshop object, so why is it getting lost?
+Looking at `setTimeout(workshop.ask,10,"Lost this?");` → the method is on the workshop object, so why is it getting lost?
 Because `setTimeout(workshop.ask,10,"Lost this?");` this is not the call site...
 B/c of setTimeout we actually invoke the `ask()` method in the global context, where it won't find a global variable teacher, hence undefined
 
-So the solution is to pass a hard bound function `workshop.ask.bind(workshop)` -> which is saying invoke the `ask()` method and no matter how you invoke it, always use workshop as its `this` context
+So the solution is to pass a hard bound function `workshop.ask.bind(workshop)` → which is saying invoke the `ask()` method and no matter how you invoke it, always use workshop as its `this` context
 
 In other words, the `.bind()` method, it doesn't invoke the function, it produces a new function which is bound to a particular specific `this` context
 so there's a trade off - we have a predictable `this` binding.... but then
@@ -1127,7 +1127,7 @@ this: default binding
 
 </p>
 
-So we dont specify any object, or use `call` or binding -> the fallback is to default to the global (where it finds the global variable teacher and this prints kyle)
+So we dont specify any object, or use `call` or binding → the fallback is to default to the global (where it finds the global variable teacher and this prints kyle)
 
 But askAgain is in strict-mode - gets a TypeError...
 In strict-mode, when you invoke it with no other `this` bindings, the default behavior is to leave it undefined
@@ -1190,7 +1190,7 @@ And therefore, when we say `deepJS.ask()`, it's actually going to delegate one l
 
 And when it invokes the ask method, look at the call site down on line 11. Look at how that function is being invoked.
 Remember the `this` keyword, 1 of the rules - at the call site what determines what the `this` keyword should point at
-Well `var deepJS = new Workshop("Kyle");` -> here we're invoking the `ask()` method in this context of the deepJS object. 
+Well `var deepJS = new Workshop("Kyle");` → here we're invoking the `ask()` method in this context of the deepJS object. 
 So when we invoke `ask()` we're actually saying deepJS.teacher
 
 or reactJS.ask() on line 5 we're actually saying reactJS.teacher
@@ -1300,7 +1300,7 @@ It grabbed its surrounding data and it was attached to the function definition!
 
 Under the hood, we would see the actual function definition and a hidden property
 And in the JS engine, you know it's a hidden property when there are 2 pairs of brackets enclosing the property name
-In this case its `[[scope]]` -> its a hidden property that **LINKS TO** and **WHERE** all the surrounding data is being stored
+In this case its `[[scope]]` → its a hidden property that **LINKS TO** and **WHERE** all the surrounding data is being stored
 ... it gives a link to where all that surrounding data is stored.
 
 Meaning that when I return `incrementCounter()` out of `outer()` **into** `myNewFunction()` you bet it brings its hidden property and pulls that data **with it** through its hidden square bracket
@@ -1313,7 +1313,7 @@ Anything that the function `incrementCounter()` ever makes a reference to when i
 
 The "correct" term which is used to refer to the thing that results in the backpack existing and they call the backpack this umbrella term "closure" 
 
-People call local memory -> variable environment | some developers call the backpack the "c.o.v.e"
+People call local memory → variable environment | some developers call the backpack the "c.o.v.e"
 that is to say we close the lid on the data, "closed over the variable environment" (cove)
 the data in the cove is persistant, it never gets deleted
 
@@ -1323,9 +1323,9 @@ JS has lexical(static) scoping:
 that is where I save my function determines for the rest of that life, for the life of that function.
 Whenever it gets run, under whatever label is gets, what data it will have access to when that function runs
 
-So **Persistant lexically scoped referenced data**, our rule is...where my function was saved determines what data I have access to, when its eventually run -> which is why we must return the nested function... to save all the data surrounding it
+So **Persistant lexically scoped referenced data**, our rule is...where my function was saved determines what data I have access to, when its eventually run → which is why we must return the nested function... to save all the data surrounding it
 
-So P.L.S.R.D -> otherwise called closures
+So P.L.S.R.D → otherwise called closures
 
 However, **closures are too complex** to have an umberlla term
 The backpack is a result of Javascript being a lexically scoped language
@@ -1336,7 +1336,7 @@ Closures give our functions persistant memory
 - module pattern
 - asynchronous JS - callbacks and promises rely on closures to persist state in an asychronous environment
 
-So since JS is a lexical scoped language - that means that even if I returned my function out and theoretically all the memory in our execution context's local memory should get deleted -> **nope!**
+So since JS is a lexical scoped language - that means that even if I returned my function out and theoretically all the memory in our execution context's local memory should get deleted → **nope!**
 B/c I have this fundamental rule of lexically scoped language
 I'm going to grab all that data and pull it out on the backpack such that when I run the function, I still have all the data from when the function was born.
 
@@ -1895,7 +1895,7 @@ And move on to the next step, where I then say print out the user orders
 
 This is called promise chaining - which used to the be accepted standard for doing asynchronous programming, instead of doing callback hell
 
-But doing `.then` chaining isn't always great -> and using async-await pattern is great.
+But doing `.then` chaining isn't always great → and using async-await pattern is great.
 
 Now recall Generators - Another way of thinking about what Generators can do is that because there is an iterator protocol attached to it,
 it can pause itself by virtue of the `yield` keyword
@@ -1912,8 +1912,8 @@ runner(function *main(){
 })
 ```
 
-So we're saying -> fetch the current user and yield out the result of that, which is a promise
-And then wait for that to come back -> which is why we can say `user = ...` because that whole statement **pauses** until we get a user back
+So we're saying → fetch the current user and yield out the result of that, which is a promise
+And then wait for that to come back → which is why we can say `user = ...` because that whole statement **pauses** until we get a user back
 The way it does the pausing is I'm using a utility library (i.e co, koa, bluebird and other promise utility libraries). They all have a utility on them which is able to run generators as if they're this sort of asynchronous/synchronous tradeoff pattern. Which means if you yield out a promise, it will wait for it to resolve before resuming your generator and give you the value back.
 
 So this syntax is much more straightforward - its a very synchronous looking syntax
@@ -1986,7 +1986,7 @@ The await keyword is essentially a pull operation
 I am pulling a value from a promise that may resolve after a certain amount of time
 And while pull is great it's only half of what we often need to do and we already saw another example of the other half ... generators
 So what's conceptually missing is, we want the ability to pull and push ... in other words an async generator
-`async* ... yield await` -> the yield keyword for pushing and the await keyword for pulling
+`async* ... yield await` → the yield keyword for pushing and the await keyword for pulling
 
 ```js
 async function fetchURLs(urls) {
@@ -2374,17 +2374,17 @@ evens = filter(isEven, wholes) // [0, 2, 4, 6, 8, 10]
 
 // Now we start resolving our chain of functions
 
-// concat(10, filter(predicateFn, []) -> [10]
-// concat([], filter(predicateFn, [10]) -> [10]
-// concat(8, filter(predicateFn, [10]) -> [8, 10]
-// concat([], filter(predicateFn, [8, 10]) -> [8, 10]
-// concat(6, filter(predicateFn, [8, 10]) -> [6, 8, 10]
-// concat([], filter(predicateFn, [6, 8, 10]) -> [6, 8, 10]
-// concat(4, filter(predicateFn, [6, 8, 10]) -> [4, 6, 8, 10]
-// concat([], filter(predicateFn, [4, 6, 8, 10]) -> [4, 6, 8, 10]
-// concat(2, filter(predicateFn, [4, 6, 8, 10]) -> [2, 4, 6, 8, 10]
-// concat([], filter(predicateFn, [2, 4, 6, 8, 10]) -> [2, 4, 6, 8, 10]
-// concat(0, filter(predicateFn, [2, 4, 6, 8, 10])) -> [0, 2, 4, 6, 8, 10]
+// concat(10, filter(predicateFn, []) → [10]
+// concat([], filter(predicateFn, [10]) → [10]
+// concat(8, filter(predicateFn, [10]) → [8, 10]
+// concat([], filter(predicateFn, [8, 10]) → [8, 10]
+// concat(6, filter(predicateFn, [8, 10]) → [6, 8, 10]
+// concat([], filter(predicateFn, [6, 8, 10]) → [6, 8, 10]
+// concat(4, filter(predicateFn, [6, 8, 10]) → [4, 6, 8, 10]
+// concat([], filter(predicateFn, [4, 6, 8, 10]) → [4, 6, 8, 10]
+// concat(2, filter(predicateFn, [4, 6, 8, 10]) → [2, 4, 6, 8, 10]
+// concat([], filter(predicateFn, [2, 4, 6, 8, 10]) → [2, 4, 6, 8, 10]
+// concat(0, filter(predicateFn, [2, 4, 6, 8, 10])) → [0, 2, 4, 6, 8, 10]
 ```
 
 **[Map](Code/map.js)** More examples in this file
@@ -2393,7 +2393,7 @@ The map function takes a one-argument function and an array, and applies the fun
 
 To move towards a functional mindset, these helper functions are very useful instead of the equivalent object-oriented array methods:
 
-- head(array) to return the first element of an array (e.g. head([1,2,3]) -> 1)
+- head(array) to return the first element of an array (e.g. head([1,2,3]) → 1)
 - tail(array) to return the rest of the array after the first element (e.g. tail([1,2,3]) returns [2,3])
 - length(array) to return the number of elements in the array (e.g. length([1,2,3]) returns 3)
 
@@ -2408,26 +2408,26 @@ function map(fn, array) {
 
 doubled = map(n => n * 2, wholes) // [0,2,4,6,8,10,12,14,16,18,20]
 // doesn't concatenate the arrays until it finishes all the recursive calls
-// [fn(0)].concat(map(fn, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])) -> [fn(1)].concat(map(fn, [2, 3, 4, 5, 6, 7, 8, 9, 10]))
-// [fn(2)].concat(map(fn, [3, 4, 5, 6, 7, 8, 9, 10])) -> [fn(3)].concat(map(fn, [4, 5, 6, 7, 8, 9, 10]))
-// [fn(4)].concat(map(fn, [5, 6, 7, 8, 9, 10])) -> [fn(5)].concat(map(fn, [6, 7, 8, 9, 10]))
-// [fn(6)].concat(map(fn, [6, 7, 8, 9, 10])) -> [fn(7)].concat(map(fn, [7, 8, 9, 10]))
-// [fn(8)].concat(map(fn, [8, 9, 10])) -> [fn(9)].concat(map(fn, [10]))
-// [fn(10)].concat(map(fn, [])) -> here we've reached our base case
+// [fn(0)].concat(map(fn, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])) → [fn(1)].concat(map(fn, [2, 3, 4, 5, 6, 7, 8, 9, 10]))
+// [fn(2)].concat(map(fn, [3, 4, 5, 6, 7, 8, 9, 10])) → [fn(3)].concat(map(fn, [4, 5, 6, 7, 8, 9, 10]))
+// [fn(4)].concat(map(fn, [5, 6, 7, 8, 9, 10])) → [fn(5)].concat(map(fn, [6, 7, 8, 9, 10]))
+// [fn(6)].concat(map(fn, [6, 7, 8, 9, 10])) → [fn(7)].concat(map(fn, [7, 8, 9, 10]))
+// [fn(8)].concat(map(fn, [8, 9, 10])) → [fn(9)].concat(map(fn, [10]))
+// [fn(10)].concat(map(fn, [])) → here we've reached our base case
 
 // start resolving each resursive call
 
-// [fn(10)].concat([]) -> [20]
-// [fn(9)].concat([20]) -> [18,20]
-// [fn(8)].concat([18,20]) -> [16,18,20]
-// [fn(7)].concat([[16,18,20]]) -> [14,16,18,20]
-// [fn(6)].concat([14,16,18,20]) -> [12,14,16,18,20]
-// [fn(5)].concat([12,14,16,18,20]) -> [10,12,14,16,18,20]
-// [fn(4)].concat([10,12,14,16,18,20]) -> [8,10,12,14,16,18,20]
-// [fn(3)].concat([8,10,12,14,16,18,20]) -> [6,8,10,12,14,16,18,20]
-// [fn(2)].concat([6,8,10,12,14,16,18,20]) -> [4,6,8,10,12,14,16,18,20]
-// [fn(1)].concat([4,6,8,10,12,14,16,18,20]) -> [2,4,6,8,10,12,14,16,18,20]
-// [fn(0)].concat([0,2,4,6,8,10,12,14,16,18,20]) -> [0,2,4,6,8,10,12,14,16,18,20]
+// [fn(10)].concat([]) → [20]
+// [fn(9)].concat([20]) → [18,20]
+// [fn(8)].concat([18,20]) → [16,18,20]
+// [fn(7)].concat([[16,18,20]]) → [14,16,18,20]
+// [fn(6)].concat([14,16,18,20]) → [12,14,16,18,20]
+// [fn(5)].concat([12,14,16,18,20]) → [10,12,14,16,18,20]
+// [fn(4)].concat([10,12,14,16,18,20]) → [8,10,12,14,16,18,20]
+// [fn(3)].concat([8,10,12,14,16,18,20]) → [6,8,10,12,14,16,18,20]
+// [fn(2)].concat([6,8,10,12,14,16,18,20]) → [4,6,8,10,12,14,16,18,20]
+// [fn(1)].concat([4,6,8,10,12,14,16,18,20]) → [2,4,6,8,10,12,14,16,18,20]
+// [fn(0)].concat([0,2,4,6,8,10,12,14,16,18,20]) → [0,2,4,6,8,10,12,14,16,18,20]
 ```
 
 **[Reduce](Code/reduce.js)** More examples in this file
@@ -2455,27 +2455,27 @@ sum = reduce((accumulator, value) => { return accumulator + value;}, 0, wholes) 
 /**
  * [0,1,2,3,4,5]
  * 
- * reducerFn -> (accumulator, value) => return accumulator + value // so we're just adding inputA and inputB
- * initialValue -> 0
- * wholes -> [0,1,2,3,4,5]
+ * reducerFn → (accumulator, value) => return accumulator + value // so we're just adding inputA and inputB
+ * initialValue → 0
+ * wholes → [0,1,2,3,4,5]
  * 
- * newInitialValue = reducerFn -> return 0 + 0 = 0
+ * newInitialValue = reducerFn → return 0 + 0 = 0
  * return reduce(reducerFn, 0, [1,2,3,4,5]) // notice how we splice the array - we NEED to remove the initial value so we can continue to work with the "head"
  * 
- * newInitialValue = reducerFn -> return 0 + 1 = 1
+ * newInitialValue = reducerFn → return 0 + 1 = 1
  * return reduce(reducerFn, 1, [2,3,4,5])
  * 
- * newInitialValue = reducerFn -> return 1 + 2 = 3
+ * newInitialValue = reducerFn → return 1 + 2 = 3
  * return reduce(reducerFn, 3, [3,4,5])
  * 
- * newInitialValue = reducerFn -> return 3 + 3 = 6
+ * newInitialValue = reducerFn → return 3 + 3 = 6
  * return reduce(reducerFn, 6, [4,5])
  * 
- * newInitialValue = reducerFn -> return 6 + 4 = 10
+ * newInitialValue = reducerFn → return 6 + 4 = 10
  * return reduce(reducerFn, 10, [5])
  * 
- * newInitialValue = reducerFn -> return 10 + 5 = 15
- * return reduce(reducerFn, 15, []) -> 15
+ * newInitialValue = reducerFn → return 10 + 5 = 15
+ * return reduce(reducerFn, 15, []) → 15
  */
 ```
 
@@ -2511,7 +2511,7 @@ function tail(array) {
 
 **Closures**
 
-Functions can defined functions -> return the inner function, the inner function will 'remember' values from the scope from which it was defined even if the function does not use those values
+Functions can defined functions → return the inner function, the inner function will 'remember' values from the scope from which it was defined even if the function does not use those values
 
 example:
 
@@ -2564,7 +2564,7 @@ greetTex("Alonzo"); // "Howdy, Alonzo"
 greetTex("Alan"); // "Howdy, Alan"
 ```
 
-We have our `greet` function that takes in 2 arguments: `greeting` and `name` -> which returns out: "Hi lenny" or whatever
+We have our `greet` function that takes in 2 arguments: `greeting` and `name` → which returns out: "Hi lenny" or whatever
 Now we make a curryed version - which is a single argument: `greeting` then it returns **another single argument function, which takes in a `name`**, which then returns the same same result as our original `greet` function
 
 So now if I want to greet lots of people with the same greeting, I don't have to keep passing in that greeting over and over again...
@@ -2789,7 +2789,7 @@ What that's gonna do is preload modulo with one of its arguments
 And then I have a function (isOdd) waiting for its second argument
 
 So I've given `x` as 2, and I get a new function back that looks like this:
-`const isOdd = modulo(2); // (2, y) -> x % y`
+`const isOdd = modulo(2); // (2, y) → x % y`
 
 ```js
 const result = isOdd(2)
@@ -2894,7 +2894,7 @@ const shout = compose(exclaim, toUpper);
 console.log(shout('lenster'));
 // we're just nesting
 // const compose = x => exclaim(toUpper('lenster'));
-// Also note, we go right to left -> first g(x) then f(result of g(x))
+// Also note, we go right to left → first g(x) then f(result of g(x))
 
 const loud = compose(first, exclaim, toUpper);
 console.log(loud("tears")) // T
@@ -2971,22 +2971,22 @@ map(String, [1, 2, 3]) = [‘1’, ‘2’, ‘3’]
 // Also, a map function never changes the container, instead it just act upon its contents. Keeping the container retained.
 // A map will not change the type of the container but it can change the type of its contents.
 // The type of the contents may change, and we can see that from the type definition of the map function.
-map :: (a -> b) -> [a] -> [b]
+map :: (a → b) → [a] → [b]
 // or
-fmap :: (a -> b) -> F a -> F b 
+fmap :: (a → b) → F a → F b 
 ```
 > Here, a and b can be of same type or different type.
 >
-> Now, if you squint your eyes really hard, you’ll see that map function is taking a function from a -> b and returning a function from Fa -> Fb
+> Now, if you squint your eyes really hard, you’ll see that map function is taking a function from a → b and returning a function from Fa → Fb
 >
-> Here, a -> b means any unary function that takes a and returns b like
+> Here, a → b means any unary function that takes a and returns b like
 
 ```js
-multiplyBy2(3) = 6 // is a -> b as 3 -> 6
+multiplyBy2(3) = 6 // is a → b as 3 → 6
 
-// and Fa -> Fb means any unary function that takes a Container with a inside and returns a Container with b inside
+// and Fa → Fb means any unary function that takes a Container with a inside and returns a Container with b inside
 
-multiplyArrBy2([1]) = [2] // is Fa -> Fb as [1] -> [2], F is []
+multiplyArrBy2([1]) = [2] // is Fa → Fb as [1] → [2], F is []
 ```
 
 So a thing with a map method can be defined in terms of objects or other things (aka functor)
@@ -3259,7 +3259,7 @@ const nextCharForNumberString = str =>
   .map(i => String.fromCharCode(i))
   .fold(c => c.toLowerCase())
 
-const result = nextCharForNumberString('  64') // { map: ƒ map(), inspect: ƒ inspect() } -> this is the definition of Box()
+const result = nextCharForNumberString('  64') // { map: ƒ map(), inspect: ƒ inspect() } → this is the definition of Box()
 ```
 
 We add the inspect so that when we call `console.log` we actually see what the data structure is holding
@@ -3310,7 +3310,7 @@ const percentToFloat = str =>
   Box(str)
     .map(str => str.replace(/\%/g, ''))
     .map(num => parseFloat(num))
-    .map(res => res * 0.01) // we changed this from fold -> map b/c we want to keep the result in the box
+    .map(res => res * 0.01) // we changed this from fold → map b/c we want to keep the result in the box
 
 /**
   * We could have also done it like this
@@ -3330,7 +3330,7 @@ const applyDiscount = (price, discount) =>
     .fold(cost => percentToFloat(discount)
       .fold(savings => cost - cost * savings))
 
-// the 2 fold were previously map, but we had to change it because then we'll have a Box within a Box -> Box(Box())
+// the 2 fold were previously map, but we had to change it because then we'll have a Box within a Box → Box(Box())
 // So to get our result out, we simply fold twice
 const result2 = applyDiscount('$5.00', '20%')
 console.log(result2);
