@@ -425,7 +425,7 @@ const nameImprover = function nameImprover(name, adj){
 // named function expression
 ```
 
-> It's a stylistic choice based on scope !
+It's a **stylistic** choice based on scope !
 
 ```js
 function teacher() { / ... / }
