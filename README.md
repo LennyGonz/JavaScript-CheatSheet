@@ -406,9 +406,9 @@ In other words, in any place where I'm going to or would be inclined to use some
 
 ## 4. Functions
 
-### 4.1 Function Declarations and Function Expressions
+### 4.1 Function Declarations, Expressions and Named Function Expressions
 
-Function declarations vs Function expressions
+There are multiple ways to create functions in JavaScript and each method has its pros and cons
 
 ```js
 function teacher() { / ... / }
@@ -423,29 +423,20 @@ const nameImprover = function nameImprover(name, adj){
   return 'Col' + name + ' Mc' + adji + ' pants'
 }
 // named function expression
-```
-
-It's a **stylistic** choice based on scope !
-
-```js
-function teacher() { / ... / }
 
 const myTeacher = function anotherTeacher(){
-  console.log(anotherTeacher)
+  console.log(anotherTeacher) // Reference Error
+  // will throw display a ReferenceError, because there is no `anotherTeacher()` in global scope 
+  // therefore global scope never heard of this function
 }
 ```
-
-> The last console log - will throw a ReferenceError, because there is no `anotherTeacher()` in global scope therefore global scope will never had heard of this function
-
 
 **One of the key differences** between *function declarations* and *function expressions* is:
 
 - that function declarations attach their name to the enclosing scope
 - whereas function expressions put their identifier into their own scope.
 
-### 4.2 Named function expressions
-
-A function expression thats been given a name.
+A named function expression is ... a function expression thats been given a name.
 
 ```js
 var clickHandler = function() {
