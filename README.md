@@ -440,36 +440,36 @@ A named function expression is ... a function expression thats been given a name
 
 ```js
 var clickHandler = function() {
-  // ...
+  // function expression...
 }
 
 var keyHandler = function keyHandler(){
-  // ...
+  // named function expression...
 }
 ```
 
-`clickHandler()`, I'm declaring a function expression:
+`clickHandler()` is a function expression:
 - why is it a function expression?
   - because its not a function declaration...
     - How do we know if somethings a function declaration? 
       - if the word function is literally the first thing in the statement
 
 So if `function` is not the first thing in the statement, if there's a variable or an operator or parenthesis, then it's not a declaration... **it is an expression** <br>
-**BUT also,** we see no name, so it's an anonymous function expression
+**BUT also,** we see no name, so it's an **anonymous** function expression
 
 whereas `keyHandler()` is a named function expression.
 
-Setting aside the syntax differences between the anonymous function expressions and named function expressions <br>
-Even though anonymous function expressions are vastly more common/popular, they make debugging code much harder <br>
+Setting aside the syntax differences between anonymous function expressions and named function expressions <br> 
+Anonymous function expressions are vastly more common/popular, but they make debugging code much harder <br>
 Using **named function expressions** should be used more often because:
 
 1. The name produces or creates a reliable self reference to the function from inside of itself 
    - that's useful if the function is recursive
    - if the function is an event handler and it needs to reference itself to **unbind itself**
    - its useful if you need to access any properties on that function object (i.e name, length, etc)
-   - Any time you need a self reference to the function, the single only right answer to that question is, it needs to have a name.
+   - Any time you need a self reference to the function, the only right answer to that question is, it needs to have a name.
 2. More debuggable stack traces, in the stack traces you'll get `Anonymous Function` in the stack traces <br> but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
-3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing... <br> Where as with function declarations the purpose of the function is in the name
+3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing ... Where as with function declarations the purpose of the function is in the name
 
 ### 4.3 IIFEs (another form of anonymous function expressions)
 
@@ -490,12 +490,11 @@ var teacher = 'Will'
 console.log(teacher)
 ```
 
-You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function
-That's what makes it a function expression, instead of a function declaration.
+You'll notice that from the beginning of the declaration of `anotherTeacher()` there's a wrapping set of parenthesis around that function → That's what makes it a function expression, instead of a function declaration.
 
 And then at the end of the function definition, you can see an extra set of parenthesis, which means it's getting invoked. Hence the 'immediately ivoked' part of the name
 
-The main end result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
+The main result of an IIFE is we get a new block of scope, there's a block of scope inside of that function `anotherTeacher()`
 
 > One of the well-known uses of IIFEs is avoiding global scope pollution
 > Local variables declared using `var` keyword are scoped to the closest containing function
