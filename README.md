@@ -471,7 +471,7 @@ Using **named function expressions** should be used more often because:
 2. More debuggable stack traces, in the stack traces you'll get `Anonymous Function` in the stack traces <br> but if you used a named function expression then you know exactly where your code is failing, or whats getting called or not getting called
 3. More self-documenting code - we have to read the function body of an anonymous function and where its being called to **infer** what that function is doing ... Where as with function declarations the purpose of the function is in the name
 
-### 4.3 IIFEs (another form of anonymous function expressions)
+### 4.2 IIFEs (another form of anonymous function expressions)
 
 Immediatelly Invoked Function Expressions
 
@@ -501,9 +501,9 @@ The main result of an IIFE is we get a new block of scope, there's a block of sc
 > And if there is no fnuction that exists, the variables will be global and would pollute the global scope
 > To avoid this we simply wrap the `var` variables in an IIFE such that they are scoped within and isolated from global 
 
-**However,** after the introduction `let` and `const`, this use case lost its popularity
+**However,** after the introduction `let` and `const`, this use-case lost its popularity
 
-**another usecase is Closures and Private Data**, IIFEs enable you to create closures that can maintain private Data
+**Another usecase is Closures and Private Data**, IIFEs enable you to create closures that can maintain private Data
 
 ```js
 const uniqueId = (function(){
@@ -524,47 +524,31 @@ console.log(uniqueId()); // "id_3"
 > And the `count` variable cannot be accessed or modified from outside the scope making it **truly** private.
 > The only way to access the variable is through the function being returned by the IIFE
 
-**another usecase is enabling the Await keyword outside of Asnyc Functions**
+### 4.3 Arrow functions (another form of anonymous function expressions)
 
-If you use the `await` keyword outside of an `async` function, you'll get a Syntax Error
-So as a workwround is to use async IIFEs, but handling the errors within is tricky
-
-```js
-(async() => {
-  await Promise.resolve("resolved");
-})();
-
-// Uncaught Errors
-(async() => {
-  await Promise.reject("rejected");
-})();
-
-// Catching errors
-
-// Method 1
-(async () => {
-  try {
-    await Promise.reject("rejected");
-  } catch(err) {
-    console.log(err)
-  }
-})();
-
-// Method 2
-(async() => {
-  await Promise.reject("rejected");
-})().catch(err => {
-  console.log(err);
-});
-```
-
-The top level await proposal would remove the need for async IIFEs coupled with `await` keywords <br>
-However, [top-level awaits](https://blog.bitsrc.io/why-should-you-use-top-level-await-in-javascript-a3ba8139ef23#:~:text=Top%2Dlevel%20await%20allows%20us,promises%20are%20resolved%20in%20middleware.) still have their problems
-
-
-### 4.4 Arrow functions (another form of anonymous function expressions)
+An arrow function expression is a compact alternative to a traditional expression, **but** is limited and can't be used in all situations.
 
 ```js
+// Traditional Function
+function (a){
+  return a + 100;
+}
+
+// Arrow Function Break Down
+
+// 1. Remove the word "function" and place arrow between the argument and opening body bracket
+(a) => {
+  return a + 100;
+}
+
+// 2. Remove the body brackets and word "return" -- the return is implied.
+(a) => a + 100;
+
+// 3. Remove the argument parentheses
+a => a + 100;
+
+// ************************************************************************************************ \\
+
 function myFunc() {
   this.myVar = 0
   var that = this; // that = this trick
@@ -781,7 +765,7 @@ if you have one that defines the same method name in a chold as in the parent.
 You can refer to the parent from the child by saying `super.` → in our example we did `super.ask(msg.UpperCase())`
 
 
-### 4.5 Callbacks & Higher Order Functions
+### 4.4 Callbacks & Higher Order Functions
 
 Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
 
