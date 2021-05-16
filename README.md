@@ -528,6 +528,7 @@ console.log(uniqueId()); // "id_3"
 
 An arrow function expression is a compact alternative to a traditional expression, **but** is limited and can't be used in all situations.
 
+One of the main reasons you should use arrow functions comes from it's **lexical `this` capabilities**
 ```js
 // Traditional Function
 function (a){
@@ -572,20 +573,17 @@ function myFunc() {
 ```
 
 Syntax differences:
-We don't have to wrap our parameters in parenthesis if there's only 1 parameters
-If the function body is only 1 line - we don't need to wrap it in curly braces
-
-It binds the context, and the context is the value that 'this' has ... to its parent context
+- We don't have to wrap our parameters in parenthesis if there's only 1 parameters
+- If the function body is only 1 line - we don't need to wrap it in curly braces
 
 All functions have a keyword 'this' that gets bound at call time...
-
 Arrow functions do not have their own value for `this`
-They inherit, they reach up to the parent scope and grab that value of `this` in that parent scope
+They inherit, they reach up to the parent scope and grab that value of `this` in that parent scope. In other words, the value of `this` is defined lexically.
 
-And this functionality of arrow functions replaces the need to use `.bind()` or `var that = this → that = randomObj`
+And this functionality of arrow functions **replaces the need to use** `.bind()` or `var that = this → that = randomObj`
 
 Another thing is that arrow functions don't have its own value for the arguments keyword
-So the arguments keyword, at call time, gets bound to all the arguments that are being passed to the function
+So the arguments keyword, at call time, **gets bound to all the arguments that are being passed to the function**
 
 The arguments keyword is the same as the arguments that are being passed, except it's an object-like-array
 That comes for free in all of our regular functions in JS, but not arrow functions
@@ -606,9 +604,7 @@ Whereas the second one we know it gets an ID, we could even call it `getPersonID
 
 **You should definitely not be using arrow functions for general replacements for all other functions** !
 
-One of the main reasons you should use arrow functions comes from it's **lexical `this` capabilities**
-
-Another is: **Promise-chains**
+A use-case for arrow functions: **Promise-chains**
 
 ```js
 getPerson()
@@ -622,48 +618,36 @@ getPerson()
 .then(renderData)
 ```
 
-And while you can do Named (Arrow) Function Expressions...
-Its more characters to define the function as an arrow function then it is to make it a function declaration
-```js
-var getID = person => person.id;
-var ids = people.map(getID)
-
-// ****************************
-
-var getDataFrom = person => getData(person.id);
-getPerson()
-.then(getDataFrom)
-.then(renderData);
-```
-
 Personally I believe this is the heirarchy of function types that should be used:
 
 1. Function Declarations
 2. Named Function Expressions
 3. Anonymous Function Expressions
 
-### Arrow-functions and `this`
+#### 4.3.1 `this`
+
+Lexical `this` capabilities of arrow functions
 
 <p align="center">
 
-<image src="/Images/js_snippet13.png">
+<image src="/Images/ArrowFunctions1.png">
 
 </p>
 
 Here `this` is correctly pointing to the workshop object
-**How is this not implicit binding???????**
-The behavior is actually called "lexical `this` behavior
+**This not implicit binding**, the behavior is actually called **lexical `this` behavior**
 
-Lexical `this`: many people think that an arrow function is essentially a hardbound function to the parent's `this` ... this is not accurate
-The proper way to think of what an arrow function is... **an arrow function does not define the `this` keyword at all**
-there is no such thing as a `this` keyword in an arrow function, which means **IF** you put a `this` keyword inside an arrow function it's going to behave **like any other variable**
-Which means it's going to lexically resolve to some enclosing scope - that does define a `this` keyword
+Lexical `this`: many people think that an arrow function is essentially a hardbound function to the parent's `this` ... this is **not** accurate <br>
+The proper way to think of what an arrow function is → **an arrow function does not define the `this` keyword at all** <br>
+There is no such thing as a `this` keyword in an arrow function, which means **IF** you put a `this` keyword inside an arrow function it's going to behave **like any other variable**
+Therefore, it's going to lexically resolve to some enclosing scope that **does** define the `this` keyword
 
-In the example above, when we say `this.` ... there is no `this` in that arrow function **NO MATTER HOW IT GETS INVOKED**
+In the example above, when we say `this.` <br> There is no `this` in that arrow function **NO MATTER HOW IT GETS INVOKED** <br>
 So we lexically go up one level of scope which is, the `ask()` function...
-`this` goes out from the `callback` function (the  arrow function) that scope → to the enclosing scope, which is??? `ask()`
-AND `ask()`'s definition of the `this` keyword is **determined by HOW IT IS INVOKED**...
-`workshop.ask("Is this lexical `this`?");` ... `ask()` is being invoked by the workshop object... so `this` inside the arrow function determines what is pointing to by how `ask()` gets invoked.
+`this` goes out from the `callback`(the  arrow function) scope → to the enclosing scope → `ask()` <br>
+AND `ask()`'s definition of the `this` keyword is determined by **HOW IT IS INVOKED**
+How was it invoked? → `workshop.ask("Is this lexical this?");` <br> 
+Through the object `workshop` → so `this` inside the arrow function determines what is pointing to by how `ask()` gets invoked.
 
 So it resolves lexically, meaning if you had 5 nested arrow function it will go up 5 levels and keeps on going until it finds a function that defines a `this` keyword and whatever the `this` keyword points at for that function, that's what it uses.
 
@@ -675,25 +659,27 @@ The **spec sheet** for Arrow function says:
 
 <p align="center">
 
-<image src="/Images/js_snippet14.png">
+<image src="/Images/ArrowFunctions2.png">
 
 </p>
 
-We tend to think that `{}` curly braces are scopes, theyre blocks, theyre function bodies ... they must be scopes!
-**No!** 
-In this example, when `this` goes up one level to resolve what `this` is pointing to... it won't point to the workshop object! just because it has curly braces doesn't mean its a scope! **Objects are not scopes!!!**, **Object properties aren't scoped, properties arent lexical identifiers**
+We tend to think that `{}` curly braces are scopes, theyre blocks, theyre function bodies ... they must be scopes → **No!**
+
+In this example, when `this` goes up one level to resolve what `this` is pointing to... it won't point to the workshop object! <br> 
+Just because it has curly braces doesn't mean its a scope! <br> **Objects are not scopes!** <br> **Object properties are not scoped, properties are not lexical identifiers**
 
 **You have to think about an arrow function as not having a `this` and resolving it lexically!** 
 So what is the parents scope!? There are only 2 scopes in the function above!
 1) ask() - but its an arrow function
 2) global scope 
-Thats it! so `this` points to the global scope, and will therefore return `undefined`
+So `this` points to the global scope, and will therefore return `undefined`
 
-**Nonetheless,** this arrow function lexical `this` behavior is a much better way of doing it rather than `var self = this` or even doing `function.bind()`
-Because when you use it, you want the `this` to behave lexically, we don't want the arrow function to have some magical `this` behavior to it.
-We want it to just adopt the `this` keyword of some parent scope.
+**Nonetheless,** the lexical behavior of arrow functions is a much better way of defining `this` rather than `var self = this` or even doing `function.bind()` <br>
+Because when you use arrow functions, you want the `this` to behave lexically, rather than having the arrow function having some magical `this` behavior.
 
-Cannot stress this enough: **Only use `=>` arrow functions when you need lexical `this`**
+Bottom Line: We want it to just adopt the `this` keyword of some parent scope.
+
+Cannot stress this enough: **Only use arrow functions when you need lexical `this`**
 
 
 ```js
@@ -718,7 +704,7 @@ class Workshop {
     this.teacher = teacher
   }
   ask(question) {
-    console.log(this.teacher, question)
+    console.log(`${this.teacher}, ${question}?`)
   }
 }
 
@@ -731,7 +717,7 @@ class AnotherWorkshop extends Workshop{
 var JSRecentParts = new AnotherWorkshop("Will")
 
 JSRecentParts.speakUp("Are classes getting better");
-// Will Are classes getting better
+// Will, Are classes getting better?
 ```
 
 As a matter of fact, the class system also now has a `super` keyword in it:
