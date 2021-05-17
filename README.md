@@ -624,6 +624,70 @@ Personally I believe this is the heirarchy of function types that should be used
 2. Named Function Expressions
 3. Anonymous Function Expressions
 
+### 4.4 Callbacks & Higher Order Functions
+
+Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
+
+1. Assigned to variables and properties of other objects
+2. Passed as arguments into functions
+3. Returned as values from functions
+
+```js
+function copyArrayAndManipulate(array, instructions){
+  const output = []
+  for(let i=0; i < array.length; i++){
+    output.push(instructions(array[i]))
+  }
+  return output
+}
+```
+*otherwise known as `map()`*
+
+Which is our higher order function?
+- The outer function that **takes in** a function is our higher order funcion
+- In this case our higher order function is: `copyArrayAndManipulate()`
+
+Which is our callback function?
+- The function **we insert** is our callback function
+- In this case our callback function is `multiplyBy2()`
+
+**The notion of passing in a function to the running of another function in a very different way is going to turn out to be the backbone of asynchronous JavaScript**. Even if we're using promises, even if we're using async/await... behind the scenes - passing in a function to another function is going to be the core of those concepts
+
+## 5. Scope & this
+
+Scope: where to look for things
+
+Function Scoping
+
+```js
+var teacher = "Lenny"
+
+console.log(teacher)
+```
+
+```js
+var teacher = "Lenny"
+
+var teacher = "Suzy";
+console.log(teacher); // Suzy
+
+console.log(teacher) // Suzy 
+```
+
+How do we solve the problem of having 2 of the same variable names?
+
+```js
+var teacher = 'Will'
+
+function anotherTeacher() {
+  var teacher = 'Suzy'
+  console.log(teacher) // Suzy
+}
+
+anotherTeacher();
+
+console.log(teacher) // Will
+```
 #### 4.3.1 `this`
 
 Lexical `this` capabilities of arrow functions
@@ -749,73 +813,6 @@ If you have a child class that defines a method of the same name as a parent cla
 if you have one that defines the same method name in a chold as in the parent.
 
 You can refer to the parent from the child by saying `super.` → in our example we did `super.ask(msg.UpperCase())`
-
-
-### 4.4 Callbacks & Higher Order Functions
-
-Functions in JavaScript are first class objects, meaning they can co-exists with and can be treated like any other JS object
-
-1. Assigned to variables and properties of other objects
-2. Passed as arguments into functions
-3. Returned as values from functions
-
-```js
-function copyArrayAndManipulate(array, instructions){
-  const output = []
-  for(let i=0; i < array.length; i++){
-    output.push(instructions(array[i]))
-  }
-  return output
-}
-```
-*otherwise known as `map()`*
-
-Which is our higher order function?
-- The outer function that **takes in** a function is our higher order funcion
-- In this case our higher order function is: `copyArrayAndManipulate()`
-
-Which is our callback function?
-- The function **we insert** is our callback function
-- In this case our callback function is `multiplyBy2()`
-
-**The notion of passing in a function to the running of another function in a very different way is going to turn out to be the backbone of asynchronous JavaScript**. Even if we're using promises, even if we're using async/await... behind the scenes - passing in a function to another function is going to be the core of those concepts
-
-## 5. Scope & this
-
-Scope: where to look for things
-
-Function Scoping
-
-```js
-var teacher = "Lenny"
-
-console.log(teacher)
-```
-
-```js
-var teacher = "Lenny"
-
-var teacher = "Suzy";
-console.log(teacher); // Suzy
-
-console.log(teacher) // Suzy 
-```
-
-How do we solve the problem of having 2 of the same variable names?
-
-```js
-var teacher = 'Will'
-
-function anotherTeacher() {
-  var teacher = 'Suzy'
-  console.log(teacher) // Suzy
-}
-
-anotherTeacher();
-
-console.log(teacher) // Will
-```
-
 
 
 ### 5.1 Lexical Scope
