@@ -921,6 +921,7 @@ In both cases, we're providing a dynamic context to this function, and if we wer
 
 It can be 1 function that can be reused against a lot of different contexts
 
+
 `this`
 
 A function's `this` references the execution context for that call, a context in which that call was being made and that is detemined entirely by **how the function was called**
@@ -1044,19 +1045,6 @@ If I go to the trouble to write a `this` aware set of code, and then most of my 
 On the other hand, if i go through the trouble to write a `this` aware system and then everyone or most of my call sites **have** to use `.bind()`, that's a clue to me that Im doing this the hard way and should use `closures` and lexical scope instead.
 
 
-### 3rd way of invoking a function: `new`
-**The purpose of the new keyword is actually to invoke a function with a `this` keyword pointing at a whole new empty object**
-If we have invoking function functions and pointing them at a context object
-
-This new way of doing it is to say, I wanna invoke a function and use a whole new empty object. And the `new` keyword can accomplish that.
-
-4 things that new does:
-1. Create a brand new empty object
-2. Link that object to another object
-3. Call function with `this` set to the new object
-4. If function does not return an object, assume return of `this`
-
-These 4 things happen every time the `new` keyword is used.
 
 4) 4th and final way of invoking a function
 
@@ -1139,6 +1127,20 @@ or reactJS.ask() on line 5 we're actually saying reactJS.teacher
 It's because we have found a function through the prototype chain, invoked it, but it still is deremine what the `this` keyword is gonna point at by the call sites on line 11 or line 14
 
 ## 7. `new`
+
+### 3rd way of invoking a function: `new`
+**The purpose of the new keyword is actually to invoke a function with a `this` keyword pointing at a whole new empty object**
+If we have invoking function functions and pointing them at a context object
+
+This new way of doing it is to say, I wanna invoke a function and use a whole new empty object. And the `new` keyword can accomplish that.
+
+4 things that new does:
+1. Create a brand new empty object
+2. Link that object to another object
+3. Call function with `this` set to the new object
+4. If function does not return an object, assume return of `this`
+
+These 4 things happen every time the `new` keyword is used.
 
 ## 8. `class`
 
