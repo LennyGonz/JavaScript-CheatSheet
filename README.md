@@ -655,175 +655,23 @@ Which is our callback function?
 
 ## 5. Scope & this
 
-Scope: where to look for things
-
-Function Scoping
-
-```js
-var teacher = "Lenny"
-
-console.log(teacher)
-```
-
-```js
-var teacher = "Lenny"
-
-var teacher = "Suzy";
-console.log(teacher); // Suzy
-
-console.log(teacher) // Suzy 
-```
-
-How do we solve the problem of having 2 of the same variable names?
-
-```js
-var teacher = 'Will'
-
-function anotherTeacher() {
-  var teacher = 'Suzy'
-  console.log(teacher) // Suzy
-}
-
-anotherTeacher();
-
-console.log(teacher) // Will
-```
-#### 4.3.1 `this`
-
-Lexical `this` capabilities of arrow functions
-
-<p align="center">
-
-<image src="/Images/ArrowFunctions1.png">
-
-</p>
-
-Here `this` is correctly pointing to the workshop object
-**This not implicit binding**, the behavior is actually called **lexical `this` behavior**
-
-Lexical `this`: many people think that an arrow function is essentially a hardbound function to the parent's `this` ... this is **not** accurate <br>
-The proper way to think of what an arrow function is → **an arrow function does not define the `this` keyword at all** <br>
-There is no such thing as a `this` keyword in an arrow function, which means **IF** you put a `this` keyword inside an arrow function it's going to behave **like any other variable**
-Therefore, it's going to lexically resolve to some enclosing scope that **does** define the `this` keyword
-
-In the example above, when we say `this.` <br> There is no `this` in that arrow function **NO MATTER HOW IT GETS INVOKED** <br>
-So we lexically go up one level of scope which is, the `ask()` function...
-`this` goes out from the `callback`(the  arrow function) scope → to the enclosing scope → `ask()` <br>
-AND `ask()`'s definition of the `this` keyword is determined by **HOW IT IS INVOKED**
-How was it invoked? → `workshop.ask("Is this lexical this?");` <br> 
-Through the object `workshop` → so `this` inside the arrow function determines what is pointing to by how `ask()` gets invoked.
-
-So it resolves lexically, meaning if you had 5 nested arrow function it will go up 5 levels and keeps on going until it finds a function that defines a `this` keyword and whatever the `this` keyword points at for that function, that's what it uses.
-
-The **spec sheet** for Arrow function says:
-
-1. An arrow function does not defined local bindings for `arguments`, `super`, `this` or `new.target`. **Any reference to `arguments`, `super`, `this` or `new.target` within an arrow function must resolve to a binding in a lexically enclosing environment**
-2. If you call `new` on an arrow function, you get an exception ... an error
-
-
-<p align="center">
-
-<image src="/Images/ArrowFunctions2.png">
-
-</p>
-
-We tend to think that `{}` curly braces are scopes, theyre blocks, theyre function bodies ... they must be scopes → **No!**
-
-In this example, when `this` goes up one level to resolve what `this` is pointing to... it won't point to the workshop object! <br> 
-Just because it has curly braces doesn't mean its a scope! <br> **Objects are not scopes!** <br> **Object properties are not scoped, properties are not lexical identifiers**
-
-**You have to think about an arrow function as not having a `this` and resolving it lexically!** 
-So what is the parents scope!? There are only 2 scopes in the function above!
-1) ask() - but its an arrow function
-2) global scope 
-So `this` points to the global scope, and will therefore return `undefined`
-
-**Nonetheless,** the lexical behavior of arrow functions is a much better way of defining `this` rather than `var self = this` or even doing `function.bind()` <br>
-Because when you use arrow functions, you want the `this` to behave lexically, rather than having the arrow function having some magical `this` behavior.
-
-Bottom Line: We want it to just adopt the `this` keyword of some parent scope.
-
-Cannot stress this enough: **Only use arrow functions when you need lexical `this`**
-
-
-```js
-class Workshop {
-  constructor(teacher) {
-    this.teacher = teacher
-  }
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
-
-var deepJS = new Workshop("Kyle");
-var reactJS = new Workshop("Lenny");
-```
-
-you can extend
-
-```js
-class Workshop {
-  constructor(teacher) {
-    this.teacher = teacher
-  }
-  ask(question) {
-    console.log(`${this.teacher}, ${question}?`)
-  }
-}
-
-class AnotherWorkshop extends Workshop{
-  speakUp(msg){
-    this.ask(msg)
-  }
-}
-
-var JSRecentParts = new AnotherWorkshop("Will")
-
-JSRecentParts.speakUp("Are classes getting better");
-// Will, Are classes getting better?
-```
-
-As a matter of fact, the class system also now has a `super` keyword in it:
-
-```js
-class Workshop {
-  constructor(teacher) {
-    this.teacher = teacher
-  }
-  ask(question) {
-    console.log(this.teacher, question)
-  }
-}
-
-class AnotherWorkshop extends Workshop{
-  ask(msg) {
-    super.ask(msg.toUpperCase())
-  }
-}
-
-var JSRecentParts = new AnotherWorkshop("Will")
-
-JSRecentParts.speakUp("Are classes Super?");
-// Will Are classes super?
-```
-
-`super` allows you to do relative polymorphism
-If you have a child class that defines a method of the same name as a parent class, so called shadowing,
-if you have one that defines the same method name in a chold as in the parent.
-
-You can refer to the parent from the child by saying `super.` → in our example we did `super.ask(msg.UpperCase())`
-
+**Scope**:  is the location where a variable is defined and the context where other pieces of your code can access and manipulate it.
 
 ### 5.1 Lexical Scope
 
-### 5.2 Dynamic Scope
+<p align="center">
 
-Dynamic Scope **does not exist in JavaScript!**
+<image src="/Images/functionScope.png">
 
-Add image from slides
+</p>
 
-### 5.3 Block Scoping
+<p align="center">
+
+<image src="Images/fScope2.png">
+
+</p>
+
+### 5.2 Block Scoping
 
 Anything within `{}` is a block
 
@@ -921,8 +769,11 @@ In both cases, we're providing a dynamic context to this function, and if we wer
 
 It can be 1 function that can be reused against a lot of different contexts
 
+<hr>
 
 `this`
+
+<hr>
 
 A function's `this` references the execution context for that call, a context in which that call was being made and that is detemined entirely by **how the function was called**
 
@@ -1128,19 +979,24 @@ It's because we have found a function through the prototype chain, invoked it, b
 
 ## 7. `new`
 
-### 3rd way of invoking a function: `new`
 **The purpose of the new keyword is actually to invoke a function with a `this` keyword pointing at a whole new empty object**
-If we have invoking function functions and pointing them at a context object
+If we have invoking function functions and pointing them at a context object like a `workshop.ask()` thats 1 way
 
-This new way of doing it is to say, I wanna invoke a function and use a whole new empty object. And the `new` keyword can accomplish that.
+Or we say I'm going to invoke a function and give it a specific object with a `.call()` or `.apply()` or force it with a `.bind()` - 2nd way
 
-4 things that new does:
+A third way of doing it is to say ... I wanna invoke a function and use a whole new empty object. It does other stuff, but it also accomplishes that task, which is to invoke a function with a new empty object
+
+So the `new` this keyword isn't actually buying you much except the syntactic sugar of "hey i want this function invoked with a new `this` context
+
+4 things that `new` does:
 1. Create a brand new empty object
-2. Link that object to another object
+2. Link that object to another object (prototype chaining ELABORATE)
 3. Call function with `this` set to the new object
 4. If function does not return an object, assume return of `this`
 
-These 4 things happen every time the `new` keyword is used.
+These 4 things happen every time the `new` keyword is invoked with a function.
+
+**To review this Kyle Simpsons course**
 
 ## 8. `class`
 
@@ -1282,10 +1138,6 @@ Closures give our functions persistant memory
 So since JS is a lexical scoped language - that means that even if I returned my function out and theoretically all the memory in our execution context's local memory should get deleted → **nope!**
 B/c I have this fundamental rule of lexically scoped language
 I'm going to grab all that data and pull it out on the backpack such that when I run the function, I still have all the data from when the function was born.
-
-
-
-
 
 ## 10. Asynchronous Javascript
 
