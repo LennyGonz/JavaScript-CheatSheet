@@ -663,8 +663,6 @@ Which is our callback function?
 
 <image src="/Images/functionScope.png">
 
-</p>
-
 <p align="center">
 
 <image src="Images/fScope2.png">
