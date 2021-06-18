@@ -1943,7 +1943,7 @@ Then we can have asynchronous functions, which are pulls so we can pull values a
 
 Now we have the ability to push and pull at the same time so that I can have lazy asynchronous iteration.
 
-# 11. Functional Programming
+## 11. Functional Programming
 ### 11.1 Pure Functions
 
 Pure functions take in an input and outputs something
@@ -2493,7 +2493,7 @@ function pop(array) {
 
 <hr>
 
-# 12. Functional Programming with Brian Lonsdorf
+## 12. Functional Programming with Brian Lonsdorf
 
 ### 12.1 Properties, Arguments & Currying
 
@@ -3476,3 +3476,55 @@ const Pair = (x, y) =>
   concat: ({x: x1, y: y1}) => Pair(x.concat(x1), y.concat(y1))
 })
 ```
+
+## 13. JavaScript Gotchas
+
+Use `===` instead of `==`
+
+`==` is the type-coercion non-strict equality operator.
+
+```js
+const a = '1';
+const b = 1;
+const c = '1.0';
+
+console.log(a == b); // true
+console.log(b == c); // true
+console.log(a == c); // false
+```
+
+In the short piece of code given above, the constants `a`, `b`, and `c` have the values ‘1’, 1, and ‘1.0’, respectively. 
+One value is of *number* type, and the other two are of *string* type. The last three lines of code compare each combination of constants.
+
+Suppose `a` is equal to `b` and `b` is equal to `c`. Then, logically, JavaScript should tell us that `a` is equal to `c`. 
+However, the JavaScript `==` operator does not honor the transitive property of equality due to `type coercion`
+
+**Why use `===` instead of `==` ?**
+
+The `==` operator performs type coercion if the things being compared are not of the same type.
+If the objects or values being compared are both of type string, number, or Boolean, then a direct equality check is performed.
+
+When comparing `a` with `b` and `b` with `c`, type coercion is involved before the comparison. 
+However, when `a` and `c` are compared, a **lexical comparison** is used. Hence, the result may be different than expected
+
+Rework the previous example with using the identity strict equality operator, which is `===`
+
+```js
+const a = '1';
+const b = 1;
+const c = '1.0';
+
+console.log(a === b); // false
+console.log(b === c); // false
+console.log(a === c); // false
+```
+
+- In the uncommon situation where you want type coercion before comparison for equality, `==` is your operator.
+
+- Another situation where `==` may be a better choice than `===` is when you want to determine if a variable is either `null` or `undefined`. The check `variable == null` will yield `true` if the variable is `null` or `undefined` and may be used instead of `variable === null` or `variable === undefined`.
+- In most situations, however, you generally would want a straight-up strict equality check with no type coercions. In that case, use `===` instead of `==`.
+
+**Also** it's a good idea to use `!==` instead of `!=` to check for inequality.
+
+
+
