@@ -618,6 +618,8 @@ getPerson()
 .then(renderData)
 ```
 
+Arrow functions are useful to reduce clutter for short functions. They reduce noise where anonymous functions are passed as arguments
+
 Personally I believe this is the heirarchy of function types that should be used:
 
 1. Function Declarations
