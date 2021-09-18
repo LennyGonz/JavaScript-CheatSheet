@@ -769,11 +769,139 @@ In both cases, we're providing a dynamic context to this function, and if we wer
 
 It can be 1 function that can be reused against a lot of different contexts
 
-<hr>
+### 5.3 `this!`
 
-`this!`
+The value of `this` can be tricky to pinpoint; however, I'm going to start with the most specific situation, and end with the least-specific. This will be kinda like a big `if (…) … else if () … else if (…) …`, so you can go straight to the first section that matches the code you're looking at.
 
-<hr>
+#### Arrow Functions - this assignment
+If the function is defined as an arrow function:
+
+```js
+const arrowfunction = () => {
+  console.log(this);
+}
+```
+
+In **this case**, the value of `this` is **always** the same as `this` in the parent scope:
+
+```js
+const outerThis = this;
+
+const arrowFunction = () => {
+  // Always logs true
+  console.log(this === outerThis);
+}
+```
+
+Arrow functions are great because the inner value of `this` can't be changed, it's **always** the same as the outer `this`.
+
+**Bound instance methods** 
+
+With instance methods, if you want to ensure `this` always refers to the class instance, the best way is to use arrow functions and [class fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields):
+
+```js
+class Whatever {
+  someMethod = () => {
+    // Always the instance of Whatever:
+    console.log(this);
+  };
+}
+```
+
+This pattern is really useful when using instance methods as event listeners in components (such as React components, or web components).
+
+The above might feel like it's breaking the "`this` will be the same as `this` in the parent scope" rule, but it starts to make sense if you think of class fields as syntactic sugar for setting things in the constructor:
+
+```js
+class Whatever {
+  someMethod = (() => {
+    const outerThis = this;
+    return () => {
+      // Always logs `true`:
+      console.log(this === outerThis);
+    };
+  })();
+}
+
+// …is roughly equivalent to:
+
+class Whatever {
+  constructor() {
+    const outerThis = this;
+    this.someMethod = () => {
+      // Always logs `true`:
+      console.log(this === outerThis);
+    };
+  }
+}
+```
+
+Alternative pattens involve binding an existing function in the constructor, or assigning the function in the constructor.
+If you can't use class fields for some reason, assigning functions in the constructor is a reasonable alternative:
+
+```js
+class Whatever {
+  constructor() {
+    this.someMethod = () => {
+      // …
+    };
+  }
+}
+```
+
+Otherwise, if the function/class is called with `new`
+
+#### new - this assignment
+
+```js
+new Whatever();
+```
+
+The above will call `Whatever` (or its constructor function if it's a class) with `this` set to the result of `Object.create(Whatever.prototype)`.
+
+```js
+class MyClass {
+  constructor() {
+    console.log(
+      this.constructor === Object.create(MyClass.prototype).constructor,
+    );
+  }
+}
+
+// Logs `true`:
+new MyClass();
+```
+
+The same is true for older-style constructors:
+
+```js
+function MyClass() {
+  console.log(
+    this.constructor === Object.create(MyClass.prototype).constructor,
+  );
+}
+
+// Logs `true`:
+new MyClass();
+```
+
+Other examples...
+
+When called with `new`, the value of `this` can't be changed with bind:
+
+```js
+const BoundMyClass = MyClass.bind({foo: 'bar'});
+// Logs `true` - bound `this` value is ignored:
+new BoundMyClass();
+```
+
+When called with `new`, the value of `this` can't be changed by calling the function as a member of another object:
+
+```js
+const obj = {MyClass};
+// Logs `true` - parent object is ignored:
+new obj.MyClass();
+```
 
 A function's `this` references the execution context for that call, a context in which that call was being made and that is detemined entirely by **how the function was called**
 
