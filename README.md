@@ -1137,20 +1137,31 @@ In lexical scope land, we start at the current scope and we work our way to the 
 
 <p align="center">
 
-<image src="/Images/js_snippet07.png">
+<image src="/Images/implicitBinding.png">
 
 </p>
 
-You'll notice i have a workshop objectZ with a method on it that is `this` aware.
+You'll notice I have a workshop object with a method on it that is `this` aware.
 That's called the `namespace pattern`
 
 how does the `this` keyword behave in the namespace pattern?
 
-When we invoke the `ask()` method on the workshop objecy, how does it figure out what the `this` keyword should point at?
+When we invoke the `ask()` method on the workshop object, how does it figure out what the `this` keyword should point at?
 > The Call Site
 > Because of the call site the `this` keyword is going to end up pointing at the object that is used to invoke it, which in this case is the workshop object
 > `workshop.ask()` says invoke `ask()` with the `this` keyword pointing at workshop - thats what the implicit binding rule says
 > And thats how the `this` keyword works in all other languages - so this is the most common and intuitive 
+
+The idea of having implicit binding is useful because this is how we share behavior in different contexts
+
+Here:
+
+<p align="center">
+  <image src="/Images/implicitBinding2.png">
+</p>
+
+I am defining just one ask function, but I am sharing the ask function across 2 different objects with 2 different sets of data in them. But because on line 7 & 12 I have a reference to the `ask` function on it. 
+When I use the reference to invoke the ask function, the implicit binding rule says "invoke that one function in a different context each time"
 
 2) this: dynamic binding → sharing
 
