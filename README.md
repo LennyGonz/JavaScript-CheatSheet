@@ -1069,7 +1069,7 @@ console.log(someFunction() === globalThis);
 
 A function's `this` references the execution context for that call, a context in which that call was being made and that is detemined entirely by **how the function was called**
 
-In other words, if you look at a function that has a `this` keyword in it. It is assigned based upon how the function is called
+In other words, if you look at a function that has a `this` keyword in it. It is assigned based upon **how the function is called**
 Which is the counterintuitive part because most people think that you could look at a function, and figure out what its `this` keyword is going to point at.
 **But the function's definition doesn't matter at all**, when determing the `this` keyword
 **The only thing that matters is:** how does that function get invoked?
@@ -1078,6 +1078,29 @@ Which is the counterintuitive part because most people think that you could look
 A `this`-aware function can thus have a different context each time its called, which makes it more flexible and reusable
 In other words the `this` keyword is Javascripts version of dynamic scoping - **because what matters is how the function is being called**
 
+This is a function that isn't `this` aware
+```js
+var teacher = "Lenny"
+
+function ask(question){
+  console.log(teacher, question)
+}
+
+function otherClass(){
+  var teacher = "Chelsea"
+
+  ask("Why?");
+}
+
+otherClass();
+```
+
+In a dynamic scope we are dynamically context aware, so on this line `console.log(teacher, question)` when it references teacher, instead of trying to go to line 1 to get `teacher`, it goes to the 2nd instance of `teacher` inside of `otherClass()`, because `ask()` was invoked in `otherClass()`.
+Thats why dynamic scope does
+
+In JS we have something similar, but it's not based on scope boundaries, or where something is called from, **it's based on how the function was called**
+
+This is a version of the `ask` function that is `this`-aware:
 ```js
 function ask(question){
   console.log(this.teacher, question)
@@ -1085,10 +1108,10 @@ function ask(question){
 
 function otherClass() {
   var myContext = {
-    teacher: "Suzy"
+    teacher: "Chelsea"
   }
 
-  ask.call(myContext, "Why?")
+  ask.call(myContext, "Why?") // Chelsea why?
 }
 
 otherClass();
@@ -1096,8 +1119,8 @@ otherClass();
 
 You'll notice we're invoking `ask()` from another location, but it doesn't matter...
 **It's not where I call it from, it's how I call it** 
-By using `call()` I'm saying use this particular object (myContext) as your `this` keyword, and invoke the function in that context
-So the `this` keyword in this particular case, will end up pointing at `myContext`.
+By using `call()` - I'm saying use this particular object (myContext) as your `this` keyword, and invoke the function in that context
+So the `this` keyword in this particular case, will end up pointing at `myContext`
 
 So you get that dynamically flexibilty.
 We can call that same `ask()` function, lots of different ways... and provide lots of different context objects for the `this` keyword to point at, thats the dynamic flexible reusability of the `this` keyword. 
@@ -1118,7 +1141,7 @@ In lexical scope land, we start at the current scope and we work our way to the 
 
 </p>
 
-You'll notice i have a workshop objec with a method on it that is `this` aware.
+You'll notice i have a workshop objectZ with a method on it that is `this` aware.
 That's called the `namespace pattern`
 
 how does the `this` keyword behave in the namespace pattern?
