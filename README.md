@@ -1157,7 +1157,7 @@ The idea of having implicit binding is useful because this is how we share behav
 Here:
 
 <p align="center">
-  <image src="/Images/implicitBinding2.png" />
+  ![ImplicitBinding](/Images/implicitBinding2.png)
 </p>
 
 I am defining just one ask function, but I am sharing the ask function across 2 different objects with 2 different sets of data in them. But because on line 7 & 12 I have a reference to the `ask` function on it. 
