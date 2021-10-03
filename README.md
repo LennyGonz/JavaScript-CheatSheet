@@ -617,7 +617,6 @@ getPerson()
 })
 .then(renderData)
 ```
-
 Arrow functions are useful to reduce clutter for short functions. They reduce noise where anonymous functions are passed as arguments
 
 Personally I believe this is the heirarchy of function types that should be used:
@@ -625,6 +624,40 @@ Personally I believe this is the heirarchy of function types that should be used
 1. Function Declarations
 2. Named Function Expressions
 3. Anonymous Function Expressions
+
+#### lexical `this`
+
+```js
+var workshop = {
+  teacher: "Lenny",
+  ask(question) {
+    setTimeout(() => {
+      console.log(this.teacher, question)
+    }, 100)
+  }
+}
+
+workshop.ask("Is this lexical 'this'?");
+// Lenny Is this lexical 'this' ?
+```
+
+Lexical `this` - arrow functions are not hard bound function's to the parent's this. That is not accurate. Arrow functions do not define `this` keyword at all.
+
+If you put `this` inside an arrow function it'll behave like any other variable, which means it's going to lexically resolve to some enclosing scope that **does** define a `this` keyword.
+
+So in this case, when we use `this.` -> `console.log(this.teacher, question)`. There is no `this` in that arrow function, no matter how it gets invoked, so lexically go up 1 level of scope which is the `ask` function. And `ask`'s definition of the `this` keyword is `workshop`, which is defined in the last line `workshop.ask("Is this lexical 'this'?");`
+
+<p align="center">
+  <Image src="/Images/arrowThis.png">
+</p>
+
+We tend to think `{}` must be scopes, but this is wrong.
+The parent lexical scope from which that arrow function will go up one level to resolve the `this` keyword, is **global**! `Not workshop`
+
+In the example above, `ask` was a function and the callback function passed to `setTimeout` was the arrow function, so it resolved lexically to `ask`.
+But in this example, there are only 2 scopes, `ask` but its an arrow function and global!
+
+Arrow functions are great when you benefit for lexical `this` behavior, because `this` keyword never under any circumstances points at the function itself, it points at a context.
 
 ### 4.4 Callbacks & Higher Order Functions
 
@@ -1133,11 +1166,11 @@ There are 4 different ways of invoking a function, and each way is going to answ
 
 In lexical scope land, we start at the current scope and we work our way to the global scope
 
-1) this: implicit binding
+1. this: implicit binding
 
 <p align="center">
 
-<image src="/Images/implicitBinding.png" />
+  <image src="/Images/implicitBinding.png" />
 
 </p>
 
@@ -1147,38 +1180,31 @@ That's called the `namespace pattern`
 how does the `this` keyword behave in the namespace pattern?
 
 When we invoke the `ask()` method on the workshop object, how does it figure out what the `this` keyword should point at?
-> The Call Site
+> **The Call Site!**
+> 
 > Because of the call site the `this` keyword is going to end up pointing at the object that is used to invoke it, which in this case is the workshop object
-> `workshop.ask()` says invoke `ask()` with the `this` keyword pointing at workshop - thats what the implicit binding rule says
+> 
+> `workshop.ask()` says invoke `ask()` with the `this` keyword pointing at workshop - thats what the implicit binding rule says...
+> 
 > And thats how the `this` keyword works in all other languages - so this is the most common and intuitive 
 
 The idea of having implicit binding is useful because this is how we share behavior in different contexts
-
-Here:
 
 <p align="center">
   <image src="/Images/implicitBinding2.png" />
 </p>
 
 I am defining just one ask function, but I am sharing the ask function across 2 different objects with 2 different sets of data in them. But because on line 7 & 12 I have a reference to the `ask` function on it. 
+
 When I use the reference to invoke the ask function, the implicit binding rule says "invoke that one function in a different context each time"
 
-2) this: dynamic binding → sharing
-
-<p align="center">
-
-<image src="/Images/js_snippet08.png">
-
-</p>
 Im sharing the ask function across 2 different objects: workshop1 and workshop2
 With the help of the implicit binding rule, `this` points to the object - so its invoked in 2 different contexts (again to the dynamic flexibility)
 
-3) this: explicit binding
+2. this: explicit binding
 
 <p align="center">
-
-<image src="/Images/js_snippet09.png">
-
+  <image src="/Images/explicitBinding.png" />
 </p>
 
 The `.call()` method & `.apply()` method, both of them take, as their first argument, a `this` keyword
@@ -1186,11 +1212,6 @@ So when we pass an object as the first argument, we're saying invoke the `ask()`
 
 **losing your `this` binding** - a variation of explicit binding is called **hard binding**
 
-<p align="center">
-
-<image src="/Images/js_snippet10.png">
-
-</p>
 
 Looking at `setTimeout(workshop.ask,10,"Lost this?");` → the method is on the workshop object, so why is it getting lost?
 Because `setTimeout(workshop.ask,10,"Lost this?");` this is not the call site...
@@ -1207,34 +1228,51 @@ So...
 
 If I go to the trouble to write a `this` aware set of code, and then most of my call sites are using the flexible dynamism and every once in a while I have to do something like a hard binding.. then im getting a lot of benefit from that system
 
-On the other hand, if i go through the trouble to write a `this` aware system and then everyone or most of my call sites **have** to use `.bind()`, that's a clue to me that Im doing this the hard way and should use `closures` and lexical scope instead.
+On the other hand, if i go through the trouble to write a `this` aware system and then everyone or most of my call sites **have** to use `.bind()`, that's a clue to me that I'm doing this the hard way and should use `closures` and lexical scope instead.
 
+3. Invoking a function using the `new` keyword 
 
+```js
+function ask(question){
+  console.log(this.teacher,question)
+}
 
-4) 4th and final way of invoking a function
+var newEmptyObject = new ask("What is 'new' doing here?")
+// undefined What is 'new' doing here?
+```
 
-this: default binding
+The purpose of the `new` keyword is actually to invoke a function with a `this` keyword pointing at a whole new empty object
+
+The `new` keyword also does a total of 4 actions when invoked with a function:
+- Creates a brand new empty object
+- Links that object to another object
+- Call function with `this` set to the new object 
+- If function does not return an object, assume return of `this`
+
+4. default binding
 
 <p align="center">
-
-<image src="/Images/js_snippet11.png">
-
+  <image src="/Images/defaultBinding.png" />
 </p>
 
-So we dont specify any object, or use `call` or binding → the fallback is to default to the global (where it finds the global variable teacher and this prints kyle)
+So we don't specify any context object, no dot method, no `new`, or use `call` or binding → the fallback is to default to the global (where it finds the global variable teacher and this prints kyle)
 
-But askAgain is in strict-mode - gets a TypeError...
+But `askAgain` is in strict-mode - gets a TypeError...
 In strict-mode, when you invoke it with no other `this` bindings, the default behavior is to leave it undefined
 and now you're trying to access a property on an undefined value - which is a TypeError
 
-And this makes sense, youre invoking a function without giving a `this` - because if you don't it goes hunting in global and thats horrible... 
+And this makes sense, youre invoking a function without giving a `this` - because if you don't, it goes hunting in global and thats horrible... 
 
 We have to look at the call-site to determine what `this` is pointing at, you have to look at **how the function's being called!!**
-because everytime it gets called, the how of the call controls what the `this` keyword will point at
+because everytime it gets called, the *how* of the call controls what the `this` keyword will point at
+
+<hr>
+
+#### Binding Precedence
 
 <p align="center">
 
-<image src="/Images/js_snippet12.png">
+<image src="/Images/orderOfPrecedence.png">
 
 </p>
 
@@ -1247,7 +1285,7 @@ because everytime it gets called, the how of the call controls what the `this` k
 4. And if none of the previous 3 apply - we default onto the global object (except strict mode)
 
 
-## 6. Prototype & __proto__
+## 6. Prototype & `__proto__`
 
 The prototype system is what the `class` keyword is built on top of
 
@@ -1314,9 +1352,23 @@ These 4 things happen every time the `new` keyword is invoked with a function.
 
 ## 8. `class`
 
+<p align="center">
+
+<image src="/Images/class.png" />
+
+</p>
+
 ### 8.1 `super`
 
+<p align="center">
+  <image src="/Images/super.png" />
+</p>
+
 ### 8.2 `extends`
+
+<p align="center">
+  <image src="/Images/extends.png" />
+</p>
 
 ## 9. Closure
 
