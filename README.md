@@ -2309,6 +2309,288 @@ Then we can have asynchronous functions, which are pulls so we can pull values a
 
 Now we have the ability to push and pull at the same time so that I can have lazy asynchronous iteration.
 
+<hr>
+
+Promises are used constantly in our code, and they are also the foundation of async/await
+Promises in javascript are kind of like an 'iou' for something that is going to happen at some point in the future
+
+for example:
+
+- ajax call returning data
+- access to a user's webcam
+- resizing an imge
+
+The point is all of these things take time, we simply kick off the process and move along with our lives
+
+We only come back to that thing, when we need to deal with the data, but why do we do it this way?
+
+JS waits for nobody, everything in JS is synchronous... so real life examples:
+
+Let's say we wanted to do a few things:
+
+1. make coffee
+2. drink coffee
+3. cook breakfast
+4. eat breakfast
+
+You want to make your coffee, then drink it
+Then you want to make your breakfast, then eat it
+
+Would it make sense to finish making coffee before you can even start cooking your breakfast
+
+Would it make sense to make the coffee, drink the coffee. Once you're done then you go ahead and start making your breakfast.. No!
+
+We want to start one thing, come back to it once it's finished, and deal with the result accordingly
+
+In the past to deal with asynchronous scenarios we do this:
+
+```js
+makeBreakfast(function(){
+  makeCoffee(function(){
+    eatBreakfast(function(){
+      drinkCoffee(function(){
+        cleanUp(function(){
+          // Finally done and it's time for lunch
+        })
+      })
+    })
+  })
+}) /// wtf??
+```
+
+This is also known as callback hell!
+
+Promises allows us to start writing code that returns a promise, not data.
+A promise that the data will come at some point in time, and then we can use `.then` to listen for the data coming back. And we can even take it one step further and wrap it in a "mega-promise" `promise.all()` that will allow us to wait until both (the data comes back, and listening for it to come back) things are done until we go further and deal with the result
+
+And while promises help us avoid callback hell... `.then` still feels "callbacky"
+Any code that needs to come after the promise still needs to be in the final `.then()` callback
+
+This is where Async/Await comes in... It's still based on promises but with better syntax
+
+So where before we would have something like:
+
+```js
+moveTo(50,50, function(){
+  moveTo(20,100, function(){
+    moveTo(100,200, function(){
+      moveTo(2,10, function(){
+        // done
+      })
+    })
+  })
+})
+```
+
+Becomes
+
+```js
+moveTo(50,50)
+  .then(() => moveTo(20,100))
+  .then(() => moveTo(100,200))
+  .then(() => moveTo(2,10))
+```
+
+Becomes
+
+```js
+async function animate() {
+  await moveTo(50,50)
+  await moveTo(20,100)
+  await moveTo(100,200)
+  await moveTo(2, 10)
+}
+```
+
+We can make a function async, by using the keyword and then inside of that we simply put the await keyword
+That'll pause the function from running, it'll wait till that promises resolves, until it moves on to the next line of code
+
+Javascript is almost entirely asynchronous/non-blocking, it's great without locking up the browser but it's hard to author the code
+
+Let's see a php example:
+
+```php
+// first get some data
+$wes = file_get_contents('https://api.github.com/users/wesbos')
+$scott = file_get_contents('https://api.github.com/users/stolinski')
+
+// then use it!
+echo "<h1>".$wes['name']."</h1>";
+echo "<h1>".$scott['name']."</h1>";
+```
+We fetch 2 things from github...
+We fetch the first one, when that comes back then fetch the 2nd one
+When that comes back we have both pieces of data and we use them
+However, this isn't the most optimal solution.
+
+In JavaScript we can put 2 promises into variables and wait until both of them to comeback and then we can use the data and using it with html
+```js
+// first get some data
+const wesPromise = axios.get('https://api.github.com/users/wesbos')
+const scottPromise = axios.get('https://api.github.com/users/stolinski')
+
+Promise
+  .all([wesPromise, scottPromise])
+  .then(([wes, scott] => {
+    const html = `
+      <h1>${west.name}</h1>
+      <h1>${scott.name}</h1>
+    `;
+  }))
+```
+
+So php is easier to read, but JS is more performant bc we're not waiting for unnecessary things to finish, but im not happy with either
+
+Async/Await gives up synchronous looking code without the down side of writing synchronous code
+
+So we start by adding `async` to the beginning of our function, we still keep our regular promise functions. But with small tweaks...
+
+```js
+function sleep(amount){
+  return new Promise((resolve, reject) => {
+    if (amount <= 300) {
+      return reject('That is too fast, cool it down')
+    }
+    setTimeout(() => resolve(`Slept for ${amount}`), amount)
+  })
+}
+
+async function go() {
+  // ....
+}
+```
+Then when youre inside an async function you simply await things inside of it
+
+```js
+  async function go() {
+    // just wait
+    await sleep(1000);
+
+    // OR capture the return value
+    const response = await sleep(750);
+    console.log(response)
+  }
+```
+We can either wait, or store the data (returned value) in a variable
+
+Now even with async/await we want to optimize, this reads exactly our php snippet
+
+```js
+const getDetails = async function() {
+  const wes = axios.get('https://api.github.com/users/wesbos')
+  const scott = axios.get('https://api.github.com/users/stolinski')
+
+  const html = `
+    <h1>${west.name}</h1>
+    <h1>${scott.name}</h1>
+  `;
+}
+```
+
+This is too slow, we can instead do this:
+
+```js
+const getDetails = async function() {
+  // fire both off
+  const wesPromise = axios.get('https://api.github.com/users/wesbos')
+  const scottPromise = axios.get('https://api.github.com/users/stolinski')
+
+  // and wait to both to come back
+  const [wes, scott] = await Promise.all([wesPromise, scottPromise]); // WAIT FOR BOTH
+  const html = `
+    <h1>${west.name}</h1>
+    <h1>${scott.name}</h1>
+  `;
+}
+```
+
+We can simply `await` Promise.all - we make a mega-promise, we await for both of them to finish before it moves on to the next line.
+This is great, but we also need to take into account ERROR-HANDLING
+
+```JS
+async function displayData() {
+  try{
+    const wes = await axios.get('https://api.github.com/users/wesbos')
+    console.log(data); // work with data
+  } catch(err) {
+    console.log(err); // handle error
+  }
+}
+```
+
+Wrap it in a try/catch or use a Higher Order Function
+
+```js
+// create a function without any error handling
+async function yolo() {
+  // do something that errors out
+  const wes = await.axios.get('https://no.com')
+}
+
+// Create a HOF that takes as an argument the actual function
+// from that return a new function but with a catch tagged at the end
+function handleError(fn){
+  return function(...params) {
+    return fn(...params).catch(function (err){
+      // do something with the error!
+      console.error('oops!', err)
+    })
+  }
+}
+```
+
+You can chain a `.catch()` on async functions
+
+Create a new function with your HOF
+
+```js
+// Wrap it in a HOC
+const safeYolo = handleError(yolo);
+safeYolo();
+```
+
+This technique can be really handy, let's look at this example:
+
+```js
+const getOrders = async (req, res, next) => {
+  const orders = Orders.find({ email: req.user.email });
+  // Something Goes Wrong
+  if(!orders.length) throw Error('No Orders Found'){
+    // ...
+  }
+
+  // Since this unhandled, this route would cause the app to quit
+  router.get('/orders', getOrders);
+}
+```
+
+```js
+const catchErrors = (fn) => {
+  return function (req, res, next) {
+    return fn(req, res, next).catch(next);
+  }
+}
+
+// or hot shot
+const catchErrors = (fn) => (req, res, next) => fn(req, res, next).catch(next)
+```
+
+We need to catch all of our errors and pass it along to the next function, and that's where our HOF comes in.
+
+Node - error handling
+
+```js
+process.on('unhandledRejection', error => {
+  console.log('unhandledReject', error)
+})
+```
+
+If you don't handle errors with Node, it will shut your app down completely
+
+So write your API's in promises, async/await are great for flow control
+Convert older APIs with promisify
+
+
 ## 11. Functional Programming
 ### 11.1 Pure Functions
 
