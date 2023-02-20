@@ -540,27 +540,423 @@ root.render(element);
 
 ## Components
 
+React is a component based framework.
 
+What is a component, exactly?
+A component is a bundle of markup, styles, and logic that controls everything about a specific part of the user interface.
 
-### Thinking in Components
+It's a different mental model when it comes to code organization.
+Instead of separating our application into markup (written in HTML), styles (written in CSS), and logic (written in JS), we organize our application into components.
 
+In JavaScript, the mechanism of reuse is the function. Maybe we have a function to process data in some way:
 
+```js
+function shout(sentence) {
+  return sentence.toUpperCase() + '!!';
+}
+
+shout("we're off to see the wizard")
+// -> "WE'RE OFF TO SEE THE WIZARD!!"
+```
+
+**With React, components are the main mechanism of reuse**. Instead of partials for HTML, classes for CSS, and functions for JavaScript, we create a component that bundles up all 3, and allows us to create a library of high-level reusable UI elements.
+
+This idea is really very powerful. It takes a while to get accustomed to thinking in components, but once you do, you'll never want to work on a project without them.
+
+(Modern React also features hooks, which offers a way to reuse React logic! We'll learn all about them in the modules ahead.)
 
 ### Basic Syntax
 
+Here's an example of a JS function:
 
+```js
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+function FriendlyGreeting() {
+  return (
+    <p
+      style={{
+        fontSize: '1.25rem',
+        textAlign: 'center',
+        color: 'sienna',
+      }}
+    >
+      Greetings, weary traveller!
+    </p>
+  );
+}
+
+const container = document.querySelector('#root');
+const root = createRoot(container);
+root.render(<FriendlyGreeting />);
+```
+
+In React, components can be defined as JavaScript functions.
+Typically, React components return one or more React elements.
+In this example, `FriendlyGreeting`, creates a React element that describes a paragraph, with some built-in styles.
+
+And finally, we render this component **just like** how HTML tags are rendered.
+Instead of rendering a `<div>` or an `<h1>`, `<FriendlyGreeting>` is rendered.
+
+Components **must** always start with a **Capital Letter**. This is due to how JSX is transformed into JS.
+
+Here are 2 React elements in JSX:
+
+```js
+const elem1 = <h1>Hello!</h1>
+const elem2 = <FriendlyGreeting />
+```
+
+... Those same elements, compiled into JavaScript
+
+```js
+const elem1 = React.createElement('h1', null, 'Hello!');
+const elem2 = React.createElement(FriendlyGreeting, null);
+```
+
+**A React element is a description of a thing we want to create**. In some cases we want to create a DOM node.
+In other cases, we want to create a *component instance*.
+
+The first argument that we pass to `React.createElement` is the **“type”** of the thing we want to create.
+For the first element, it's a string (`"h1"`).
+For the second element, it's a **function**! It's `FriendlyGreeting`, and not `"FriendlyGreeting"`.
+
+If our component had a lower-case function name, React would render a `<friendlygreeting>` HTML element, instead of processing it as a component.
+
+#### Arrow functions vs traditional functions
+
+Modern JavaScript supports two different syntaxes for writing functions.
+In addition, to the traditional way, using the `function` keyword, you can also use "arrow functions"
+
+When it comes to defining React Components either syntax works. But there are some functional limitations when it comes to arrow functions.
+
+Arrow functions:
+
+- do **not** have their own `this` value
+- are **not** constructor-friendly
+- are **not** hoisted
+
+However, these limitations apply when it comes to making React components the conventional way.
+
+Arrow functions are inspired by lamdba functions from other functional programming languages.
+Their **main** benefit is that they're much shorter and cleaner.
+Reducing "function clutter" may seem like an insignificant benefit, but it can really help improve readability when working with anonymous functions. For example:
+
+```js
+const arr = ['hey', 'ho', 'let\'s go'];
+
+// This:
+arr
+  .map(function(string) {
+    return string + '!'
+  })
+  .join(' ');
+
+// …Becomes this:
+arr
+  .map(string => string + '!')
+  .join(' ');
+```
+
+Arrow functions do have rules... there's a "short-form" and a "long-form"
+
+short form: `const add1 = n => n + 1;`
+
+long form:
+
+```js
+const add1 = n => {
+  return n + 1;
+};
+```
+
+Opting into the long form by adding curly braces (`{ }`) around the function body.
+The fundamental difference between the two forms is this:
+
+- The short-form function's body **must be a single expression**. That expression will be **automatically returned** or **implicitly returned**.
+- The long-form function's body **can contain a number of statements** and therefore the return value must be explicitly stated.
+
+*If you add a return keyword to the short-form syntax*, a syntax error will be thrown.
+```js
+const add1 = n => return n + 1;
+// Uncaught SyntaxError: Unexpected token 'return'
+```
+
+There are also times when short-form syntax uses parenthesis instead of curly braces.
+
+```js
+const shout = sentence => (
+  sentence.toUpperCase()
+);
+```
+
+Parentheses can be added to help with formatting.
+By adding parens, we're able to push the returned expression to a new line.
+And so, we're still using the short-form “implicit” return structure, but we're restructuring it to make it more readable.
+
+```js
+// On multiple lines, with parens:
+const shoutWithParens = sentence => (
+  sentence.toUpperCase()
+);
+
+// Or, in a single line without parens:
+const shoutWithoutParens = sentence => sentence.toUpperCase();
+```
+
+There are also `Optional parameter parentheses`: if an arrow function takes a single parameter, the parentheses are optional:
+
+```js
+// This is valid:
+const logUser = user => {
+  console.log(user);
+}
+
+// This is also valid:
+const logUser = (user) => {
+  console.log(user);
+}
+```
+
+The parentheses are mandatory if we have more than 1 parameter:
+
+```js
+const updateUser = (user, properties, isAdmin) => {
+  if (!isAdmin) {
+    throw new Error('Not authorized')
+  }
+
+  user.setProperties(properties);
+}
+```
+
+The parentheses are also mandatory if we have no parameters:
+
+`const sayHello = () => console.log('Hello!')`
+
+**Implicitly returning objects**, the function below returns an object:
+
+```js
+function makeObject() {
+  return {
+    hi: 5,
+  };
+}
+```
+
+When attempting to convert it to a short-form arrow function:
+
+`const makeObject = () => {hi: 5};`
+
+There are 2 ways to interpret this code:
+
+- A short-form arrow function that returns an object, `{ hi: 5}`
+- A long-form arrow function with a single statement, `hi: 5`
+
+The problem is that curly braces (`{ }`) serve two purposes in JavaScript: they're used for object notation, **but** they're *also* used to create blocks, like in `if` statements.
+
+When curly braces follow an arrow (`=>`), the JS engine assumes we're creating a new block, and so it'll throw a syntax error, since `hi:5` is not a valid JS statement.
+
+**If** we want to implicitly return an object, we need to wrap it in parentheses: `const makeObject = () => ({ hi:5 });`
+
+In JavaScript, parentheses can be added around **any** expression, to change its evaluation order.
+In this case, we don't care about evaluation order, we just need to make it clear that we're trying to pass an expression.
+
+Similarly, it's common to wrap the short-form expression in parentheses when it's too long to fit on a single line:
+
+```js
+const matchedItem = items.find(item => (
+  item.color === 'red' && item.size === 'large'
+));
+```
+
+We can wrap any expression in parentheses, but we can't wrap a block in parentheses.
+And so, when we wrap the `{}` characters in parens, the engine can figure out that we're trying to create an object, not a block.
 
 ### Props
 
+The `FriendlyGreeting` component is great, but it isn't terribly useful. Every time the component is rendered the exact same result is displayed. It's not flexible at all.
 
+Components use **props**. Props are **like** arguments to a function: they allow us to pass data to our components, so that the components can include customizations based on the data. 
+
+![props](../Images/props-transformation.png)
+
+By adding props to the component, the component is now more flexible. We are able to pass data through props which is an object.
+
+And with objects we can always destructure them to more easily grab the information we need.
+That is how we go from `(props)` to `({ name})` in the function declaration.
+Then in the function body we no longer need to prefix every property inside props with `prop.`, we just specify the key (`name`).
+
+> When React renders, it'll collect all of the props into a props object. So, we can access the name value by specifying {props.name} in the JSX.
+> with destructuring {name} is enough
+
+And passing the information directly to the component is very similar to how we pass properties in html.
+
+If we want to give `<div>` a class we simply do `<div class="hello">`
+
+In JSX, we declare all the properties we need, so when we pass the component to be rendered we do a similar thing:
+`<FriendlyGreeting name="Lenny">`.
+
+Behind the scenes we have this:
+
+```js
+render(
+  // <FriendlyGreeting name="Lenny" />
+  React.createElement(
+    FriendlyGreeting,
+    {
+      name: "Lenny"
+    }
+  )
+  document.querySelector('#root')
+);
+```
+
+When the application runs, if we were to inspect this element, we would see that we have an element of type `FriendlyGreeting` and we see there's a props object...
+The props object/element, which is a bundle of information **about this particular element**, and we pass it to the render function.
+React then figures out what it needs to render and with what necessary information...
+For our example, React will see `FriendlyGreeting` component, **because it's a component**, it's a function. React needs to **call that function with the props that have been provided**. And that's how the argument is provided to the component.
+
+We can also use default values. Suppose `FriendlyGreeting` is being worked on and we want to greet the user, but there's a problem. **We don't know everyone's name**. And instead of displaying an incomplete greeting we could do this with the `||` operator:
+
+```js
+function FriendlyGreeting({ name }) {
+  return (
+    <p>
+      Hey {name || 'there'}!
+    </p>
+  )
+}
+```
+
+If `name` is provided, it'll be used. Otherwise, we'll fall back and use "there".
+This method works, but there's **an even better way** to do this in React. We can specify default values for **each** prop:
+
+```js
+function FriendlyGreeting({ name = 'there' }) {
+  return (
+    <p>
+      Hey {name}
+    </p>
+  );
+}
+```
+
+There are a couple of benefits to this approach:
+
+- If we have multiple props with default values, we can see all of the defaults in the same place, rather than having them sprinkled around the component
+- The `||` operator will occasionally surprise us by using the default value even when we've supplied a value! This can happen when the supplied value is falsy.
+
+As a result, it's become a well-established convention to specify default values within the prop object.
 
 ### The Children prop
 
+Let's suppose that we're building a custom *button* component.
+It should look and act just like a regular HTML button, but with some additional styling.
 
+```js
+function RedButton({ contents }){
+  return (
+    <button
+      style={{
+        color: 'white',
+        backgroundColor: 'red',
+      }}
+    >
+      {contents}
+    </button>
+  );
+}
+
+// ... And then rendered like so:
+
+root.render(
+  <RedButton contents="Don't click me" />
+);
+```
+
+This works... but it's quite different from how we use a typical HTML button, where the content goes in-between the open and close tags:
+
+```js
+<button>
+  Don't click me
+</button>
+```
+
+As a nice but of syntactic sugar, React lets us do the same thing with our custom components:
+
+```js
+root.render(
+  <button>
+    Don't click me
+  </button>
+);
+```
+
+When we do this, we can access the children through the `children` prop:
+
+```js
+function RedButton({ children }){
+  return (
+    <button
+      style={{
+        color: 'white',
+        backgroundColor: 'red',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+When we pass something between the open and close tags, React will automatically supply that value to us under `children`.
+
+We can see this when we examine the React element produced:
+
+![children-component](../Images/children-component.png)
+
+`children` is a special value, a "reserved word" when it comes to props.
+
+**But it's not THAT special**, `children` is not different from other props. They're exactly the same.
+
+If we wanted to, we could pass `children` in the "traditional" way.
+It's clunky, but the outcome is the same:
+
+```js
+// This element:
+<div children="Hello world!" />
+
+// …is equivalent to this one:
+<div>
+  Hello world!
+</div>
+```
+
+If both "forms" of the children prop are passed:
+
+```js
+const element = (
+  <div children="As an attribute">
+    Between the brackets
+  </div>
+);
+```
+
+React chooses to priortize the content passed between the open/close tags, rather than the one written as an attribute.
+
+**This is the only difference**.
+The only thing that makes children special is that I can choose to pass it between the open/close tags.
+In every other way, it's the same as any other prop.
 
 ### Exercises
 
+Creating a new component, `ContactCard`, to reduce redundant code
+![exercise-one](../Images/component-exercise.png)
 
+Create a new component, `Button`, to create a more flexible button and reduce redundant code
+![exercise-two](../Images/component-button-exercise.png)
 
 ## Application Structure
 
